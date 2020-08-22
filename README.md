@@ -54,6 +54,8 @@ public class DemoSO : ScriptableObject{
 }
 
 ```
+![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/sheet1.png)
+
 =============
 
 Default Sheet Id
@@ -88,6 +90,13 @@ public class DemoSO : ScriptableObject{
 }
 
 ```
+
+## Editor Window
+
+![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/menu.png)
+
+![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/editor.png)
+
 
 ## Google API V4 .NET References
 
