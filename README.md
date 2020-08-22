@@ -15,7 +15,8 @@ Unity3D Google Spreadsheet export/import library
 ## Import/Export Attributes
 
 =============
-1. SpreadsheetTargetAttribute
+
+**SpreadsheetTargetAttribute**
 
 Allow to mark serializable class as Synched with Google Spreadsheet. 
 
@@ -27,7 +28,8 @@ Parameters:
 - syncAllFields. If TRUE, then try to sync all class fields data. If FALSE - synchronized only fields marked with attribute **[SpreadSheetFieldAttribute]**
 
 =============
-2. SpreadSheetFieldAttribute
+
+**SpreadSheetFieldAttribute**
 
 All fields marked with this attribute will be synchronized with target Spreadsheet data
 
