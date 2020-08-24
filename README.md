@@ -97,6 +97,16 @@ public class DemoSO : ScriptableObject{
 
 ![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/editor.png)
 
+### Spreadsheet Id's
+
+Id's of your sheet can be found right from web page url
+
+![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/sheetid.png)
+
+Copy your table id and paste into importer window field
+
+![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/sheetid1.png)
+
 
 ## Google API V4 .NET References
 
