@@ -143,7 +143,7 @@ Copy your table id and paste into importer window field
 {
   "name": "com.unity.nuget.newtonsoft-json",
   "displayName": "Newtonsoft Json",
-  "version": "2.0.0-preview",
+  "version": "2.0.0",
   "unity": "2018.4",
   "description": "Newtonsoft Json for use in Unity projects and Unity packages. Currently synced to version 12.0.2.\n\nThis package is used for advanced json serialization and deserialization. Most Unity users will be better suited using the existing json tools built into Unity.\nTo avoid assembly clashes, please use this package if you intend to use Newtonsoft Json.",
   "type": "library",
@@ -159,7 +159,7 @@ add into your manifest dependency
 
 ```json
   "dependencies": {
-    "com.unity.nuget.newtonsoft-json" : "2.0.0-preview",
+    "com.unity.nuget.newtonsoft-json" : "2.0.0",
     ...
     ...
     ...
