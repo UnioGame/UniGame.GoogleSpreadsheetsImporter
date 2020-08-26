@@ -90,20 +90,39 @@ public class DemoSO : ScriptableObject{
 }
 
 ```
+## Connect to Google Spreadsheet
 
-## Editor Window
+### Editor Window
 
 ![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/menu.png)
 
-![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/editor.png)
+
+### Create Google Api Credentials
+
+
+- HOWTO create api credentials https://developers.google.com/sheets/api/quickstart/dotnet
+
+- Setup path to credential .json file and press "Connect Spreadsheet" 
+
+![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/editorapikey.png)
+
+- Under target Google Profile allow application access to spreadsheets
+
+![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/editorapikey2.png)
+
+
 
 ### Spreadsheet Id's
 
-Id's of your sheet can be found right from web page url
+- Now you can specify your spreadsheets
+
+![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/editor.png)
+
+- Id's of your sheet can be found right from web page url
 
 ![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/sheetid.png)
 
-Copy your table id and paste into importer window field
+- Copy your table id and paste into importer window field
 
 ![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/sheetid1.png)
 
