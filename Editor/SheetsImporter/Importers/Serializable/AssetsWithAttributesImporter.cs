@@ -1,4 +1,4 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Importers
+﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Importers.Serializable
 {
     using System;
     using System.Collections.Generic;
@@ -7,15 +7,13 @@
     using Extensions;
     using GoogleSpreadsheets.Runtime.Attributes;
     using UnityEngine;
-    using Object = UnityEngine.Object;
 
     [Serializable]
 #if ODIN_INSPECTOR
     [Sirenix.OdinInspector.HideLabel]
     [Sirenix.OdinInspector.BoxGroup("Attributes Source")]
 #endif
-    [CreateAssetMenu(menuName = "UniGame/Google/Spreadsheet/Importers/AssetsWithAttributesImporter",fileName = nameof(AssetsWithAttributesImporter))]
-    public class AssetsWithAttributesImporter :  BaseSpreadsheetImporter 
+    public class AssetsWithAttributesImporter :  SerializableSpreadsheetImporter 
     {
         
         /// <summary>
@@ -23,8 +21,16 @@
         /// </summary>
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.TableList]
+        [Sirenix.OdinInspector.InlineButton("LoadAssets")]
 #endif
         public List<SheetSyncItem> assets = new List<SheetSyncItem>();
+
+        public void LoadAssets()
+        {
+            foreach (var asset in Load()) {
+                
+            }
+        }
         
         public override IEnumerable<object> Load()
         {
@@ -40,15 +46,15 @@
                 }).
                 ToList();
             
-            return assets.Select(x => x.asset).
+            return assets.
                 OfType<object>().
                 ToList();
         }
 
-        public override List<object> Import(SpreadsheetData spreadsheetData)
+        public override IEnumerable<object> ImportObjects(IEnumerable<object> source,SpreadsheetData spreadsheetData)
         {
             var result = new List<object>();
-            foreach (var item in assets) {
+            foreach (var item in source.OfType<SheetSyncItem>()) {
                 if(!spreadsheetData.HasSheet(item.sheetName) || item.asset == null)
                     continue;
                 var asset = item.asset.
@@ -57,6 +63,16 @@
             }
 
             return result;
+        }
+        
+        public override SpreadsheetData ExportObjects(IEnumerable<object> source,SpreadsheetData spreadsheetData)
+        {
+            foreach (var item in assets) {
+                if(item.asset == null)
+                    continue;
+                item.asset.UpdateSheetValue(spreadsheetData, item.sheetName);
+            }
+            return spreadsheetData;
         }
     }
 }

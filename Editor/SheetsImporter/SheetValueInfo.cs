@@ -1,6 +1,8 @@
 ﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
 {
-    public struct SheetValueInfo
+    using System.Collections.Generic;
+
+    public class SheetValueInfo
     {
         public object          Source;
         public SheetSyncScheme SyncScheme;
@@ -8,5 +10,7 @@
         public string          SheetId;
         public string          SyncFieldName;
         public object          SyncFieldValue;
+        public HashSet<object> IgnoreCache;
+        
     }
 }

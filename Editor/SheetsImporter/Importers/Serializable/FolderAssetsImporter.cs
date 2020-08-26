@@ -10,7 +10,7 @@
     using Object = UnityEngine.Object;
 
     [Serializable]
-    public class FolderAssetsImporter : SpreadsheetSerializableImporter
+    public class FolderAssetsImporter : SerializableSpreadsheetImporter
     {
         private const int LabelWidth = 120;
         
@@ -78,29 +78,27 @@
             return Values;
         }
 
-        public sealed override SpreadsheetData Export(SpreadsheetData data)
+        public sealed override SpreadsheetData ExportObjects(IEnumerable<object> source,SpreadsheetData data)
         {
             if (!data.HasSheet(sheetId))
                 return data;
 
-            AssetEditorTools.ShowProgress(ExportValues(data,sheetId));
+            AssetEditorTools.ShowProgress(ExportValues(source,data,sheetId));
 
             return data;
         }
 
-        public sealed override List<object> Import(SpreadsheetData spreadsheetData)
+        public sealed override IEnumerable<object> ImportObjects(IEnumerable<object> source,SpreadsheetData spreadsheetData)
         {
             var result = new List<object>();
             var filterType = GetFilteredType();
             if (filterType == null)
                 return result;
 
-            Load();
-            
             var syncedAsset = filterType.SyncFolderAssets(
                 folder,
                 spreadsheetData,
-                Values.ToArray(),
+                source.OfType<Object>().ToArray(),
                 createMissingItems, 
                 maxItemsCount,
                 overrideSheetId ? sheetId : string.Empty);
@@ -117,14 +115,14 @@
             return importedAssets;
         }
 
-        private IEnumerable<ProgressData> ExportValues(SpreadsheetData data,string sheeName)
+        private IEnumerable<ProgressData> ExportValues(IEnumerable<object> source,SpreadsheetData data,string sheeName)
         {
             var progressData = new ProgressData() {
                 Title = "Export",
                 IsDone =  false,
             };
             
-            var targetObjects = Load().ToList();
+            var targetObjects = source.ToList();
             var count         = targetObjects.Count;
             for (var index = 0; index < targetObjects.Count; index++) {
                 var targetObject = targetObjects[index];

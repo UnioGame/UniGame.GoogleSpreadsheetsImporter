@@ -2,17 +2,31 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Abstract;
     using Core.Runtime.DataFlow.Interfaces;
+    using Importers.Serializable;
     using UniGreenModules.UniCore.Runtime.DataFlow;
     using UniGreenModules.UniCore.Runtime.Interfaces;
     using UniGreenModules.UniCore.Runtime.Rx.Extensions;
     using UniRx;
+    using UnityEngine;
 
     [Serializable]
     public class SpreadsheetImportersHandler : ISpreadsheetAssetsHandler,IResetable
     {
+        
 #region inspector
+
+#if ODIN_INSPECTOR
+        [Sirenix.OdinInspector.InlineProperty]
+#endif
+        [SerializeReference]
+        public List<SerializableSpreadsheetImporter> serializabledImporters = 
+            new List<SerializableSpreadsheetImporter>() {
+                new AssetsWithAttributesImporter()
+            };
+
         /// <summary>
         /// list of assets linked by attributes
         /// </summary>
@@ -34,7 +48,8 @@
 
         public ILifeTime LifeTime => _lifeTime = (_lifeTime ?? new LifeTimeDefinition());
 
-        public IEnumerable<ISpreadsheetAssetsHandler> Importers => importers;
+        public IEnumerable<ISpreadsheetAssetsHandler> Importers => importers.
+            Concat<ISpreadsheetAssetsHandler>(serializabledImporters);
 
         public void Reset() => _lifeTime?.Release();
         
@@ -45,7 +60,9 @@
             _spreadsheetData = spreadsheetData;
             _clients = new List<GoogleSpreadsheetClient>(clients);
             
-            foreach (var importer in importers) {
+            foreach (var importer in importers.
+                Concat<ISpreadsheetTriggerAssetsHandler>(serializabledImporters)) 
+            {
                 importer.Initialize();
                 importer.ExportCommand.Do(
                         x => ExportSheets(Export(_spreadsheetData, x))).
@@ -71,7 +88,7 @@
             return result;
         }
 
-        public List<object> Import()
+        public IEnumerable<object> Import()
         {
             return Import(_spreadsheetData);
         }
@@ -99,7 +116,7 @@
         
         
         
-        public List<object> Import(SpreadsheetData spreadsheetData)
+        public IEnumerable<object> Import(SpreadsheetData spreadsheetData)
         {
             var result = new List<object>();
             foreach (var importer in Importers) {
@@ -122,7 +139,7 @@
             return importer.Export(data);
         }
         
-        private List<object> Import(SpreadsheetData data, ISpreadsheetAssetsHandler importer)
+        private IEnumerable<object> Import(SpreadsheetData data, ISpreadsheetAssetsHandler importer)
         {
             importer.Load();
             return importer.Import(data);

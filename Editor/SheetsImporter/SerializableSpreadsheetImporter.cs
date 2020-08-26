@@ -4,9 +4,9 @@
     using System.Collections.Generic;
     using Abstract;
     using UniRx;
-    using UnityEngine;
 
-    public abstract class BaseSpreadsheetImporter : ScriptableObject, 
+    [Serializable]
+    public abstract class SerializableSpreadsheetImporter : 
         ISpreadsheetAssetsHandler,
         ISpreadsheetTriggerAssetsHandler
     {
@@ -14,6 +14,7 @@
         private ISubject<ISpreadsheetAssetsHandler> _exportCommand;
         
         #region public properties
+        
         public bool IsValidData => _importCommand != null && _exportCommand !=null;
 
         public IObservable<ISpreadsheetAssetsHandler> ImportCommand => _importCommand;
@@ -28,7 +29,10 @@
             _exportCommand = new Subject<ISpreadsheetAssetsHandler>();
         }
 
-        public abstract IEnumerable<object> Load();
+        public virtual IEnumerable<object> Load()
+        {
+            yield break;
+        }
 
         public IEnumerable<object> Import(SpreadsheetData spreadsheetData)
         {
@@ -41,7 +45,7 @@
             var source = Load();
             return ExportObjects(source, data);
         }
-        
+
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.ButtonGroup()]
         [Sirenix.OdinInspector.Button()]
@@ -62,12 +66,12 @@
             _exportCommand?.OnNext(this);
         }
 
+
         public virtual IEnumerable<object> ImportObjects(IEnumerable<object> source,SpreadsheetData spreadsheetData)
         {
             return source;
         }
 
         public virtual SpreadsheetData ExportObjects(IEnumerable<object> source,SpreadsheetData spreadsheetData) => spreadsheetData;
-
     }
 }

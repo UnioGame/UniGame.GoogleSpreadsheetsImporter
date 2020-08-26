@@ -8,7 +8,7 @@
     [Serializable]
     public abstract class SpreadsheetSerializableImporter : ISpreadsheetAssetsHandler
     {
-        public abstract List<object> Import(SpreadsheetData spreadsheetData);
+        public abstract IEnumerable<object> Import(SpreadsheetData spreadsheetData);
 
         public abstract IEnumerable<object> Load();
 
