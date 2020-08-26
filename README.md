@@ -137,7 +137,37 @@ Copy your table id and paste into importer window field
 }
 ```
 
-### Newtonsoft.Json for Unity 
+### Official Newtonsoft.Json Unity Package
+
+```json
+{
+  "name": "com.unity.nuget.newtonsoft-json",
+  "displayName": "Newtonsoft Json",
+  "version": "2.0.0",
+  "unity": "2018.4",
+  "description": "Newtonsoft Json for use in Unity projects and Unity packages. Currently synced to version 12.0.2.\n\nThis package is used for advanced json serialization and deserialization. Most Unity users will be better suited using the existing json tools built into Unity.\nTo avoid assembly clashes, please use this package if you intend to use Newtonsoft Json.",
+  "type": "library",
+  "repository": {
+    "type": "git",
+    "url": "git@github.cds.internal.unity3d.com:unity/com.unity.nuget.newtonsoft-json.git",
+    "revision": "74ca86c283a2f63ba5b687451a0842ba924da907"
+  }
+}
+```
+
+add into your manifest dependency
+
+```json
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json" : "2.0.0",
+    ...
+    ...
+    ...
+  }
+```
+
+
+### Trird party Newtonsoft.Json for Unity 
 
 https://github.com/jilleJr/Newtonsoft.Json-for-Unity
 
