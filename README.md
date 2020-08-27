@@ -1,5 +1,4 @@
-# Unity Google Sheets v.4 Converter
-
+# Unity3D Google Spreadsheets v.4 Support
 Unity3D Google Spreadsheet export/import library
 
 **Odin Inspector Asset recommended to usage with this Package (https://odininspector.com)**
