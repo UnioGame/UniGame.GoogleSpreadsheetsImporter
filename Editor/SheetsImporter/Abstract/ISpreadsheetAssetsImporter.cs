@@ -5,6 +5,6 @@
 
     public interface ISpreadsheetAssetsImporter
     {
-        IEnumerable<object> Import(SpreadsheetData spreadsheetData);
+        IEnumerable<object> Import(ISpreadsheetData spreadsheetData);
     }
 }

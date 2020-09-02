@@ -4,13 +4,13 @@
 
     public class SheetValueInfo
     {
-        public object          Source;
-        public SheetSyncScheme SyncScheme;
-        public SpreadsheetData SpreadsheetData;
-        public string          SheetId;
-        public string          SyncFieldName;
-        public object          SyncFieldValue;
-        public HashSet<object> IgnoreCache;
+        public object           Source;
+        public SheetSyncScheme  SyncScheme;
+        public ISpreadsheetData SpreadsheetData;
+        public string           SheetId;
+        public string           SyncFieldName;
+        public object           SyncFieldValue;
+        public HashSet<object>  IgnoreCache;
         
     }
 }

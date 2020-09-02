@@ -14,7 +14,7 @@
             return importers;
         }
 
-        public override SpreadsheetData ExportObjects(IEnumerable<object> source,SpreadsheetData data)
+        public override ISpreadsheetData ExportObjects(IEnumerable<object> source,ISpreadsheetData data)
         {
             foreach (var importer in source.OfType<ISpreadsheetAssetsExporter>()) {
                 importer.Export(data);
@@ -23,7 +23,7 @@
             return data;
         }
 
-        public sealed override IEnumerable<object> ImportObjects(IEnumerable<object> source,SpreadsheetData spreadsheetData)
+        public sealed override IEnumerable<object> ImportObjects(IEnumerable<object> source,ISpreadsheetData spreadsheetData)
         {
             var result = new List<object>();
             

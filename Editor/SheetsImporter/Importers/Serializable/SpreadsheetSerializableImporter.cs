@@ -8,11 +8,11 @@
     [Serializable]
     public abstract class SpreadsheetSerializableImporter : ISpreadsheetAssetsHandler
     {
-        public abstract IEnumerable<object> Import(SpreadsheetData spreadsheetData);
+        public abstract IEnumerable<object> Import(ISpreadsheetData spreadsheetData);
 
         public abstract IEnumerable<object> Load();
 
-        public virtual SpreadsheetData Export(SpreadsheetData data)
+        public virtual ISpreadsheetData Export(ISpreadsheetData data)
         {
             return data;
         }

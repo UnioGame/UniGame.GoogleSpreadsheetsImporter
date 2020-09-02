@@ -10,17 +10,17 @@
         
         public static readonly AssetSheetDataProcessor DefaultProcessor = new AssetSheetDataProcessor();
 
-        public static bool UpdateSheetValue(this object source, SpreadsheetData data,string sheetId,string sheetKeyField)
+        public static bool UpdateSheetValue(this object source, ISpreadsheetData data,string sheetId,string sheetKeyField)
         {
             return DefaultProcessor.UpdateSheetValue(source, data,sheetId,sheetKeyField);
         }
         
-        public static bool UpdateSheetValue(this object source, SpreadsheetData data)
+        public static bool UpdateSheetValue(this object source, ISpreadsheetData data)
         {
             return DefaultProcessor.UpdateSheetValue(source, data);
         }
         
-        public static bool UpdateSheetValue(this object source, SpreadsheetData data,string sheetId)
+        public static bool UpdateSheetValue(this object source, ISpreadsheetData data,string sheetId)
         {
             return DefaultProcessor.UpdateSheetValue(source, data,sheetId);
         }
@@ -28,7 +28,7 @@
         public static List<Object> SyncFolderAssets(
             this Type filterType, 
             string folder,
-            SpreadsheetData spreadsheetData,
+            ISpreadsheetData spreadsheetData,
             Object[] assets = null,
             bool createMissing = true, 
             int maxItemsCount = -1,
@@ -41,14 +41,14 @@
             this Type type, 
             string folder,
             bool createMissing, 
-            SpreadsheetData spreadsheetData)
+            ISpreadsheetData spreadsheetData)
         {
             return DefaultProcessor.SyncFolderAssets(type, folder,createMissing, spreadsheetData);
         }
         
         public static object ApplySpreadsheetData(
             this object asset,
-            SpreadsheetData spreadsheetData, 
+            ISpreadsheetData spreadsheetData, 
             string sheetId,
             object keyValue = null,
             string sheetFieldName = "")
@@ -70,12 +70,12 @@
             return DefaultProcessor.ApplyData(sheetValueIndo);
         }
 
-        public static object ApplySpreadsheetData(this object asset, SpreadsheetData data)
+        public static object ApplySpreadsheetData(this object asset, ISpreadsheetData data)
         {
             return DefaultProcessor.ApplyData(asset,data);
         }
         
-        public static object ApplySpreadsheetData(this object asset,SheetSyncScheme syncAsset, SpreadsheetData data)
+        public static object ApplySpreadsheetData(this object asset,SheetSyncScheme syncAsset, ISpreadsheetData data)
         {
             var sheetValueInfo = new SheetValueInfo() {
                 Source = asset,
@@ -88,7 +88,7 @@
         public static object ApplySpreadsheetData(
             this object asset,
             Type type,
-            SpreadsheetData sheetData,
+            ISpreadsheetData sheetData,
             string sheetId,
             object keyValue = null,
             string sheetFieldName = "")
