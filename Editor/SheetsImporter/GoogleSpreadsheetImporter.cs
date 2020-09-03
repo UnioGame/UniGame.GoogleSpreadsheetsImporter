@@ -19,6 +19,33 @@
         #region inspector
 
         /// <summary>
+        /// credential profile file
+        /// https://developers.google.com/sheets/api/quickstart/dotnet
+        /// </summary>
+#if ODIN_INSPECTOR
+        [Sirenix.OdinInspector.BoxGroup(nameof(user), false)]
+        [Sirenix.OdinInspector.FilePath]
+#endif
+        public string credentialsPath;
+
+#if ODIN_INSPECTOR
+        [Sirenix.OdinInspector.BoxGroup(nameof(user))]
+#endif
+        public string user = "user";
+
+        /// <summary>
+        /// list of target sheets
+        /// </summary>
+        [Space(4)]
+#if ODIN_INSPECTOR
+        [Sirenix.OdinInspector.HorizontalGroup("Sheets")]
+        [Sirenix.OdinInspector.BoxGroup("Sheets/Sheets Ids", false)]
+        [Sirenix.OdinInspector.InfoBox("Add any valid spreadsheet id's")]
+#endif
+        public List<string> sheetsIds = new List<string>();
+
+
+        /// <summary>
         /// list of assets linked by attributes
         /// </summary>
         [Space(8)]
@@ -42,8 +69,6 @@
 
         #region private data
 
-        private ISpreadsheetStatus _clientStatus;
-
         private LifeTimeDefinition _lifeTime;
 
         private GoogleSpreadsheetClient _sheetClient;
@@ -54,10 +79,14 @@
 
         public bool IsValidToConnect => sheetsIds.Any(x => !string.IsNullOrEmpty(x));
 
-        public bool HasConnectedSheets => _clientStatus.HasConnectedSheets;
+        public bool HasConnectedSheets => Status.HasConnectedSheets;
 
         public ILifeTime LifeTime => (_lifeTime = _lifeTime ?? new LifeTimeDefinition());
 
+        public IGoogleSpreadsheetClient Client => (_sheetClient = _sheetClient ?? CreateClient());
+
+        public IGooglsSpreadsheetClientStatus Status => Client.Status;
+        
         #endregion
 
         #region public methods
@@ -68,43 +97,31 @@
         [Sirenix.OdinInspector.Button("Import All")]
         [Sirenix.OdinInspector.EnableIf("HasConnectedSheets")]
 #endif
-        public void Import()
-        {
-            sheetsItemsHandler.Import();
-        }
+        public void Import() => sheetsItemsHandler.Import();
 
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.VerticalGroup("Sources/Source Commands")]
         [Sirenix.OdinInspector.Button("Export All")]
         [Sirenix.OdinInspector.EnableIf("HasConnectedSheets")]
 #endif
-        public void Export()
-        {
-            sheetsItemsHandler.Export();
-        }
+        public void Export() => sheetsItemsHandler.Export();
 
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.HorizontalGroup("Sheets", DefaultButtonsWidth)]
         [Sirenix.OdinInspector.BoxGroup("Sheets/Commands", false)]
         [Sirenix.OdinInspector.Button("Show")]
 #endif
-        public void ShowSpreadSheets()
-        {
-            GoogleSpreadSheetViewWindow.Open(_sheetClient.GetSheets());
-        }
+        public void ShowSpreadSheets() => GoogleSpreadSheetViewWindow.Open(Client.GetSheets());
 
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.ButtonGroup()]
         [Sirenix.OdinInspector.Button("Reload Spreadsheets")]
         [Sirenix.OdinInspector.EnableIf("HasConnectedSheets")]
 #endif
-        private void ReloadSpreadsheetsData()
+        public void ReloadSpreadsheetsData()
         {
-            foreach (var sheetsId in sheetsIds) {
-                if (string.IsNullOrEmpty(sheetsId))
-                    continue;
-                _sheetClient.Reload(sheetsId);
-            }
+            ReconnectToSpreadsheets();
+            Client.ReloadAll();
         }
 
 #if ODIN_INSPECTOR
@@ -118,13 +135,13 @@
 
             LoadTypeConverters();
 
-            _sheetClient.Connect();
+            Client.Connect(user, credentialsPath);
 
-            LifeTime.AddDispose(_sheetClient);
+            LifeTime.AddDispose(Client);
 
             ReloadSpreadsheetsData();
 
-            sheetsItemsHandler.Initialize(_sheetClient);
+            sheetsItemsHandler.Initialize(Client);
         }
 
 #if ODIN_INSPECTOR
@@ -142,6 +159,15 @@
 
         #region private methods
 
+        private void ReconnectToSpreadsheets()
+        {
+            foreach (var sheetsId in sheetsIds) {
+                if (string.IsNullOrEmpty(sheetsId))
+                    continue;
+                Client.ConnectToSpreadsheet(sheetsId);
+            }
+        }
+
         private void LoadTypeConverters()
         {
             typeConverters = typeConverters ? typeConverters : ObjectTypeConverter.TypeConverters;
@@ -149,20 +175,18 @@
 
         private void OnEnable()
         {
-            CreateClient();
             LoadTypeConverters();
         }
 
         private GoogleSpreadsheetClient CreateClient()
         {
-            _sheetClient = new GoogleSpreadsheetClient(
+            var client = new GoogleSpreadsheetClient(
                 user,
                 credentialsPath,
                 GoogleSheetImporterConstants.ApplicationName,
                 GoogleSpreadsheetConnection.WriteScope);
-            _clientStatus = _sheetClient.Status;
-            LifeTime.AddDispose(_sheetClient);
-            return _sheetClient;
+            LifeTime.AddDispose(client);
+            return client;
         }
 
         #endregion

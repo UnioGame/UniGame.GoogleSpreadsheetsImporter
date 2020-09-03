@@ -3,7 +3,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
     using System.Collections.Generic;
     using System.Linq;
 
-    public class GoogleSpreadsheetClientStatus : ISpreadsheetStatus
+    public class GoogleSpreadsheetClientStatus : IGooglsSpreadsheetClientStatus
     {
         private IEnumerable<SheetData> _connectedSheets;
 

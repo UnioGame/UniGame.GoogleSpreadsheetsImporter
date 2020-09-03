@@ -1,16 +1,17 @@
 namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
 {
+    using System;
     using System.Collections.Generic;
     using Google.Apis.Sheets.v4;
 
-    public interface IGoogleSpreadsheetClient
+    public interface IGoogleSpreadsheetClient : IDisposable
     {
         bool                   IsConnectionRefused { get; }
         SheetsService          SheetsService       { get; }
 
         ISpreadsheetData SpreadsheetData { get; }
 
-        ISpreadsheetStatus Status { get; }
+        IGooglsSpreadsheetClientStatus Status { get; }
 
         IEnumerable<SheetData> GetSheets();
 
@@ -26,6 +27,6 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
         
         void ReloadAll();
         void Reload(string id);
-        bool ConnectToSpreadsheet(string id);
+        bool ConnectToSpreadsheet(string spreadsheetId);
     }
 }

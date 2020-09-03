@@ -10,10 +10,10 @@
         ISpreadsheetAssetsHandler,
         ISpreadsheetTriggerAssetsHandler
     {
-        private ISubject<ISpreadsheetAssetsHandler> _importCommand;
-        private ISubject<ISpreadsheetAssetsHandler> _exportCommand;
-        private IGoogleSpreadsheetClient            _client;
-        private ISpreadsheetStatus                  _status;
+        private Subject<ISpreadsheetAssetsHandler> _importCommand;
+        private Subject<ISpreadsheetAssetsHandler> _exportCommand;
+        private IGoogleSpreadsheetClient           _client;
+        private IGooglsSpreadsheetClientStatus                 _status;
         
         #region public properties
         
@@ -27,12 +27,26 @@
 
         public void Initialize(IGoogleSpreadsheetClient client)
         {
+            Reset();
+
             _client        = client;
             _status        = client.Status;
             _importCommand = new Subject<ISpreadsheetAssetsHandler>();
             _exportCommand = new Subject<ISpreadsheetAssetsHandler>();
         }
 
+        public void Reset()
+        {
+            _client        = null;
+            _status        = null;
+            
+            _importCommand?.Dispose();
+            _exportCommand?.Dispose();
+
+            _importCommand = null;
+            _exportCommand = null;
+        }
+        
         public virtual IEnumerable<object> Load()
         {
             yield break;
@@ -53,7 +67,7 @@
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.ButtonGroup()]
         [Sirenix.OdinInspector.Button()]
-        [Sirenix.OdinInspector.ShowIf("IsValidData")]
+        [Sirenix.OdinInspector.EnableIf("IsValidData")]
 #endif
         public void Import()
         {
@@ -63,14 +77,13 @@
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.ButtonGroup()]
         [Sirenix.OdinInspector.Button()]
-        [Sirenix.OdinInspector.ShowIf("IsValidData")]
+        [Sirenix.OdinInspector.EnableIf("IsValidData")]
 #endif
         public void Export()
         {
             _exportCommand?.OnNext(this);
         }
-
-
+        
         public virtual IEnumerable<object> ImportObjects(IEnumerable<object> source,ISpreadsheetData spreadsheetData)
         {
             return source;

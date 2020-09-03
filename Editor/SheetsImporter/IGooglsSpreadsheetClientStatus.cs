@@ -1,6 +1,6 @@
 namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
 {
-    public interface ISpreadsheetStatus
+    public interface IGooglsSpreadsheetClientStatus
     {
         bool HasConnectedSheets { get; }
     }

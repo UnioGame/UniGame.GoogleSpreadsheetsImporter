@@ -44,7 +44,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
 
         public ISpreadsheetData SpreadsheetData => _spreadsheetData;
 
-        public ISpreadsheetStatus Status => _clientStatus;
+        public IGooglsSpreadsheetClientStatus Status => _clientStatus;
 
         public bool HasSheet(string id) => _spreadsheetData.HasSheet(id);
         
@@ -115,14 +115,14 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
 
         public void ReloadAll() => _connections.ForEach(x => x.Reload());
 
-        public void Reload(string id) => _connections.FirstOrDefault(x => x.Id == id)?.Reload();
+        public void Reload(string sheetId) => _connections.FirstOrDefault(x => x.Id == sheetId)?.Reload();
 
-        public bool ConnectToSpreadsheet(string id)
+        public bool ConnectToSpreadsheet(string spreadsheetId)
         {
-            if (_connections.Any(x => x.Id == id))
+            if (_connections.Any(x => x.Id == spreadsheetId))
                 return true;
             try {
-                var client = new GoogleSpreadsheetConnection(SheetsService, id);
+                var client = new GoogleSpreadsheetConnection(SheetsService, spreadsheetId);
                 client.Reload();
                 _connections.Add(client);
             }

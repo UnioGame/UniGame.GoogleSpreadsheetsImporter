@@ -17,33 +17,6 @@
     {
         #region inspector
 
-        /// <summary>
-        /// credential profile file
-        /// https://developers.google.com/sheets/api/quickstart/dotnet
-        /// </summary>
-#if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.BoxGroup(nameof(user), false)]
-        [Sirenix.OdinInspector.FilePath]
-#endif
-        public string credentialsPath;
-
-#if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.BoxGroup(nameof(user))]
-#endif
-        public string user = "user";
-
-        /// <summary>
-        /// list of target sheets
-        /// </summary>
-        [Space(4)]
-#if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.HorizontalGroup("Sheets")]
-        [Sirenix.OdinInspector.BoxGroup("Sheets/Sheets Ids", false)]
-        [Sirenix.OdinInspector.InfoBox("Add any valid spreadsheet id's")]
-#endif
-        public List<string> sheetsIds = new List<string>();
-
-
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.InfoBox("Reload spreadsheet on each reimport action")]
 #endif
@@ -92,11 +65,19 @@
 
             foreach (var importer in importers.Concat<ISpreadsheetTriggerAssetsHandler>(serializabledImporters)) {
                 importer.Initialize(client);
-                importer.ExportCommand.Do(
-                    x => ExportSheets(Export(_spreadsheetData, x))).Subscribe().AddTo(LifeTime);
+                importer.ExportCommand.
+                    Do(x => ExportSheets(Export(_spreadsheetData, x))).
+                    Subscribe().
+                    AddTo(LifeTime);
 
-                importer.ImportCommand.Do(
-                    x => Import(_spreadsheetData, x)).Subscribe().AddTo(LifeTime);
+                importer.ImportCommand.
+                    Do(x => {
+                        if (autoReloadSpreadsheetOnImport)
+                            _client.ReloadAll();
+                    }).
+                    Do(x => Import(_spreadsheetData, x)).
+                    Subscribe().
+                    AddTo(LifeTime);
             }
 
             LifeTime.AddCleanUpAction(() => _client          = null);
@@ -137,6 +118,9 @@
 
         public IEnumerable<object> Import(ISpreadsheetData spreadsheetData)
         {
+            if (autoReloadSpreadsheetOnImport)
+                _client.ReloadAll();
+            
             var result = new List<object>();
             foreach (var importer in Importers) {
                 result.AddRange(Import(spreadsheetData, importer));

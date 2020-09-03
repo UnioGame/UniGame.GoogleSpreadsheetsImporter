@@ -10,10 +10,10 @@
         ISpreadsheetAssetsHandler,
         ISpreadsheetTriggerAssetsHandler
     {
-        private ISubject<ISpreadsheetAssetsHandler> _importCommand;
-        private ISubject<ISpreadsheetAssetsHandler> _exportCommand;
-        private IGoogleSpreadsheetClient            _client;
-        private ISpreadsheetStatus                  _status;
+        private Subject<ISpreadsheetAssetsHandler> _importCommand;
+        private Subject<ISpreadsheetAssetsHandler> _exportCommand;
+        private IGoogleSpreadsheetClient           _client;
+        private IGooglsSpreadsheetClientStatus                 _status;
         
         #region public properties
         public bool IsValidData => _importCommand != null && _exportCommand !=null && _status!=null && _status.HasConnectedSheets;
@@ -26,6 +26,8 @@
 
         public void Initialize(IGoogleSpreadsheetClient client)
         {
+            Reset();
+            
             _client        = client;
             _status        = client.Status;
             _importCommand = new Subject<ISpreadsheetAssetsHandler>();
@@ -34,6 +36,18 @@
 
         public abstract IEnumerable<object> Load();
 
+        public void Reset()
+        {
+            _client        = null;
+            _status        = null;
+            
+            _importCommand?.Dispose();
+            _exportCommand?.Dispose();
+            
+            _importCommand = null;
+            _exportCommand = null;
+        }
+        
         public IEnumerable<object> Import(ISpreadsheetData spreadsheetData)
         {
             var source = Load();
@@ -49,7 +63,7 @@
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.ButtonGroup()]
         [Sirenix.OdinInspector.Button()]
-        [Sirenix.OdinInspector.ShowIf("IsValidData")]
+        [Sirenix.OdinInspector.EnableIf("IsValidData")]
 #endif
         public void Import()
         {
@@ -59,7 +73,7 @@
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.ButtonGroup()]
         [Sirenix.OdinInspector.Button()]
-        [Sirenix.OdinInspector.ShowIf("IsValidData")]
+        [Sirenix.OdinInspector.EnableIf("IsValidData")]
 #endif
         public void Export()
         {
