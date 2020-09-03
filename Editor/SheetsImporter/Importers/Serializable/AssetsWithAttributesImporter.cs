@@ -51,7 +51,7 @@
                 ToList();
         }
 
-        public override IEnumerable<object> ImportObjects(IEnumerable<object> source,SpreadsheetData spreadsheetData)
+        public override IEnumerable<object> ImportObjects(IEnumerable<object> source,ISpreadsheetData spreadsheetData)
         {
             var result = new List<object>();
             foreach (var item in source.OfType<SheetSyncItem>()) {
@@ -65,7 +65,7 @@
             return result;
         }
         
-        public override SpreadsheetData ExportObjects(IEnumerable<object> source,SpreadsheetData spreadsheetData)
+        public override ISpreadsheetData ExportObjects(IEnumerable<object> source,ISpreadsheetData spreadsheetData)
         {
             foreach (var item in assets) {
                 if(item.asset == null)

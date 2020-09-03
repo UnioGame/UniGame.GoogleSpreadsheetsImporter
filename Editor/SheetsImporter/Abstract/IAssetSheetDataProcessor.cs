@@ -20,7 +20,7 @@
             Type filterType, 
             string folder,
             bool createMissing, 
-            SpreadsheetData spreadsheetData,
+            ISpreadsheetData spreadsheetData,
             int maxItems = -1,
             string overrideSheetId = "");
 
@@ -38,7 +38,7 @@
         List<Object> SyncFolderAssets(
             Type filterType, 
             string folder,
-            SpreadsheetData spreadsheetData,
+            ISpreadsheetData spreadsheetData,
             Object[] assets = null,
             bool createMissing = true, 
             int maxItemsCount = -1,
@@ -49,18 +49,18 @@
             string sheetId,
             string folder,
             SheetSyncScheme syncScheme,
-            SpreadsheetData spreadsheetData,
+            ISpreadsheetData spreadsheetData,
             object[] keys,
             Object[] assets = null,
             int count = -1,
             bool createMissing = true,
             string keyFieldName = "");
 
-        object ApplyData(object source, SpreadsheetData spreadsheetData);
+        object ApplyData(object source, ISpreadsheetData spreadsheetData);
         
         object ApplyData(SheetValueInfo syncValueInfo);
 
-        bool              UpdateSheetValue(object source, SpreadsheetData data,string sheetId = "", string sheetKeyField = "");
+        bool              UpdateSheetValue(object source, ISpreadsheetData data,string sheetId = "", string sheetKeyField = "");
 
         bool UpdateSheetValue(SheetValueInfo sheetValueInfo);
         

@@ -78,7 +78,7 @@
             return Values;
         }
 
-        public sealed override SpreadsheetData ExportObjects(IEnumerable<object> source,SpreadsheetData data)
+        public sealed override ISpreadsheetData ExportObjects(IEnumerable<object> source,ISpreadsheetData data)
         {
             if (!data.HasSheet(sheetId))
                 return data;
@@ -88,7 +88,7 @@
             return data;
         }
 
-        public sealed override IEnumerable<object> ImportObjects(IEnumerable<object> source,SpreadsheetData spreadsheetData)
+        public sealed override IEnumerable<object> ImportObjects(IEnumerable<object> source,ISpreadsheetData spreadsheetData)
         {
             var result = new List<object>();
             var filterType = GetFilteredType();
@@ -115,7 +115,7 @@
             return importedAssets;
         }
 
-        private IEnumerable<ProgressData> ExportValues(IEnumerable<object> source,SpreadsheetData data,string sheeName)
+        private IEnumerable<ProgressData> ExportValues(IEnumerable<object> source,ISpreadsheetData data,string sheeName)
         {
             var progressData = new ProgressData() {
                 Title = "Export",

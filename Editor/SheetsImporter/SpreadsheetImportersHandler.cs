@@ -13,16 +13,20 @@
     using UnityEngine;
 
     [Serializable]
-    public class SpreadsheetImportersHandler : ISpreadsheetAssetsHandler,IResetable
+    public class SpreadsheetImportersHandler : ISpreadsheetAssetsHandler, IResetable
     {
-        
-#region inspector
+        #region inspector
+
+#if ODIN_INSPECTOR
+        [Sirenix.OdinInspector.InfoBox("Reload spreadsheet on each reimport action")]
+#endif
+        public bool autoReloadSpreadsheetOnImport = true;
 
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.InlineProperty]
 #endif
         [SerializeReference]
-        public List<SerializableSpreadsheetImporter> serializabledImporters = 
+        public List<SerializableSpreadsheetImporter> serializabledImporters =
             new List<SerializableSpreadsheetImporter>() {
                 new AssetsWithAttributesImporter()
             };
@@ -36,48 +40,50 @@
 #endif
         public List<BaseSpreadsheetImporter> importers = new List<BaseSpreadsheetImporter>();
 
-#endregion
+        #endregion
 
-#region private data
+        #region private data
 
-        private SpreadsheetData               _spreadsheetData;
-        private List<GoogleSpreadsheetClient> _clients;
-        private LifeTimeDefinition _lifeTime;
+        private ISpreadsheetData         _spreadsheetData;
+        private IGoogleSpreadsheetClient _client;
+        private LifeTimeDefinition       _lifeTime;
 
-#endregion
+        #endregion
 
         public ILifeTime LifeTime => _lifeTime = (_lifeTime ?? new LifeTimeDefinition());
 
-        public IEnumerable<ISpreadsheetAssetsHandler> Importers => importers.
-            Concat<ISpreadsheetAssetsHandler>(serializabledImporters);
+        public IEnumerable<ISpreadsheetAssetsHandler> Importers => importers.Concat<ISpreadsheetAssetsHandler>(serializabledImporters);
 
         public void Reset() => _lifeTime?.Release();
-        
-        public void Initialize(SpreadsheetData spreadsheetData,IReadOnlyList<GoogleSpreadsheetClient> clients)
+
+        public void Initialize(IGoogleSpreadsheetClient client)
         {
             Reset();
-            
-            _spreadsheetData = spreadsheetData;
-            _clients = new List<GoogleSpreadsheetClient>(clients);
-            
-            foreach (var importer in importers.
-                Concat<ISpreadsheetTriggerAssetsHandler>(serializabledImporters)) 
-            {
-                importer.Initialize();
-                importer.ExportCommand.Do(
-                        x => ExportSheets(Export(_spreadsheetData, x))).
+
+            _client          = client;
+            _spreadsheetData = client.SpreadsheetData;
+
+            foreach (var importer in importers.Concat<ISpreadsheetTriggerAssetsHandler>(serializabledImporters)) {
+                importer.Initialize(client);
+                importer.ExportCommand.
+                    Do(x => ExportSheets(Export(_spreadsheetData, x))).
                     Subscribe().
                     AddTo(LifeTime);
-                importer.ImportCommand.Do(
-                        x => Import(_spreadsheetData,x)).
+
+                importer.ImportCommand.
+                    Do(x => {
+                        if (autoReloadSpreadsheetOnImport)
+                            _client.ReloadAll();
+                    }).
+                    Do(x => Import(_spreadsheetData, x)).
                     Subscribe().
                     AddTo(LifeTime);
             }
 
-            LifeTime.AddCleanUpAction(() => _clients = null);
+            LifeTime.AddCleanUpAction(() => _client          = null);
             LifeTime.AddCleanUpAction(() => _spreadsheetData = null);
         }
-        
+
         public IEnumerable<object> Load()
         {
             var result = new List<object>();
@@ -92,54 +98,53 @@
         {
             return Import(_spreadsheetData);
         }
-        
-        public SpreadsheetData Export()
+
+        public ISpreadsheetData Export()
         {
             var data = Export(_spreadsheetData);
             return ExportSheets(data);
         }
 
-        public SpreadsheetData ExportSheets(SpreadsheetData data)
+        public ISpreadsheetData ExportSheets(ISpreadsheetData data)
         {
             foreach (var sheetData in data.Sheets) {
-                if(!sheetData.IsChanged)
+                if (!sheetData.IsChanged)
                     continue;
-                foreach (var client in _clients) {
-                    if(!client.HasSheet(sheetData.Id))
-                        continue;
-                    client.UpdateData(sheetData);
-                }
+                _client.Upload(sheetData);
             }
 
             return data;
         }
-        
-        
-        
-        public IEnumerable<object> Import(SpreadsheetData spreadsheetData)
+
+        public IEnumerable<object> Import(ISpreadsheetData spreadsheetData)
         {
+            if (autoReloadSpreadsheetOnImport)
+                _client.ReloadAll();
+            
             var result = new List<object>();
             foreach (var importer in Importers) {
-                result.AddRange(Import(spreadsheetData,importer));
+                result.AddRange(Import(spreadsheetData, importer));
             }
+
             return result;
         }
 
-        public SpreadsheetData Export(SpreadsheetData data)
+        public ISpreadsheetData Export(ISpreadsheetData data)
         {
             foreach (var importer in importers) {
                 Export(data, importer);
             }
+
             return data;
         }
 
-        private SpreadsheetData Export(SpreadsheetData data, ISpreadsheetAssetsHandler importer)
+        private ISpreadsheetData Export(ISpreadsheetData data, ISpreadsheetAssetsHandler importer)
         {
             importer.Load();
             return importer.Export(data);
         }
-        
-        private IEnumerable<object> Import(SpreadsheetData data, ISpreadsheetAssetsHandler importer)
+
+        private IEnumerable<object> Import(ISpreadsheetData data, ISpreadsheetAssetsHandler importer)
         {
             importer.Load();
             return importer.Import(data);

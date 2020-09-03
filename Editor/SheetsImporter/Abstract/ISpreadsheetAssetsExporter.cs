@@ -2,6 +2,6 @@
 {
     public interface ISpreadsheetAssetsExporter
     {
-        SpreadsheetData Export(SpreadsheetData data);
+        ISpreadsheetData Export(ISpreadsheetData data);
     }
 }

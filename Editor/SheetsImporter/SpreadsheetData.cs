@@ -5,20 +5,19 @@
     using System.Linq;
 
     [Serializable]
-    public class SpreadsheetData
+    public class SpreadsheetData : ISpreadsheetData
     {
-        public List<SheetData> _sheets = new List<SheetData>();
+        private IEnumerable<SheetData> _sheets;
 
-        public void Initialize(IEnumerable<SheetData> sheets)
+        public SpreadsheetData(IEnumerable<SheetData> sheets)
         {
-            _sheets.Clear();
-            _sheets.AddRange(sheets);
+            _sheets = sheets;
         }
 
         public bool HasSheet(string sheetId) => _sheets.Any(x => x.Id.Equals(sheetId));
-        
-        public IReadOnlyList<SheetData> Sheets => _sheets;
-        
+
+        public IEnumerable<SheetData> Sheets => _sheets;
+
         public SheetData this[string sheetName] => _sheets.FirstOrDefault(x => x.Id == sheetName);
     }
 }

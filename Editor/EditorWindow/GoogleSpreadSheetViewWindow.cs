@@ -13,10 +13,10 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.EditorWindow
     {
         #region static data
         
-        public static GoogleSpreadSheetViewWindow Open(List<GoogleSpreadsheetClient> spreadsheetClients)
+        public static GoogleSpreadSheetViewWindow Open(IEnumerable<SheetData> sheets)
         {
             var window = GetWindow<GoogleSpreadSheetViewWindow>();
-            window.Initialize(spreadsheetClients);
+            window.Initialize(sheets);
             window.Show();
             return window;
         }
@@ -28,7 +28,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.EditorWindow
 #endif
         public List<SpreadsheetSheetView> tables = new List<SpreadsheetSheetView>();
 
-        public void Initialize(List<GoogleSpreadsheetClient> spreadsheetClients)
+        public void Initialize(IEnumerable<SheetData> sheets)
         {
 
             foreach (var sheetView in tables) {
@@ -36,14 +36,13 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.EditorWindow
                     DestroyImmediate(sheetView); 
                 }
             }
+            
             tables.Clear();
 
-            foreach (var spreadsheetClient in spreadsheetClients) {
-                foreach (var sheetData in spreadsheetClient.Sheets) {
-                    var view = ScriptableObject.CreateInstance<SpreadsheetSheetView>();
-                    view.Initialize(sheetData);
-                    tables.Add(view);
-                }
+            foreach (var sheetData in sheets) {
+                var view = ScriptableObject.CreateInstance<SpreadsheetSheetView>();
+                view.Initialize(sheetData);
+                tables.Add(view);
             }
             
         }
