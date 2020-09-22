@@ -5,6 +5,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
     using System.IO;
     using System.Linq;
     using System.Threading;
+    using Cysharp.Threading.Tasks;
     using Google.Apis.Auth.OAuth2;
     using Google.Apis.Services;
     using Google.Apis.Sheets.v4;
@@ -54,11 +55,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
         
         public IEnumerable<SheetData> GetSheets()
         {
-            foreach (var connection in _connections) {
-                foreach (var sheetData in connection.GetAllSheetsData()) {
-                    yield return sheetData;
-                }
-            }
+            return _connections.SelectMany(connection => connection.GetAllSheetsData());
         }
 
         public bool Upload(string sheetId)

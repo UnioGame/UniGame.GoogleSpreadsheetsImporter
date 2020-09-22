@@ -107,9 +107,8 @@
 
         public ISpreadsheetData ExportSheets(ISpreadsheetData data)
         {
-            foreach (var sheetData in data.Sheets) {
-                if (!sheetData.IsChanged)
-                    continue;
+            var sheets = data.Sheets.ToList();
+            foreach (var sheetData in sheets.Where(sheetData => sheetData.IsChanged)) {
                 _client.Upload(sheetData);
             }
 
