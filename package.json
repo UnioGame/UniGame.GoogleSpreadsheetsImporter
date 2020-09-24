@@ -4,7 +4,7 @@
   "displayName": "UniGames Google Spreadsheets to Unity",
   "description": "Google tables to unity classes",
   "unity": "2019.1",
-  "version": "2020.0.10",
+  "version": "2020.0.11",
   "keywords": [
     "nodes",
     "spreadsheet",
@@ -15,10 +15,10 @@
   "dependencies": {
     "com.unigame.neuecc.unirx": "7.1.1",
     "com.unigame.neuecc.unitask": "2.0.32",
-    "com.unigame.unicore": "2020.0.4",
-    "com.unigame.addressablestools": "2020.0.5",
-    "com.unigame.uniroutine": "1.5.35",
-    "com.unigame.typeconverters": "2020.0.5",
+    "com.unigame.unicore": "2020.0.5",
+    "com.unigame.addressablestools": "2020.0.6",
+    "com.unigame.uniroutine": "1.5.36",
+    "com.unigame.typeconverters": "2020.0.6",
     "com.unigame.googleapi": "2020.0.1",
     "com.unity.addressables": "1.14.2",
     "com.unity.nuget.newtonsoft-json": "2.0.0"
