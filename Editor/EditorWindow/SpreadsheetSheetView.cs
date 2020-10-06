@@ -1,8 +1,7 @@
 ﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.EditorWindow
 {
-    using System.Data;
+    using global::UniGame.Utilities;
     using SheetsImporter;
-    using Sirenix.Utilities;
     using UnityEditor;
     using UnityEngine;
 
