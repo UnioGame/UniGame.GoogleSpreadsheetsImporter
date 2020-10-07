@@ -8,8 +8,9 @@
     {
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.HideLabel]
-        public string value; 
 #endif
+        public string value; 
+
         [HideInInspector]
         public int row;
         [HideInInspector]

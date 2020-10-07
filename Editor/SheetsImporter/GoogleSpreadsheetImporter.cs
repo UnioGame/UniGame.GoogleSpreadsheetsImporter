@@ -111,8 +111,13 @@
         [Sirenix.OdinInspector.BoxGroup("Sheets/Commands", false)]
         [Sirenix.OdinInspector.Button("Show")]
 #endif
-        public void ShowSpreadSheets() => GoogleSpreadSheetViewWindow.Open(Client.GetSheets());
-
+        public void ShowSpreadSheets()
+        {
+#if ODIN_INSPECTOR
+                    GoogleSpreadSheetViewWindow.Open(Client.GetSheets());
+#endif
+        }
+            
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.ButtonGroup()]
         [Sirenix.OdinInspector.Button("Reload Spreadsheets")]
