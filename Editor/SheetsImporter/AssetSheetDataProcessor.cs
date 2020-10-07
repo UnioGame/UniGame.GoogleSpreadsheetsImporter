@@ -7,8 +7,8 @@
     using Core.EditorTools.Editor.AssetOperations;
     using Extensions;
     using TypeConverters.Editor;
-    using UniGreenModules.UniCore.EditorTools.Editor;
-    using UniGreenModules.UniGame.Core.Runtime.Extension;
+    using UniModules.UniCore.EditorTools.Editor;
+    using UniModules.UniGame.Core.Runtime.Extension;
     using UnityEditor;
     using UnityEngine;
     using Object = UnityEngine.Object;

@@ -11,8 +11,8 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
     using Google.Apis.Sheets.v4;
     using Google.Apis.Util.Store;
     using GoogleSpreadsheets.Editor.SheetsImporter;
-    using UniGreenModules.UniCore.Runtime.DataFlow;
-    using UniGreenModules.UniCore.Runtime.Rx.Extensions;
+    using UniModules.UniCore.Runtime.DataFlow;
+    using UniModules.UniCore.Runtime.Rx.Extensions;
     using UnityEngine;
 
     public class GoogleSpreadsheetClient : IGoogleSpreadsheetClient, IDisposable

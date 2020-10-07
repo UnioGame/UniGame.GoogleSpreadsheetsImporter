@@ -8,8 +8,8 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
     using Cysharp.Threading.Tasks;
     using Google.Apis.Sheets.v4;
     using Google.Apis.Sheets.v4.Data;
-    using UniGreenModules.UniCore.Runtime.Interfaces;
-    using UniGreenModules.UniCore.Runtime.Utils;
+    using UniModules.UniCore.Runtime.Interfaces;
+    using UniModules.UniCore.Runtime.Utils;
     using UnityEngine;
 
     public class GoogleSpreadsheetConnection : IStringUnique

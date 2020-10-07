@@ -5,7 +5,7 @@
     using System.Linq;
     using GoogleSpreadsheets.Editor.SheetsImporter;
     using GoogleSpreadsheets.Runtime.Attributes;
-    using UniGreenModules.UniCore.Runtime.ReflectionUtils;
+    using UniModules.UniCore.Runtime.ReflectionUtils;
 
     public class SheetSyncSchemaProcessor
     {

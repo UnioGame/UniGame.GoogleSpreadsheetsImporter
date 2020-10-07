@@ -6,7 +6,7 @@
     using System.Text.RegularExpressions;
     using Core.EditorTools.Editor.AssetOperations;
     using Extensions;
-    using UniGreenModules.UniCore.EditorTools.Editor;
+    using UniModules.UniCore.EditorTools.Editor;
     using Object = UnityEngine.Object;
 
     [Serializable]

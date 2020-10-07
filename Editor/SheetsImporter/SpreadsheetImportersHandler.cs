@@ -6,9 +6,9 @@
     using Abstract;
     using Core.Runtime.DataFlow.Interfaces;
     using Importers.Serializable;
-    using UniGreenModules.UniCore.Runtime.DataFlow;
-    using UniGreenModules.UniCore.Runtime.Interfaces;
-    using UniGreenModules.UniCore.Runtime.Rx.Extensions;
+    using UniModules.UniCore.Runtime.DataFlow;
+    using UniModules.UniCore.Runtime.Interfaces;
+    using UniModules.UniCore.Runtime.Rx.Extensions;
     using UniRx;
     using UnityEngine;
 
