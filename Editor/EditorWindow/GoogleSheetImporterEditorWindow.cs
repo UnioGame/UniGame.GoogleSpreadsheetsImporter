@@ -1,5 +1,4 @@
 ﻿#if ODIN_INSPECTOR
-    
 
 namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.EditorWindow
 {
@@ -7,7 +6,6 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.EditorWindow
     using SheetsImporter;
     using Sirenix.OdinInspector;
     using Sirenix.OdinInspector.Editor;
-    using UniModules.UniCore.EditorTools.Editor.Utility;
     using UnityEditor;
     using UnityEngine;
 
@@ -37,7 +35,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.EditorWindow
             //load importer asset
             var importer = AssetEditorTools.GetAsset<GoogleSpreadsheetImporter>();
             if (!importer) {
-                importer = ScriptableObject.CreateInstance<GoogleSpreadsheetImporter>();
+                importer = CreateInstance<GoogleSpreadsheetImporter>();
                 importer.SaveAsset(nameof(GoogleSpreadsheetImporter), GoogleSheetImporterEditorConstants.DefaultGoogleSheetImporterPath);
             }
 

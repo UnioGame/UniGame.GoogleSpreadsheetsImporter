@@ -5,17 +5,16 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
     using System.IO;
     using System.Linq;
     using System.Threading;
-    using Cysharp.Threading.Tasks;
     using Google.Apis.Auth.OAuth2;
     using Google.Apis.Services;
     using Google.Apis.Sheets.v4;
     using Google.Apis.Util.Store;
     using GoogleSpreadsheets.Editor.SheetsImporter;
-    using UniModules.UniCore.Runtime.DataFlow;
+    using UniCore.Runtime.DataFlow;
     using UniModules.UniCore.Runtime.Rx.Extensions;
     using UnityEngine;
 
-    public class GoogleSpreadsheetClient : IGoogleSpreadsheetClient, IDisposable
+    public class GoogleSpreadsheetClient : IGoogleSpreadsheetClient
     {
         private readonly string                            _appName;
         private readonly string[]                          _scope;
@@ -53,6 +52,18 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
 
         public void Disconnect() => _lifeTime.Release();
         
+        public SheetsService SheetsService {
+            get {
+                if (_sheetService != null)
+                    return _sheetService;
+
+                _sheetService = LoadSheetService(GoogleSheetImporterConstants.ApplicationName, GoogleSpreadsheetConnection.WriteScope);
+                _lifeTime.AddDispose(_sheetService);
+                _lifeTime.AddCleanUpAction(() => _sheetService = null);
+                return _sheetService;
+            }
+        }
+        
         public IEnumerable<SheetData> GetSheets()
         {
             return _connections.SelectMany(connection => connection.GetAllSheetsData());
@@ -69,7 +80,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
 
         public bool Upload(SheetData sheet)
         {
-            var id         = sheet.Id;
+            var id         = sheet.Name;
             var connection = _connections.FirstOrDefault(x => x.HasSheet(id));
             if (connection == null)
                 return false;
@@ -96,18 +107,6 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
             _credentialsPath = credentialsPath;
 
             return Connect();
-        }
-
-        public SheetsService SheetsService {
-            get {
-                if (_sheetService != null)
-                    return _sheetService;
-
-                _sheetService = LoadSheetService(GoogleSheetImporterConstants.ApplicationName, GoogleSpreadsheetConnection.WriteScope);
-                _lifeTime.AddDispose(_sheetService);
-                _lifeTime.AddCleanUpAction(() => _sheetService = null);
-                return _sheetService;
-            }
         }
 
         public void ReloadAll() => _connections.ForEach(x => x.Reload());

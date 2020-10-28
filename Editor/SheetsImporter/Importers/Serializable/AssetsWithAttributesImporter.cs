@@ -40,7 +40,7 @@
             assets = attributeAssets.
                 Select(x=> new SheetSyncItem() {
                     asset = x.Value,
-                    sheetName = x.Attribute == null || x.Attribute.UseTypeName ?
+                    sheetId = x.Attribute == null || x.Attribute.UseTypeName ?
                         x.Value.GetType().Name : 
                         x.Attribute.SheetName
                 }).
@@ -55,10 +55,10 @@
         {
             var result = new List<object>();
             foreach (var item in source.OfType<SheetSyncItem>()) {
-                if(!spreadsheetData.HasSheet(item.sheetName) || item.asset == null)
+                if(!spreadsheetData.HasSheet(item.sheetId) || item.asset == null)
                     continue;
                 var asset = item.asset.
-                    ApplySpreadsheetData(spreadsheetData,item.sheetName);
+                    ApplySpreadsheetData(spreadsheetData,item.sheetId);
                 result.Add(asset);
             }
 
@@ -70,7 +70,7 @@
             foreach (var item in assets) {
                 if(item.asset == null)
                     continue;
-                item.asset.UpdateSheetValue(spreadsheetData, item.sheetName);
+                item.asset.UpdateSheetValue(spreadsheetData, item.sheetId);
             }
             return spreadsheetData;
         }

@@ -1,4 +1,6 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Extensions
+﻿using UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.CoProcessors;
+
+namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Extensions
 {
     using System;
     using System.Collections.Generic;
@@ -7,10 +9,9 @@
 
     public static class SpreadsheetExtensions
     {
-        
-        public static readonly AssetSheetDataProcessor DefaultProcessor = new AssetSheetDataProcessor();
+        public static readonly AssetSheetDataProcessor DefaultProcessor = new AssetSheetDataProcessor(CoProcessor.Processor);
 
-        public static bool UpdateSheetValue(this object source, ISpreadsheetData data,string sheetId,string sheetKeyField)
+        public static bool UpdateSheetValue(this object source, ISpreadsheetData data, string sheetId, string sheetKeyField)
         {
             return DefaultProcessor.UpdateSheetValue(source, data,sheetId,sheetKeyField);
         }
@@ -20,7 +21,7 @@
             return DefaultProcessor.UpdateSheetValue(source, data);
         }
         
-        public static bool UpdateSheetValue(this object source, ISpreadsheetData data,string sheetId)
+        public static bool UpdateSheetValue(this object source, ISpreadsheetData data, string sheetId)
         {
             return DefaultProcessor.UpdateSheetValue(source, data,sheetId);
         }
@@ -34,7 +35,7 @@
             int maxItemsCount = -1,
             string overrideSheetId = "")
         {
-            return DefaultProcessor.SyncFolderAssets(filterType,folder, spreadsheetData,assets, createMissing,maxItemsCount,overrideSheetId);
+            return DefaultProcessor.SyncFolderAssets(filterType, folder, spreadsheetData,assets, createMissing, maxItemsCount, overrideSheetId);
         }
         
         public static List<Object> SyncFolderAssets(
@@ -43,7 +44,7 @@
             bool createMissing, 
             ISpreadsheetData spreadsheetData)
         {
-            return DefaultProcessor.SyncFolderAssets(type, folder,createMissing, spreadsheetData);
+            return DefaultProcessor.SyncFolderAssets(type, folder, createMissing, spreadsheetData);
         }
         
         public static object ApplySpreadsheetData(
@@ -58,9 +59,10 @@
             
             var syncAsset = asset.CreateSheetScheme();
 
-            var sheetValueIndo = new SheetValueInfo() {
+            var sheetValueIndo = new SheetValueInfo
+            {
                 Source = asset,
-                SheetId = sheetId,
+                SheetName = sheetId,
                 SpreadsheetData = spreadsheetData,
                 SyncScheme = syncAsset,
                 SyncFieldName = sheetFieldName,
@@ -95,9 +97,10 @@
         {
             var syncAsset = type.CreateSheetScheme();
             
-            var sheetValue = new SheetValueInfo() {
+            var sheetValue = new SheetValueInfo
+            {
                 Source = asset,
-                SheetId = sheetId,
+                SheetName = sheetId,
                 SpreadsheetData = sheetData,
                 SyncScheme = syncAsset,
                 SyncFieldName = sheetFieldName,

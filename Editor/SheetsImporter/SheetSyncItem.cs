@@ -6,7 +6,7 @@
     [Serializable]
     public class SheetSyncItem
     {
-        public string sheetName;
+        public string sheetId;
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.InlineEditor]
 #endif

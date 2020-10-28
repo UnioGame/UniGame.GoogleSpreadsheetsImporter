@@ -1,4 +1,8 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
+﻿using System.Text.RegularExpressions;
+using UniModules.UniGame.GoogleSpreadsheets.Editor.SheetsImporter;
+using UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.CoProcessors.Abstract;
+
+namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
 {
     using System;
     using System.Collections.Generic;
@@ -8,14 +12,21 @@
     using Extensions;
     using TypeConverters.Editor;
     using UniModules.UniCore.EditorTools.Editor;
-    using UniModules.UniGame.Core.Runtime.Extension;
+    using Core.Runtime.Extension;
     using UnityEditor;
     using UnityEngine;
     using Object = UnityEngine.Object;
 
     public class AssetSheetDataProcessor : IAssetSheetDataProcessor
     {
-        private static SheetSyncScheme _dummyItem = new SheetSyncScheme(string.Empty);
+        private readonly ICoProcessorHandle _coProcessorHandle;
+        
+        private static readonly SheetSyncScheme _dummyItem = new SheetSyncScheme(string.Empty);
+
+        public AssetSheetDataProcessor(ICoProcessorHandle coProcessorHandle)
+        {
+            _coProcessorHandle = coProcessorHandle;
+        }
 
         public SheetSyncScheme CreateSyncItem(object source)
         {
@@ -165,7 +176,7 @@
 
                     var spreadsheetValueInfo = new SheetValueInfo() {
                         Source          = targetAsset,
-                        SheetId         = sheetId,
+                        SheetName         = sheetId,
                         SpreadsheetData = spreadsheetData,
                         SyncScheme      = syncScheme,
                         SyncFieldName   = keyField.sheetField,
@@ -201,7 +212,14 @@
                 var itemField  = syncScheme.fields.FirstOrDefault(x => SheetData.IsEquals(x.sheetField, columnName));
 
                 if (itemField == null)
+                {
+                    if (CanParse(columnName, out var tableName))
+                    {
+                        Apply(tableName, valueInfo, rowValues[i]);
+                    }
+
                     continue;
+                }
 
                 //check for recurvice call
                 var currentValue = itemField.GetValue(source);
@@ -217,7 +235,8 @@
                     //initialize cache
                     valueInfo.IgnoreCache = valueInfo.IgnoreCache ?? new HashSet<object>();
 
-                    ApplyData(new SheetValueInfo() {
+                    ApplyData(new SheetValueInfo
+                    {
                         Source          = resultValue,
                         SpreadsheetData = spreadsheetData,
                         SyncScheme      = itemField.targetType.CreateSheetScheme(),
@@ -229,6 +248,44 @@
             return source;
         }
 
+        private void Apply(string tableName, SheetValueInfo valueInfo, object rowValue)
+        {
+            var sheetData = valueInfo.SpreadsheetData.Sheets.FirstOrDefault(x=>x.Name.ToLower().Equals(tableName));
+            
+            if(sheetData == null)
+                return;
+            
+            var row = sheetData.GetRow(GoogleSheetImporterConstants.KeyField, rowValue);
+            var rowValues = row.ItemArray;
+            var table = row.Table;
+
+            for (var i = 1; i < rowValues.Length; i++)
+            {
+                var columnName = table.Columns[i].ColumnName;
+                var itemField =
+                    valueInfo.SyncScheme.fields.FirstOrDefault(x => SheetData.IsEquals(x.sheetField, columnName));
+
+                if (itemField == null)
+                {
+                    if (CanParse(columnName, out var newTableName))
+                    {
+                        Apply(newTableName, valueInfo, rowValues[i]);
+                    }
+
+                    continue;
+                }
+                
+                var currentValue = itemField.GetValue(valueInfo.Source);
+                if(valueInfo.IsInIgnoreCache(currentValue))
+                    continue;
+
+                var newRowValue = rowValues[i];
+                var resultValue = newRowValue.ConvertType(itemField.targetType);
+
+                itemField.ApplyValue(valueInfo.Source, resultValue);
+            }
+        }
+
         public object ApplyData(object source, ISpreadsheetData spreadsheetData)
         {
             var syncScheme = source.CreateSheetScheme();
@@ -236,7 +293,7 @@
             var syncValue = new SheetValueInfo() {
                 Source          = source,
                 SpreadsheetData = spreadsheetData,
-                SheetId         = syncScheme.sheetId,
+                SheetName         = syncScheme.sheetId,
                 SyncScheme      = syncScheme,
                 SyncFieldName   = syncScheme.keyField.sheetField,
             };
@@ -250,15 +307,15 @@
             var source          = sheetValueInfo.Source;
             var syncScheme      = sheetValueInfo.SyncScheme;
             var spreadsheetData = sheetValueInfo.SpreadsheetData;
-            var sheetId         = sheetValueInfo.SheetId;
+            var sheetId         = sheetValueInfo.SheetName;
 
             syncScheme = syncScheme ?? source?.GetType().CreateSheetScheme();
 
             if (source == null || syncScheme == null)
                 return false;
 
-            sheetId                = string.IsNullOrEmpty(sheetValueInfo.SheetId) ? syncScheme.sheetId : sheetId;
-            sheetValueInfo.SheetId = sheetId;
+            sheetId                = string.IsNullOrEmpty(sheetValueInfo.SheetName) ? syncScheme.sheetId : sheetId;
+            sheetValueInfo.SheetName = sheetId;
 
             if (!spreadsheetData.HasSheet(sheetId))
                 return false;
@@ -286,9 +343,9 @@
                 return sheetValueInfo.Source;
 
             var spreadsheetData = sheetValueInfo.SpreadsheetData;
-            var sheetId         = sheetValueInfo.SheetId;
+            var sheetName         = sheetValueInfo.SheetName;
 
-            var sheet = spreadsheetData[sheetId];
+            var sheet = spreadsheetData[sheetName];
             var row   = sheet.GetRow(sheetValueInfo.SyncFieldName, sheetValueInfo.SyncFieldValue);
 
             var result = ApplyData(sheetValueInfo, row);
@@ -307,14 +364,13 @@
             if (keyField == null)
                 return false;
 
-            var keyValue = keyField.GetValue(source);
-
-            var sheetValueInfo = new SheetValueInfo() {
+            var sheetValueInfo = new SheetValueInfo
+            {
                 Source          = source,
                 SpreadsheetData = data,
                 SyncScheme      = syncScheme,
                 SyncFieldName   = sheetKeyField,
-                SheetId         = sheetId
+                SheetName         = sheetId
             };
 
             return UpdateSheetValue(sheetValueInfo);
@@ -328,7 +384,7 @@
             var source          = sheetValueInfo.Source;
             var schemeValue     = sheetValueInfo.SyncScheme;
             var spreadsheetData = sheetValueInfo.SpreadsheetData;
-            var sheetId         = sheetValueInfo.SheetId;
+            var sheetId         = sheetValueInfo.SheetName;
 
             var sheet = spreadsheetData[sheetId];
             var row   = sheet.GetRow(sheetValueInfo.SyncFieldName, sheetValueInfo.SyncFieldValue) ?? sheet.CreateRow();

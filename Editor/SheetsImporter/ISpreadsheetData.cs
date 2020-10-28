@@ -4,7 +4,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
 
     public interface ISpreadsheetData
     {
-        bool                   HasSheet(string sheetId);
+        bool                   HasSheet(string sheetName);
         IEnumerable<SheetData> Sheets { get; }
         SheetData this[string sheetName] { get; }
     }

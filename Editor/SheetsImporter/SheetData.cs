@@ -45,7 +45,7 @@
 
         public string SpreadsheetId => _table.Namespace;
 
-        public string Id => _table.TableName;
+        public string Name => _table.TableName;
 
         public DataTable Table => _table;
 
