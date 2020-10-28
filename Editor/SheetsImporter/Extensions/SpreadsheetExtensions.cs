@@ -50,11 +50,11 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Ex
         public static object ApplySpreadsheetData(
             this object asset,
             ISpreadsheetData spreadsheetData, 
-            string sheetId,
+            string sheetName,
             object keyValue = null,
             string sheetFieldName = "")
         {
-            if (spreadsheetData.HasSheet(sheetId) == false)
+            if (spreadsheetData.HasSheet(sheetName) == false)
                 return asset;
             
             var syncAsset = asset.CreateSheetScheme();
@@ -62,7 +62,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Ex
             var sheetValueIndo = new SheetValueInfo
             {
                 Source = asset,
-                SheetName = sheetId,
+                SheetName = sheetName,
                 SpreadsheetData = spreadsheetData,
                 SyncScheme = syncAsset,
                 SyncFieldName = sheetFieldName,
@@ -77,7 +77,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Ex
             return DefaultProcessor.ApplyData(asset,data);
         }
         
-        public static object ApplySpreadsheetData(this object asset,SheetSyncScheme syncAsset, ISpreadsheetData data)
+        public static object ApplySpreadsheetData(this object asset, SheetSyncScheme syncAsset, ISpreadsheetData data)
         {
             var sheetValueInfo = new SheetValueInfo() {
                 Source = asset,
@@ -122,6 +122,5 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Ex
 
             return ObjectTypeConverter.TypeConverters.ConvertValue(source, target);
         }
-        
     }
 }

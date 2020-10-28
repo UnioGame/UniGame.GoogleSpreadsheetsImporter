@@ -1,8 +1,9 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.CoProcessors.Abstract
+﻿using System.Data;
+
+namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.CoProcessors.Abstract
 {
     public interface ICoProcessorHandle
     {
-        bool CanApply(string columnName);
-        void Apply(string columnName);
+        void Apply(SheetValueInfo valueInfo, DataRow row);
     }
 }

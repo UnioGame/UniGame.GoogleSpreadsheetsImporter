@@ -1,27 +1,51 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.CoProcessors
+﻿using System.Collections.Generic;
+using System.Data;
+using UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Extensions;
+
+namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.CoProcessors
 {
     using System;
     using System.Text.RegularExpressions;
     using UnityEngine;
-    
+
     [Serializable]
-    [CreateAssetMenu(menuName = "UniGame/Google/CoProcessors/NestedTableCoProcessor", fileName = nameof(NestedTableCoProcessor))]
     public class NestedTableCoProcessor : BaseCoProcessor
     {
         private const int TableNameGroupId = 1;
         
         [SerializeField]
-        private string _filter;
-        
-        public override bool CanApply(string columnName)
+        private string _filter = @"\w*\[ref:(\w*)\]";
+
+        public override void Apply(SheetValueInfo sheetValueInfo, DataRow row)
         {
-            var regex = new Regex(_filter);
-            return regex.IsMatch(columnName);
+            var validColumns = GetValidColumns(row);
+
+            foreach (var cell in validColumns)
+            {
+                var nestedTableName = GetTableName(cell.Key);
+                var nestedTableKey = cell.Value;
+                
+                sheetValueInfo.Source.ApplySpreadsheetData(sheetValueInfo.SpreadsheetData, nestedTableName, nestedTableKey);
+            }
         }
 
-        public override void Apply(string columnName)
+        private Dictionary<string, object> GetValidColumns(DataRow row)
         {
-            
+            var result = new Dictionary<string, object>();
+
+            var table = row.Table;
+            var rowValues = row.ItemArray;
+
+            for (var i = 0; i < table.Columns.Count; i++)
+            {
+                var columnName = table.Columns[i].ColumnName;
+                if (IsValidColumn(columnName))
+                {
+                    result.Add(columnName, rowValues[i]);
+                }
+            }
+
+            return result;
         }
 
         private string GetTableName(string columnName)
@@ -32,6 +56,12 @@
 
             var groups = regex.Match(columnName).Groups;
             return groups[TableNameGroupId].Value;
+        }
+
+        private bool IsValidColumn(string columnName)
+        {
+            var regex = new Regex(_filter);
+            return regex.IsMatch(columnName);
         }
     }
 }

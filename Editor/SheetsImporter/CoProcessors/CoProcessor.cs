@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using UniModules.UniGame.Core.EditorTools.Editor;
-using UniModules.UniGame.Core.EditorTools.Editor.AssetOperations;
-using UniModules.UniGame.Core.EditorTools.Editor.Tools;
-using UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.CoProcessors.Abstract;
-using UnityEngine;
-
-namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.CoProcessors
+﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.CoProcessors
 {
+    using System;
+    using System.Collections.Generic;
+    using UniModules.UniGame.Core.EditorTools.Editor;
+    using UniModules.UniGame.Core.EditorTools.Editor.AssetOperations;
+    using UniModules.UniGame.Core.EditorTools.Editor.Tools;
+    using Abstract;
+    using UnityEngine;
+    using System.Data;
+    
     [CreateAssetMenu(menuName = "UniGame/Google/CoProcessors/CoProcessor", fileName = nameof(CoProcessor))]
     public class CoProcessor : ScriptableObject, ICoProcessorHandle
     {
@@ -35,6 +35,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Co
                 if (!_processor)
                 {
                     _processor = CreateInstance<CoProcessor>();
+                    _processor.ResetToDefault();
                     _processor.SaveAsset(nameof(CoProcessor), DefaultCoProcessorPath);
                 }
 
@@ -45,30 +46,31 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Co
         #endregion
         
 #if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.InlineEditor(Sirenix.OdinInspector.InlineEditorModes.GUIOnly,
-            Sirenix.OdinInspector.InlineEditorObjectFieldModes.Foldout)]
+        [Sirenix.OdinInspector.ListDrawerSettings(Expanded = true)]
 #endif
-        [SerializeField]
+        [SerializeReference]
         private List<BaseCoProcessor> _processors = new List<BaseCoProcessor>();
-        
-        public bool CanApply(string columnName)
+
+        public void Apply(SheetValueInfo valueInfo, DataRow row)
         {
-            if(string.IsNullOrEmpty(columnName))
-                throw new ArgumentNullException(nameof(columnName));
-            
-            return _processors.Any(x => x.CanApply(columnName));
+            if(valueInfo == null)
+                throw new ArgumentNullException(nameof(valueInfo));
+
+            foreach (var coProcessor in _processors)
+            {
+                coProcessor.Apply(valueInfo, row);
+            }
         }
 
-        public void Apply(string columnName)
+        [ContextMenu(nameof(ResetToDefault))]
+#if ODIN_INSPECTOR
+        [Sirenix.OdinInspector.Button]
+#endif
+        private void ResetToDefault()
         {
-            if(string.IsNullOrEmpty(columnName))
-                throw new ArgumentNullException(nameof(columnName));
-
-            var validProcessor = _processors.FirstOrDefault(x => x.CanApply(columnName));
-            if (validProcessor != null)
-            {
-                validProcessor.Apply(columnName);
-            }
+            _processors.Clear();
+            
+            _processors.Add(new NestedTableCoProcessor());
         }
     }
 }

@@ -1,8 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using UniModules.UniGame.GoogleSpreadsheets.Editor.SheetsImporter;
-using UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.CoProcessors.Abstract;
-
-namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
+﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
 {
     using System;
     using System.Collections.Generic;
@@ -16,6 +12,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
     using UnityEditor;
     using UnityEngine;
     using Object = UnityEngine.Object;
+    using CoProcessors.Abstract;
 
     public class AssetSheetDataProcessor : IAssetSheetDataProcessor
     {
@@ -207,17 +204,13 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
                 return source;
             }
 
-            for (var i = 0; i < rowValues.Length; i++) {
+            for (var i = 0; i < rowValues.Length; i++) 
+            {
                 var columnName = table.Columns[i].ColumnName;
                 var itemField  = syncScheme.fields.FirstOrDefault(x => SheetData.IsEquals(x.sheetField, columnName));
 
                 if (itemField == null)
                 {
-                    if (CanParse(columnName, out var tableName))
-                    {
-                        Apply(tableName, valueInfo, rowValues[i]);
-                    }
-
                     continue;
                 }
 
@@ -245,52 +238,20 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
                 }
             }
 
-            return source;
-        }
-
-        private void Apply(string tableName, SheetValueInfo valueInfo, object rowValue)
-        {
-            var sheetData = valueInfo.SpreadsheetData.Sheets.FirstOrDefault(x=>x.Name.ToLower().Equals(tableName));
-            
-            if(sheetData == null)
-                return;
-            
-            var row = sheetData.GetRow(GoogleSheetImporterConstants.KeyField, rowValue);
-            var rowValues = row.ItemArray;
-            var table = row.Table;
-
-            for (var i = 1; i < rowValues.Length; i++)
+            if (_coProcessorHandle != null)
             {
-                var columnName = table.Columns[i].ColumnName;
-                var itemField =
-                    valueInfo.SyncScheme.fields.FirstOrDefault(x => SheetData.IsEquals(x.sheetField, columnName));
-
-                if (itemField == null)
-                {
-                    if (CanParse(columnName, out var newTableName))
-                    {
-                        Apply(newTableName, valueInfo, rowValues[i]);
-                    }
-
-                    continue;
-                }
-                
-                var currentValue = itemField.GetValue(valueInfo.Source);
-                if(valueInfo.IsInIgnoreCache(currentValue))
-                    continue;
-
-                var newRowValue = rowValues[i];
-                var resultValue = newRowValue.ConvertType(itemField.targetType);
-
-                itemField.ApplyValue(valueInfo.Source, resultValue);
+                _coProcessorHandle.Apply(valueInfo, row);
             }
+
+            return source;
         }
 
         public object ApplyData(object source, ISpreadsheetData spreadsheetData)
         {
             var syncScheme = source.CreateSheetScheme();
 
-            var syncValue = new SheetValueInfo() {
+            var syncValue = new SheetValueInfo
+            {
                 Source          = source,
                 SpreadsheetData = spreadsheetData,
                 SheetName         = syncScheme.sheetId,
