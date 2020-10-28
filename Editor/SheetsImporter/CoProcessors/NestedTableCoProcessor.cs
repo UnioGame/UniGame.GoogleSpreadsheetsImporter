@@ -15,7 +15,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Co
         
         [SerializeField]
         private string _filter = @"\w*\[ref:(\w*)\]";
-        [SerializeField]
+        [SerializeField, Min(0)]
         private int _overrideStartColumn = 1;
 
         public override void Apply(SheetValueInfo sheetValueInfo, DataRow row)
