@@ -15,6 +15,8 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Co
         
         [SerializeField]
         private string _filter = @"\w*\[ref:(\w*)\]";
+        [SerializeField]
+        private int _overrideStartColumn = 1;
 
         public override void Apply(SheetValueInfo sheetValueInfo, DataRow row)
         {
@@ -27,8 +29,8 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Co
             {
                 var nestedTableName = cell.Key;
                 var nestedTableKey = cell.Value;
-
-                sheetValueInfo.Source.ApplySpreadsheetData(sheetValueInfo, nestedTableName, nestedTableKey);
+                
+                sheetValueInfo.Source.ApplySpreadsheetData(sheetValueInfo, nestedTableName, nestedTableKey, overrideStartColumn: _overrideStartColumn);
             }
         }
 

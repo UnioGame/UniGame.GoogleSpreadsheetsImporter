@@ -204,7 +204,7 @@
                 return source;
             }
 
-            for (var i = 0; i < rowValues.Length; i++) 
+            for (var i = valueInfo.StartColumn; i < rowValues.Length; i++) 
             {
                 var columnName = table.Columns[i].ColumnName;
                 var itemField  = syncScheme.fields.FirstOrDefault(x => SheetData.IsEquals(x.sheetField, columnName));

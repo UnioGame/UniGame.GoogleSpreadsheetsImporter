@@ -11,6 +11,6 @@
         public string           SyncFieldName;
         public object           SyncFieldValue;
         public HashSet<object>  IgnoreCache;
-        
+        public int StartColumn;
     }
 }

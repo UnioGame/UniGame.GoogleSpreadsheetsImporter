@@ -67,6 +67,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Ex
                 SyncScheme = syncAsset,
                 SyncFieldName = sheetFieldName,
                 SyncFieldValue = keyValue,
+                StartColumn = 0
             };
             
             return DefaultProcessor.ApplyData(sheetValueIndo);
@@ -77,18 +78,16 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Ex
             SheetValueInfo sheetValueInfo, 
             string sheetName,
             object keyValue = null,
-            string sheetFieldName = "")
+            string sheetFieldName = "",
+            int overrideStartColumn = 0)
         {
             if (!sheetValueInfo.SpreadsheetData.HasSheet(sheetName))
                 return asset;
             
-            //var syncAsset = asset.CreateSheetScheme();
-
-            //sheetValueInfo.Source = asset;
             sheetValueInfo.SheetName = sheetName;
-            //sheetValueInfo.SyncScheme = syncAsset;
             sheetValueInfo.SyncFieldName = sheetFieldName;
             sheetValueInfo.SyncFieldValue = keyValue;
+            sheetValueInfo.StartColumn = overrideStartColumn;
 
             return DefaultProcessor.ApplyData(sheetValueInfo);
         }
@@ -104,7 +103,8 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Ex
             {
                 Source = asset,
                 SyncScheme = syncAsset,
-                SpreadsheetData = data
+                SpreadsheetData = data,
+                StartColumn = 0
             };
             return DefaultProcessor.ApplyData(sheetValueInfo);
         }
@@ -127,6 +127,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Ex
                 SyncScheme = syncAsset,
                 SyncFieldName = sheetFieldName,
                 SyncFieldValue = keyValue,
+                StartColumn = 0
             };
             
             return DefaultProcessor.ApplyData(sheetValue);
