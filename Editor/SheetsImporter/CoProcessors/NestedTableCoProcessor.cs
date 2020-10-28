@@ -18,18 +18,21 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Co
 
         public override void Apply(SheetValueInfo sheetValueInfo, DataRow row)
         {
-            var validColumns = GetValidColumns(row);
+            sheetValueInfo.IgnoreCache = sheetValueInfo.IgnoreCache ?? new HashSet<object>();
+            sheetValueInfo.IgnoreCache.Add(sheetValueInfo.SheetName.ToLower());
+            
+            var validColumns = GetValidColumns(sheetValueInfo, row);
 
             foreach (var cell in validColumns)
             {
-                var nestedTableName = GetTableName(cell.Key);
+                var nestedTableName = cell.Key;
                 var nestedTableKey = cell.Value;
-                
-                sheetValueInfo.Source.ApplySpreadsheetData(sheetValueInfo.SpreadsheetData, nestedTableName, nestedTableKey);
+
+                sheetValueInfo.Source.ApplySpreadsheetData(sheetValueInfo, nestedTableName, nestedTableKey);
             }
         }
 
-        private Dictionary<string, object> GetValidColumns(DataRow row)
+        private Dictionary<string, object> GetValidColumns(SheetValueInfo sheetValueInfo, DataRow row)
         {
             var result = new Dictionary<string, object>();
 
@@ -41,7 +44,11 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Co
                 var columnName = table.Columns[i].ColumnName;
                 if (IsValidColumn(columnName))
                 {
-                    result.Add(columnName, rowValues[i]);
+                    var tableName = GetTableName(columnName);
+                    if (sheetValueInfo.IsInIgnoreCache(tableName))
+                        continue;
+                    
+                    result.Add(tableName, rowValues[i]);
                 }
             }
 

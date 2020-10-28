@@ -72,6 +72,27 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Ex
             return DefaultProcessor.ApplyData(sheetValueIndo);
         }
 
+        public static object ApplySpreadsheetData(
+            this object asset, 
+            SheetValueInfo sheetValueInfo, 
+            string sheetName,
+            object keyValue = null,
+            string sheetFieldName = "")
+        {
+            if (!sheetValueInfo.SpreadsheetData.HasSheet(sheetName))
+                return asset;
+            
+            //var syncAsset = asset.CreateSheetScheme();
+
+            //sheetValueInfo.Source = asset;
+            sheetValueInfo.SheetName = sheetName;
+            //sheetValueInfo.SyncScheme = syncAsset;
+            sheetValueInfo.SyncFieldName = sheetFieldName;
+            sheetValueInfo.SyncFieldValue = keyValue;
+
+            return DefaultProcessor.ApplyData(sheetValueInfo);
+        }
+
         public static object ApplySpreadsheetData(this object asset, ISpreadsheetData data)
         {
             return DefaultProcessor.ApplyData(asset,data);
@@ -79,7 +100,8 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Ex
         
         public static object ApplySpreadsheetData(this object asset, SheetSyncScheme syncAsset, ISpreadsheetData data)
         {
-            var sheetValueInfo = new SheetValueInfo() {
+            var sheetValueInfo = new SheetValueInfo
+            {
                 Source = asset,
                 SyncScheme = syncAsset,
                 SpreadsheetData = data
@@ -107,9 +129,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Ex
                 SyncFieldValue = keyValue,
             };
             
-            var result = DefaultProcessor.ApplyData(sheetValue);
-            
-            return result;
+            return DefaultProcessor.ApplyData(sheetValue);
         }
 
         public static object ConvertType(this object source, Type target)

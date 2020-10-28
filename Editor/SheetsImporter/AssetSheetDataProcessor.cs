@@ -192,7 +192,7 @@
             }
         }
 
-        public object ApplyData(SheetValueInfo valueInfo, DataRow row)
+        private object ApplyData(SheetValueInfo valueInfo, DataRow row)
         {
             var syncScheme      = valueInfo.SyncScheme;
             var spreadsheetData = valueInfo.SpreadsheetData;
@@ -227,6 +227,7 @@
                 if (itemField.IsSheetTarget) {
                     //initialize cache
                     valueInfo.IgnoreCache = valueInfo.IgnoreCache ?? new HashSet<object>();
+                    valueInfo.IgnoreCache.Add(source);
 
                     ApplyData(new SheetValueInfo
                     {
