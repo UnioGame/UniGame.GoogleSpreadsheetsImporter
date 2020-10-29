@@ -52,7 +52,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
         /// </summary>
         [Space(8)]
 #if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.InlineProperty()]
+        [Sirenix.OdinInspector.InlineProperty]
         [Sirenix.OdinInspector.HideLabel]
         [Sirenix.OdinInspector.HorizontalGroup("Sources")]
         [Sirenix.OdinInspector.BoxGroup("Sources/Assets Handlers")]

@@ -7,6 +7,7 @@
     {
         IObservable<ISpreadsheetAssetsHandler> ImportCommand { get; }
         IObservable<ISpreadsheetAssetsHandler> ExportCommand { get; }
+        
         void                                   Initialize(IGoogleSpreadsheetClient status);
     }
 }

@@ -4,21 +4,28 @@
     using System.Collections.Generic;
     using Abstract;
     using UniRx;
+    using UnityEngine;
 
     [Serializable]
     public abstract class SerializableSpreadsheetImporter : 
         ISpreadsheetAssetsHandler,
         ISpreadsheetTriggerAssetsHandler
     {
+        [SerializeField]
+        private ImportAction _importAction = ImportAction.All;
+        
         private Subject<ISpreadsheetAssetsHandler> _importCommand;
         private Subject<ISpreadsheetAssetsHandler> _exportCommand;
         private IGoogleSpreadsheetClient           _client;
-        private IGooglsSpreadsheetClientStatus                 _status;
-        
+        private IGooglsSpreadsheetClientStatus _status;
+
         #region public properties
         
-        public bool IsValidData => _importCommand != null && _exportCommand !=null && _status!=null && _status.HasConnectedSheets;
-
+        public bool CanImport => _importAction.HasFlag(ImportAction.Import);
+        public bool CanExport => _importAction.HasFlag(ImportAction.Export);
+        
+        public bool IsValidData => _importCommand != null && _exportCommand !=null && _status !=null && _status.HasConnectedSheets;
+        
         public IObservable<ISpreadsheetAssetsHandler> ImportCommand => _importCommand;
 
         public IObservable<ISpreadsheetAssetsHandler> ExportCommand => _exportCommand;
@@ -65,9 +72,10 @@
         }
 
 #if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.ButtonGroup()]
-        [Sirenix.OdinInspector.Button()]
+        [Sirenix.OdinInspector.ButtonGroup]
+        [Sirenix.OdinInspector.Button]
         [Sirenix.OdinInspector.EnableIf("IsValidData")]
+        [Sirenix.OdinInspector.EnableIf("CanImport")]
 #endif
         public void Import()
         {
@@ -75,9 +83,10 @@
         }
 
 #if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.ButtonGroup()]
-        [Sirenix.OdinInspector.Button()]
+        [Sirenix.OdinInspector.ButtonGroup]
+        [Sirenix.OdinInspector.Button]
         [Sirenix.OdinInspector.EnableIf("IsValidData")]
+        [Sirenix.OdinInspector.EnableIf("CanExport")]
 #endif
         public void Export()
         {

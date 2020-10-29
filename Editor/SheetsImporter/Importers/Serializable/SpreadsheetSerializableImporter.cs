@@ -8,6 +8,9 @@
     [Serializable]
     public abstract class SpreadsheetSerializableImporter : ISpreadsheetAssetsHandler
     {
+        public abstract bool CanImport { get; }
+        public abstract bool CanExport { get; }
+
         public abstract IEnumerable<object> Import(ISpreadsheetData spreadsheetData);
 
         public abstract IEnumerable<object> Load();

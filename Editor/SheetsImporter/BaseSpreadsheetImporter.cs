@@ -13,10 +13,14 @@
         private Subject<ISpreadsheetAssetsHandler> _importCommand;
         private Subject<ISpreadsheetAssetsHandler> _exportCommand;
         private IGoogleSpreadsheetClient           _client;
-        private IGooglsSpreadsheetClientStatus                 _status;
-        
+        private IGooglsSpreadsheetClientStatus _status;
+
         #region public properties
+        
         public bool IsValidData => _importCommand != null && _exportCommand !=null && _status!=null && _status.HasConnectedSheets;
+        
+        public abstract bool CanImport { get; }
+        public abstract bool CanExport { get; }
 
         public IObservable<ISpreadsheetAssetsHandler> ImportCommand => _importCommand;
 
@@ -24,12 +28,13 @@
         
         #endregion
 
-        public void Initialize(IGoogleSpreadsheetClient client)
+        public virtual void Initialize(IGoogleSpreadsheetClient client)
         {
             Reset();
-            
-            _client        = client;
-            _status        = client.Status;
+
+            _client = client;
+            _status = client.Status;
+
             _importCommand = new Subject<ISpreadsheetAssetsHandler>();
             _exportCommand = new Subject<ISpreadsheetAssetsHandler>();
         }
@@ -61,9 +66,10 @@
         }
         
 #if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.ButtonGroup()]
-        [Sirenix.OdinInspector.Button()]
+        [Sirenix.OdinInspector.ButtonGroup]
+        [Sirenix.OdinInspector.Button]
         [Sirenix.OdinInspector.EnableIf("IsValidData")]
+        [Sirenix.OdinInspector.EnableIf("CanImport")]
 #endif
         public void Import()
         {
@@ -71,9 +77,10 @@
         }
 
 #if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.ButtonGroup()]
-        [Sirenix.OdinInspector.Button()]
+        [Sirenix.OdinInspector.ButtonGroup]
+        [Sirenix.OdinInspector.Button]
         [Sirenix.OdinInspector.EnableIf("IsValidData")]
+        [Sirenix.OdinInspector.EnableIf("CanExport")]
 #endif
         public void Export()
         {
@@ -86,6 +93,5 @@
         }
 
         public virtual ISpreadsheetData ExportObjects(IEnumerable<object> source,ISpreadsheetData spreadsheetData) => spreadsheetData;
-
     }
 }

@@ -7,6 +7,5 @@
         ISpreadsheetAssetsExporter
     {
         IEnumerable<object> Load();
-
     }
 }
