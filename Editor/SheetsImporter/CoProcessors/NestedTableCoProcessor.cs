@@ -1,15 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Data;
-using UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Extensions;
-
-namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.CoProcessors
+﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.CoProcessors
 {
     using System;
     using System.Text.RegularExpressions;
     using UnityEngine;
+    using System.Collections.Generic;
+    using System.Data;
+    using Abstract;
+    using Extensions;
 
     [Serializable]
-    public class NestedTableCoProcessor : BaseCoProcessor
+    public class NestedTableCoProcessor : ICoProcessorHandle
     {
         private const int TableNameGroupId = 1;
         
@@ -18,7 +18,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Co
         [SerializeField, Min(0)]
         private int _overrideStartColumn = 1;
 
-        public override void Apply(SheetValueInfo sheetValueInfo, DataRow row)
+        public void Apply(SheetValueInfo sheetValueInfo, DataRow row)
         {
             sheetValueInfo.IgnoreCache = sheetValueInfo.IgnoreCache ?? new HashSet<object>();
             sheetValueInfo.IgnoreCache.Add(sheetValueInfo.SheetName.ToLower());

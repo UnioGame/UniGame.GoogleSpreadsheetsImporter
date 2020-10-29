@@ -49,7 +49,7 @@
         [Sirenix.OdinInspector.ListDrawerSettings(Expanded = true)]
 #endif
         [SerializeReference]
-        private List<BaseCoProcessor> _processors = new List<BaseCoProcessor>();
+        private List<ICoProcessorHandle> _processors = new List<ICoProcessorHandle>();
 
         public void Apply(SheetValueInfo valueInfo, DataRow row)
         {
