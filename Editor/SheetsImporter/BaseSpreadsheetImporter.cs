@@ -1,4 +1,7 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
+﻿using UniModules.UniCore.Runtime.DataFlow;
+using UniModules.UniGame.Core.Runtime.DataFlow.Interfaces;
+
+namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
 {
     using System;
     using System.Collections.Generic;
@@ -13,10 +16,18 @@
         private Subject<ISpreadsheetAssetsHandler> _importCommand;
         private Subject<ISpreadsheetAssetsHandler> _exportCommand;
         private IGoogleSpreadsheetClient           _client;
-        private IGooglsSpreadsheetClientStatus                 _status;
+        private IGooglsSpreadsheetClientStatus _status;
         
+        private readonly LifeTimeDefinition _lifeTimeDefinition = new LifeTimeDefinition();
+
         #region public properties
+
+        protected ILifeTime LifeTime => _lifeTimeDefinition;
+        
         public bool IsValidData => _importCommand != null && _exportCommand !=null && _status!=null && _status.HasConnectedSheets;
+        
+        public abstract bool CanImport { get; }
+        public abstract bool CanExport { get; }
 
         public IObservable<ISpreadsheetAssetsHandler> ImportCommand => _importCommand;
 
@@ -24,12 +35,13 @@
         
         #endregion
 
-        public void Initialize(IGoogleSpreadsheetClient client)
+        public virtual void Initialize(IGoogleSpreadsheetClient client)
         {
             Reset();
-            
-            _client        = client;
-            _status        = client.Status;
+
+            _client = client;
+            _status = client.Status;
+
             _importCommand = new Subject<ISpreadsheetAssetsHandler>();
             _exportCommand = new Subject<ISpreadsheetAssetsHandler>();
         }
@@ -46,6 +58,8 @@
             
             _importCommand = null;
             _exportCommand = null;
+            
+            _lifeTimeDefinition.Release();
         }
         
         public IEnumerable<object> Import(ISpreadsheetData spreadsheetData)
@@ -61,9 +75,10 @@
         }
         
 #if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.ButtonGroup()]
-        [Sirenix.OdinInspector.Button()]
+        [Sirenix.OdinInspector.ButtonGroup]
+        [Sirenix.OdinInspector.Button]
         [Sirenix.OdinInspector.EnableIf("IsValidData")]
+        [Sirenix.OdinInspector.EnableIf("CanImport")]
 #endif
         public void Import()
         {
@@ -71,9 +86,10 @@
         }
 
 #if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.ButtonGroup()]
-        [Sirenix.OdinInspector.Button()]
+        [Sirenix.OdinInspector.ButtonGroup]
+        [Sirenix.OdinInspector.Button]
         [Sirenix.OdinInspector.EnableIf("IsValidData")]
+        [Sirenix.OdinInspector.EnableIf("CanExport")]
 #endif
         public void Export()
         {
@@ -86,6 +102,5 @@
         }
 
         public virtual ISpreadsheetData ExportObjects(IEnumerable<object> source,ISpreadsheetData spreadsheetData) => spreadsheetData;
-
     }
 }

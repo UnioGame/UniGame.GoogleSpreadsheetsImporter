@@ -27,7 +27,8 @@
 #endif
         [SerializeReference]
         public List<SerializableSpreadsheetImporter> serializabledImporters =
-            new List<SerializableSpreadsheetImporter>() {
+            new List<SerializableSpreadsheetImporter>
+            {
                 new AssetsWithAttributesImporter()
             };
 
@@ -50,9 +51,12 @@
 
         #endregion
 
-        public ILifeTime LifeTime => _lifeTime = (_lifeTime ?? new LifeTimeDefinition());
+        public ILifeTime LifeTime => _lifeTime = _lifeTime ?? new LifeTimeDefinition();
 
         public IEnumerable<ISpreadsheetAssetsHandler> Importers => importers.Concat<ISpreadsheetAssetsHandler>(serializabledImporters);
+
+        public bool CanImport => true;
+        public bool CanExport => true;
 
         public void Reset() => _lifeTime?.Release();
 
@@ -66,11 +70,13 @@
             foreach (var importer in importers.Concat<ISpreadsheetTriggerAssetsHandler>(serializabledImporters)) {
                 importer.Initialize(client);
                 importer.ExportCommand.
+                    Where(x=>x.CanExport).
                     Do(x => ExportSheets(Export(_spreadsheetData, x))).
                     Subscribe().
                     AddTo(LifeTime);
 
                 importer.ImportCommand.
+                    Where(x=>x.CanImport).
                     Do(x => {
                         if (autoReloadSpreadsheetOnImport)
                             _client.ReloadAll();
@@ -114,23 +120,23 @@
 
             return data;
         }
-
+        
         public IEnumerable<object> Import(ISpreadsheetData spreadsheetData)
         {
             if (autoReloadSpreadsheetOnImport)
                 _client.ReloadAll();
             
             var result = new List<object>();
-            foreach (var importer in Importers) {
+            foreach (var importer in Importers.Where(x =>x.CanImport)) {
                 result.AddRange(Import(spreadsheetData, importer));
             }
 
             return result;
         }
-
+        
         public ISpreadsheetData Export(ISpreadsheetData data)
         {
-            foreach (var importer in importers) {
+            foreach (var importer in Importers.Where(x=>x.CanExport)) {
                 Export(data, importer);
             }
 

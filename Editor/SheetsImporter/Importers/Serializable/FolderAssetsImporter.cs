@@ -34,7 +34,7 @@
         [Sirenix.OdinInspector.LabelWidth(LabelWidth)]
         [Sirenix.OdinInspector.LabelText("RegEx Filter")]
 #endif
-        public string assetRegexFilter = String.Empty;
+        public string assetRegexFilter = string.Empty;
 
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.VerticalGroup("Filter")]
@@ -47,7 +47,7 @@
         [Sirenix.OdinInspector.VerticalGroup("Filter")]
         [Sirenix.OdinInspector.LabelWidth(LabelWidth)]
 #endif
-        public bool overrideSheetId = false;
+        public bool overrideSheetId;
         
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.VerticalGroup("Filter")]
@@ -64,7 +64,7 @@
         
 
 #if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.Button()]
+        [Sirenix.OdinInspector.Button]
 #endif
         public override IEnumerable<object> Load()
         {
@@ -117,7 +117,8 @@
 
         private IEnumerable<ProgressData> ExportValues(IEnumerable<object> source,ISpreadsheetData data,string sheeName)
         {
-            var progressData = new ProgressData() {
+            var progressData = new ProgressData
+            {
                 Title = "Export",
                 IsDone =  false,
             };
