@@ -63,7 +63,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
         
         public bool HasSheet(string id)
         {
-            return Sheets.Any(x => string.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
+            return Sheets.Any(x => string.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase));
         }
         
         public void Reload()
@@ -185,7 +185,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
         
         public SpreadsheetsResource.ValuesResource.UpdateRequest CreateUpdateRequest(SheetData data)
         {
-            var sheetId = data.Id;
+            var sheetId = data.Name;
 
             var a1Range      = $"{sheetId}";
             var sourceValues = data.CreateSource();

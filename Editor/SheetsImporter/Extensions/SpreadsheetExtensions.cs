@@ -1,4 +1,6 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Extensions
+﻿using UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.CoProcessors;
+
+namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Extensions
 {
     using System;
     using System.Collections.Generic;
@@ -7,10 +9,9 @@
 
     public static class SpreadsheetExtensions
     {
-        
-        public static readonly AssetSheetDataProcessor DefaultProcessor = new AssetSheetDataProcessor();
+        public static readonly AssetSheetDataProcessor DefaultProcessor = new AssetSheetDataProcessor(CoProcessor.Processor);
 
-        public static bool UpdateSheetValue(this object source, ISpreadsheetData data,string sheetId,string sheetKeyField)
+        public static bool UpdateSheetValue(this object source, ISpreadsheetData data, string sheetId, string sheetKeyField)
         {
             return DefaultProcessor.UpdateSheetValue(source, data,sheetId,sheetKeyField);
         }
@@ -20,7 +21,7 @@
             return DefaultProcessor.UpdateSheetValue(source, data);
         }
         
-        public static bool UpdateSheetValue(this object source, ISpreadsheetData data,string sheetId)
+        public static bool UpdateSheetValue(this object source, ISpreadsheetData data, string sheetId)
         {
             return DefaultProcessor.UpdateSheetValue(source, data,sheetId);
         }
@@ -34,7 +35,7 @@
             int maxItemsCount = -1,
             string overrideSheetId = "")
         {
-            return DefaultProcessor.SyncFolderAssets(filterType,folder, spreadsheetData,assets, createMissing,maxItemsCount,overrideSheetId);
+            return DefaultProcessor.SyncFolderAssets(filterType, folder, spreadsheetData,assets, createMissing, maxItemsCount, overrideSheetId);
         }
         
         public static List<Object> SyncFolderAssets(
@@ -43,31 +44,52 @@
             bool createMissing, 
             ISpreadsheetData spreadsheetData)
         {
-            return DefaultProcessor.SyncFolderAssets(type, folder,createMissing, spreadsheetData);
+            return DefaultProcessor.SyncFolderAssets(type, folder, createMissing, spreadsheetData);
         }
         
         public static object ApplySpreadsheetData(
             this object asset,
             ISpreadsheetData spreadsheetData, 
-            string sheetId,
+            string sheetName,
             object keyValue = null,
             string sheetFieldName = "")
         {
-            if (spreadsheetData.HasSheet(sheetId) == false)
+            if (spreadsheetData.HasSheet(sheetName) == false)
                 return asset;
             
             var syncAsset = asset.CreateSheetScheme();
 
-            var sheetValueIndo = new SheetValueInfo() {
+            var sheetValueIndo = new SheetValueInfo
+            {
                 Source = asset,
-                SheetId = sheetId,
+                SheetName = sheetName,
                 SpreadsheetData = spreadsheetData,
                 SyncScheme = syncAsset,
                 SyncFieldName = sheetFieldName,
                 SyncFieldValue = keyValue,
+                StartColumn = 0
             };
             
             return DefaultProcessor.ApplyData(sheetValueIndo);
+        }
+
+        public static object ApplySpreadsheetData(
+            this object asset, 
+            SheetValueInfo sheetValueInfo, 
+            string sheetName,
+            object keyValue = null,
+            string sheetFieldName = "",
+            int overrideStartColumn = 0)
+        {
+            if (!sheetValueInfo.SpreadsheetData.HasSheet(sheetName))
+                return asset;
+            
+            sheetValueInfo.SheetName = sheetName;
+            sheetValueInfo.SyncFieldName = sheetFieldName;
+            sheetValueInfo.SyncFieldValue = keyValue;
+            sheetValueInfo.StartColumn = overrideStartColumn;
+
+            return DefaultProcessor.ApplyData(sheetValueInfo);
         }
 
         public static object ApplySpreadsheetData(this object asset, ISpreadsheetData data)
@@ -75,12 +97,14 @@
             return DefaultProcessor.ApplyData(asset,data);
         }
         
-        public static object ApplySpreadsheetData(this object asset,SheetSyncScheme syncAsset, ISpreadsheetData data)
+        public static object ApplySpreadsheetData(this object asset, SheetSyncScheme syncAsset, ISpreadsheetData data)
         {
-            var sheetValueInfo = new SheetValueInfo() {
+            var sheetValueInfo = new SheetValueInfo
+            {
                 Source = asset,
                 SyncScheme = syncAsset,
-                SpreadsheetData = data
+                SpreadsheetData = data,
+                StartColumn = 0
             };
             return DefaultProcessor.ApplyData(sheetValueInfo);
         }
@@ -95,18 +119,18 @@
         {
             var syncAsset = type.CreateSheetScheme();
             
-            var sheetValue = new SheetValueInfo() {
+            var sheetValue = new SheetValueInfo
+            {
                 Source = asset,
-                SheetId = sheetId,
+                SheetName = sheetId,
                 SpreadsheetData = sheetData,
                 SyncScheme = syncAsset,
                 SyncFieldName = sheetFieldName,
                 SyncFieldValue = keyValue,
+                StartColumn = 0
             };
             
-            var result = DefaultProcessor.ApplyData(sheetValue);
-            
-            return result;
+            return DefaultProcessor.ApplyData(sheetValue);
         }
 
         public static object ConvertType(this object source, Type target)
@@ -119,6 +143,5 @@
 
             return ObjectTypeConverter.TypeConverters.ConvertValue(source, target);
         }
-        
     }
 }

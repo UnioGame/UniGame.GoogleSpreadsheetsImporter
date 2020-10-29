@@ -1,9 +1,8 @@
 ﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
 {
     using System;
-    using System.Collections.Generic;
     using System.Reflection;
-
+    
     [Serializable]
     public class SyncField
     {
@@ -15,14 +14,14 @@
         public readonly bool            isKeyField;
         public readonly SheetSyncScheme syncScheme;
         
-        public SyncField(FieldInfo field, string sheetValueField,bool isKeyField, SheetSyncScheme fieldSheme = null)
+        public SyncField(FieldInfo field, string sheetValueField, bool isKeyField, SheetSyncScheme fieldScheme = null)
         {
             _fieldInfo       = field;
-            this.objectField = _fieldInfo.Name;
-            this.sheetField  = sheetValueField.TrimStart('_');
+            objectField = _fieldInfo.Name;
+            sheetField  = sheetValueField.TrimStart('_');
             this.isKeyField  = isKeyField;
-            this.targetType  = _fieldInfo.FieldType;
-            this.syncScheme  = fieldSheme;
+            targetType  = _fieldInfo.FieldType;
+            syncScheme  = fieldScheme;
         }
 
         public bool IsSheetTarget => syncScheme != null;

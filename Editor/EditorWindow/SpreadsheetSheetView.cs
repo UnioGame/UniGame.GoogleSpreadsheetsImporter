@@ -20,7 +20,7 @@
         public void Initialize(SheetData data)
         {
             spreadSheetId = data.SpreadsheetId;
-            sheetName = data.Id;
+            sheetName = data.Name;
             UpdateView(data);
         }
 

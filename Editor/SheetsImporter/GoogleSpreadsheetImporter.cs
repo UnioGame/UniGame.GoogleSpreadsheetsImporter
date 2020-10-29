@@ -1,4 +1,6 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
+﻿using UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.CoProcessors;
+
+namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
 {
     using System.Collections.Generic;
     using System.IO;
@@ -8,7 +10,7 @@
     using EditorWindow;
     using GoogleSpreadsheets.Editor.SheetsImporter;
     using TypeConverters.Editor;
-    using UniModules.UniCore.Runtime.DataFlow;
+    using UniCore.Runtime.DataFlow;
     using UnityEngine;
 
     [CreateAssetMenu(menuName = "UniGame/Google/GoogleSpreadSheetImporter", fileName = nameof(GoogleSpreadsheetImporter))]
@@ -65,6 +67,14 @@
 #endif
         public ObjectTypeConverter typeConverters;
 
+        [Space(8)]
+#if ODIN_INSPECTOR
+        [Sirenix.OdinInspector.InlineEditor(Sirenix.OdinInspector.InlineEditorObjectFieldModes.Boxed, Expanded = true)]
+        [Sirenix.OdinInspector.HideLabel]
+        [Sirenix.OdinInspector.BoxGroup("Co-Processors")]
+#endif
+        public CoProcessor _coProcessors;
+
         #endregion
 
         #region private data
@@ -114,7 +124,7 @@
         public void ShowSpreadSheets()
         {
 #if ODIN_INSPECTOR
-                    GoogleSpreadSheetViewWindow.Open(Client.GetSheets());
+            GoogleSpreadSheetViewWindow.Open(Client.GetSheets());
 #endif
         }
             
@@ -157,6 +167,7 @@
         {
             if (Directory.Exists(GoogleSheetImporterConstants.TokenKey))
                 Directory.Delete(GoogleSheetImporterConstants.TokenKey, true);
+            
             _lifeTime?.Release();
         }
 
@@ -169,6 +180,7 @@
             foreach (var sheetsId in sheetsIds) {
                 if (string.IsNullOrEmpty(sheetsId))
                     continue;
+                
                 Client.ConnectToSpreadsheet(sheetsId);
             }
         }
@@ -178,9 +190,15 @@
             typeConverters = typeConverters ? typeConverters : ObjectTypeConverter.TypeConverters;
         }
 
+        private void LoadNestedProcessors()
+        {
+            _coProcessors = _coProcessors ? _coProcessors : CoProcessor.Processor;
+        }
+
         private void OnEnable()
         {
             LoadTypeConverters();
+            LoadNestedProcessors();
         }
 
         private GoogleSpreadsheetClient CreateClient()
@@ -190,6 +208,7 @@
                 credentialsPath,
                 GoogleSheetImporterConstants.ApplicationName,
                 GoogleSpreadsheetConnection.WriteScope);
+            
             LifeTime.AddDispose(client);
             return client;
         }
