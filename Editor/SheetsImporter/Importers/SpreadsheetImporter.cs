@@ -3,6 +3,8 @@
     using System.Collections.Generic;
     using System.Linq;
     using Abstract;
+    using UniModules.UniCore.Runtime.Rx.Extensions;
+    using UniRx;
 
     public class SpreadsheetImporter<T> : BaseSpreadsheetImporter
         where T : SerializableSpreadsheetImporter
@@ -19,6 +21,20 @@
             foreach (var importer in importers)
             {
                 importer.Initialize(client);
+                importer.ExportCommand.
+                    Where(x=>x.CanExport).
+                    Do(x =>
+                    {
+                        ExportObjects(new[] {x}, client.SpreadsheetData);
+                    }).
+                    Subscribe().
+                    AddTo(LifeTime);
+
+                importer.ImportCommand.
+                    Where(x=>x.CanImport).
+                    Do(x => ImportObjects(new []{x}, client.SpreadsheetData)).
+                    Subscribe().
+                    AddTo(LifeTime);
             }
         }
 

@@ -1,4 +1,7 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
+﻿using UniModules.UniCore.Runtime.DataFlow;
+using UniModules.UniGame.Core.Runtime.DataFlow.Interfaces;
+
+namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
 {
     using System;
     using System.Collections.Generic;
@@ -14,8 +17,12 @@
         private Subject<ISpreadsheetAssetsHandler> _exportCommand;
         private IGoogleSpreadsheetClient           _client;
         private IGooglsSpreadsheetClientStatus _status;
+        
+        private readonly LifeTimeDefinition _lifeTimeDefinition = new LifeTimeDefinition();
 
         #region public properties
+
+        protected ILifeTime LifeTime => _lifeTimeDefinition;
         
         public bool IsValidData => _importCommand != null && _exportCommand !=null && _status!=null && _status.HasConnectedSheets;
         
@@ -51,6 +58,8 @@
             
             _importCommand = null;
             _exportCommand = null;
+            
+            _lifeTimeDefinition.Release();
         }
         
         public IEnumerable<object> Import(ISpreadsheetData spreadsheetData)
