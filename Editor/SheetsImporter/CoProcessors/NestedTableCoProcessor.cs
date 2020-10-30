@@ -30,6 +30,9 @@
                 var nestedTableName = cell.Key;
                 var nestedTableKey = cell.Value;
                 
+                if(string.IsNullOrEmpty(nestedTableName) || string.IsNullOrEmpty(nestedTableKey.ToString()))
+                    continue;
+                
                 sheetValueInfo.Source.ApplySpreadsheetData(sheetValueInfo, nestedTableName, nestedTableKey, overrideStartColumn: _overrideStartColumn);
             }
         }
