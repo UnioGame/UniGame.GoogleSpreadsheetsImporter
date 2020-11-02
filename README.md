@@ -206,3 +206,34 @@ https://github.com/jilleJr/Newtonsoft.Json-for-Unity
 
 ```
 
+## Co-Processors
+
+![2020-11-02_10-25-22](https://user-images.githubusercontent.com/26055406/97841423-d837cc00-1cf6-11eb-867f-5d53f3493664.png)
+
+Selected co-processor execute after main import processor (after parsing and applying every row).
+
+
+**Custom co-processor**
+
+```csharp
+
+[Serializable]
+public class MyCustomCoProcessor : ICoProcessorHandle
+{
+    // some properties
+    
+    public void Apply(SheetValueInfo valueInfo, DataRow row)
+    {
+        // some code
+    }
+}
+
+```
+
+**Example**
+
+For example, Nested Table Co-Processor applies nested google-table where filter is parsing pattern:
+
+![2020-11-02_10-25-59](https://user-images.githubusercontent.com/26055406/97841997-f651fc00-1cf7-11eb-8fa8-580fd9504fad.png)
+
+![2020-11-02_10-26-44](https://user-images.githubusercontent.com/26055406/97842017-fe11a080-1cf7-11eb-8b30-320bdb31282a.png)
