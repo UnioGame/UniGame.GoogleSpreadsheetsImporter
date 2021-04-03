@@ -20,7 +20,7 @@ Unity3D Google Spreadsheet export/import library
 - [Data Definitions](#data-definitions)
 - [Nested Spreadsheet tables](#nested-spreadsheet-tables)
 - [Connect to Google Spreadsheet](#connect-to-google-spreadsheet)
-- [Supported typed](#supported-types)
+- [Supported types](#supported-types)
 
 ## Data Definitions
 
@@ -115,6 +115,26 @@ Nested Table
 ## Supported Types
 
 Spreadsheet library support all base value types. 
+
+### Unity Assets Support
+
+your can make reference to unity asset by type filtering and specifying name of asset
+
+```csharp
+
+[SpreadSheetField("DemoTable",syncAllFields: true)]
+public class DemoSO : ScriptableObject{
+
+    public string id; // Field with name Id | _id | ID will be used as Primary key by Default
+
+    private Sprite iconAsset; 
+
+}
+
+```
+
+![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/asset_ref1.png)
+
 
 ### JSON support
 
