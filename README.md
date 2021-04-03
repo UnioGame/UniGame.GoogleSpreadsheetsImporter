@@ -1,4 +1,6 @@
+
 # Unity3D Google Spreadsheets v.4 Support
+
 Unity3D Google Spreadsheet export/import library
 
 **Odin Inspector Asset recommended to usage with this Package (https://odininspector.com)**
@@ -11,7 +13,13 @@ Unity3D Google Spreadsheet export/import library
 - Export/import into Addressables AssetReferences
 - Export/import into Unity Scriptable Objects
 
-## Import/Export Attributes
+- [Data Definitions](#data-definitions)
+- [Nested Spreadsheet tables](#nested-spreadsheet-tables)
+- [Connect to Google Spreadsheet](#connect-to-google-spreadsheet)
+
+## Data Definitions
+
+### Import and Export Attributes
 
 =============
 
@@ -53,7 +61,7 @@ public class DemoSO : ScriptableObject{
 }
 
 ```
-![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/sheet1.png)
+![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/sheet_fields.png)
 
 =============
 
@@ -74,6 +82,8 @@ public class DemoSO : ScriptableObject{
 
 =============
 
+## Nested Spreadsheet tables
+
 Nested fields support
 
 ```csharp
@@ -83,12 +93,20 @@ public class DemoSO : ScriptableObject{
 
     public string id; // Field with name Id | _id | ID will be used as Primary key by Default
 
-    [SpreadSheetField("FooTable",syncAllFields: true)]
-    private Foo2 value; // syncAllFields value active. Import/Export try to find Sheet column with name "Value"
+    [SpreadSheetField("ResourcesTable",syncAllFields: true)]
+    private int cost; // syncAllFields value active. Import/Export try to find column with name "Cost" from sheet "ResourcesTable" 
 
 }
 
 ```
+
+
+![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/nested_sheet.png)
+
+Nested Table
+
+![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/nested_table_field.png)
+
 ## Connect to Google Spreadsheet
 
 ### Editor Window
