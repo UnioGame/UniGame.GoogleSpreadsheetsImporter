@@ -10,12 +10,17 @@ Unity3D Google Spreadsheet export/import library
 - Export Serializable Project Data into Google Spreadsheet
 - Support Custom Import/Export data providers
 - Support nested synched spreadsheed fields
+- Support export/import JSON to serializable classed
 - Export/import into Addressables AssetReferences
 - Export/import into Unity Scriptable Objects
+- Export/import base Unity Assets types
+
+## Table of Content
 
 - [Data Definitions](#data-definitions)
 - [Nested Spreadsheet tables](#nested-spreadsheet-tables)
 - [Connect to Google Spreadsheet](#connect-to-google-spreadsheet)
+- [Supported typed](#supported-types)
 
 ## Data Definitions
 
@@ -106,6 +111,42 @@ public class DemoSO : ScriptableObject{
 Nested Table
 
 ![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/nested_table_field.png)
+
+## Supported Types
+
+Spreadsheet library support all base value types. 
+
+### JSON support
+
+For more complex scenarios JSON serialization can be used
+
+```csharp
+
+[SpreadSheetField("DemoTable",syncAllFields: true)]
+public class DemoSO : ScriptableObject{
+
+    public string id; // Field with name Id | _id | ID will be used as Primary key by Default
+
+    [SpreadSheetField("ItemsTable",syncAllFields: true)]
+    private ItemData defnition; // sync item data from json value value
+
+}
+
+[Serializable]
+public class ItemData
+{
+    public int id;
+    
+    public int position;
+}
+
+
+```
+
+
+![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/json_support1.png)
+
+![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/json_support2.png)
 
 ## Connect to Google Spreadsheet
 
