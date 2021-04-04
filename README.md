@@ -175,7 +175,7 @@ public class DemoSO : ScriptableObject{
 [Serializable]
 public class ItemData
 {
-    public int id;
+    public string id;
     
     public int position;
 }
