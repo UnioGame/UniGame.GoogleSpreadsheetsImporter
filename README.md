@@ -136,6 +136,26 @@ public class DemoSO : ScriptableObject{
 ![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/asset_ref1.png)
 
 
+### Unity Addressables References support
+
+Same usage as regular unity asset type with only one exception. The type of target field must be AssetReference or inherited from AssetReference 
+
+```csharp
+
+[SpreadSheetField("DemoTable",syncAllFields: true)]
+public class DemoSO : ScriptableObject{
+
+    public string id; // Field with name Id | _id | ID will be used as Primary key by Default
+
+    private AssetReference iconReference; 
+
+}
+
+```
+
+
+![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/asset_ref2.png)
+
 ### JSON support
 
 For more complex scenarios JSON serialization can be used
