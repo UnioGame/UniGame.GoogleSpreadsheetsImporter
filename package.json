@@ -4,7 +4,7 @@
   "displayName": "UniGames Google Spreadsheets to Unity",
   "description": "Google tables to unity classes",
   "unity": "2019.1",
-  "version": "2020.4.11",
+  "version": "2020.4.12",
   "keywords": [
     "nodes",
     "spreadsheet",
@@ -13,7 +13,7 @@
     "google"
   ],
   "dependencies": {
-    "com.unigame.coremodules": "2021.3.11",
+    "com.unigame.coremodules": "2021.3.12",
     "com.unigame.google.editor.api": "2020.0.1",
     "com.unigame.google.sheet": "2020.0.1",
     "com.unity.addressables": "1.17.17",
