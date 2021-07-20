@@ -1,4 +1,6 @@
-﻿using UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.CoProcessors;
+﻿using System.Data;
+using System.Linq;
+using UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.CoProcessors;
 
 namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Extensions
 {
@@ -142,6 +144,20 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Ex
                 return source;
 
             return ObjectTypeConverter.TypeConverters.ConvertValue(source, target);
+        }
+
+        public static IDictionary<T, V> GetDictionary<T, V>(this SheetData sheet, string keyColumn, string valueColumn)
+        {
+            var dict = new Dictionary<T, V>();
+            
+            foreach (var row in sheet.Rows.Cast<DataRow>())
+            {
+                var key = (T) Convert.ChangeType(row[keyColumn], typeof(T));
+                var val = (V) Convert.ChangeType(row[valueColumn], typeof(V));
+                dict.Add(key, val);
+            }
+
+            return dict;
         }
     }
 }
