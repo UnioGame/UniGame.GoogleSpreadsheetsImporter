@@ -3,8 +3,7 @@
     using System;
     using System.Collections.Generic;
     using UniModules.UniGame.Core.EditorTools.Editor;
-    using UniModules.UniGame.Core.EditorTools.Editor.AssetOperations;
-    using UniModules.UniGame.Core.EditorTools.Editor.Tools;
+    using UniModules.Editor;
     using Abstract;
     using UnityEngine;
     using System.Data;
