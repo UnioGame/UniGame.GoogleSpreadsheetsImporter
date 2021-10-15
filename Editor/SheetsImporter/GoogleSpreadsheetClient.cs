@@ -66,7 +66,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
         
         public IEnumerable<SheetData> GetSheets()
         {
-            return _connections.SelectMany(connection => connection.GetAllSheetsData());
+            return _connections.SelectMany(connection => connection.Sheets);
         }
 
         public bool Upload(string sheetId)

@@ -45,7 +45,6 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.EditorWindow
         protected override void OnEnable()
         {
             _googleSheetImporter = GetGoogleSpreadsheetImporter();
-            _googleSheetImporter.Reconnect();
             base.OnEnable();
         }
 

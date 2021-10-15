@@ -1,5 +1,6 @@
 {
     "name": "unigame.google.sheetsimporter.editor",
+    "rootNamespace": "",
     "references": [
         "GUID:c951d0efda6aebb47b783290667d215b",
         "GUID:a1f80e475336b1a428e09ff5dccefdbe",

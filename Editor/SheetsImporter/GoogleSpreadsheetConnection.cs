@@ -1,4 +1,5 @@
-﻿using UniModules.UniGame.Core.Runtime.Extension;
+﻿using Google.Apis.Util;
+using UniModules.UniGame.Core.Runtime.Extension;
 
 namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
 {
@@ -57,7 +58,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
 
         public Spreadsheet Spreadsheet => _spreadSheet;
 
-        public IReadOnlyList<SheetData> Sheets => GetAllSheetsData();
+        public IReadOnlyList<SheetData> Sheets => _sheets;
 
         
         
@@ -80,11 +81,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
         public IReadOnlyList<SheetData> GetAllSheetsData()
         {
             _sheets.Clear();
-            foreach (var sheet in _sheetsTitles) {
-                var sheetData = GetSheetData(sheet);
-                _sheets.Add(sheetData);
-            }
-
+            _sheets.AddRange(LoadBatchData(_sheetsTitles));
             return _sheets;
         }
         
@@ -114,6 +111,22 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
             return data;
         }
 
+        public List<SheetData> LoadBatchData(IEnumerable<string> sheets)
+        {
+            var request       = CreateBatchGetRequest(sheets);
+            var response = request.Execute();
+            var sheetsData = new List<SheetData>();
+            
+            foreach (var valueRange in response.ValueRanges)
+            {
+                var data = UpdateCache(valueRange.Range,valueRange.Values);
+                sheetsData.Add(data);
+            }
+
+            return sheetsData;
+        }
+
+        
         public SheetData LoadData(string sheetId)
         {
             var request       = CreateGetRequest(sheetId);
@@ -169,6 +182,16 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
         }
         
         #endregion
+        
+        public SpreadsheetsResource.ValuesResource.BatchGetRequest CreateBatchGetRequest(IEnumerable<string> sheets)
+        {
+            // Define request parameters.
+            var spreadsheetId = _spreadsheetId;
+            var request       = _service.Spreadsheets.Values.BatchGet(spreadsheetId);
+            request.Ranges = new Repeatable<string>(sheets);
+            request.MajorDimension = GetBatchResourceDimmension();
+            return request;
+        }
 
         public SpreadsheetsResource.ValuesResource.GetRequest CreateGetRequest(string sheetId)
         {
@@ -216,6 +239,20 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
             }
 
             return SpreadsheetsResource.ValuesResource.GetRequest.MajorDimensionEnum.ROWS;
+        }
+        
+        private SpreadsheetsResource.ValuesResource.BatchGetRequest.MajorDimensionEnum GetBatchResourceDimmension()
+        {
+            switch (_dimension) {
+                case MajorDimension.DimensionUnspecified:
+                    return SpreadsheetsResource.ValuesResource.BatchGetRequest.MajorDimensionEnum.DIMENSIONUNSPECIFIED;
+                case MajorDimension.ROWS:
+                    return SpreadsheetsResource.ValuesResource.BatchGetRequest.MajorDimensionEnum.ROWS;
+                case MajorDimension.COLUMNS:
+                    return SpreadsheetsResource.ValuesResource.BatchGetRequest.MajorDimensionEnum.COLUMNS;
+            }
+
+            return SpreadsheetsResource.ValuesResource.BatchGetRequest.MajorDimensionEnum.ROWS;
         }
 
         private SheetData UpdateCache(string sheetId, IList<IList<object>> values)
