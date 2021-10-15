@@ -16,7 +16,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
 
         IGooglsSpreadsheetClientStatus Status { get; }
 
-        IEnumerable<SheetData> GetSheets();
+        IEnumerable<SheetData> Sheets { get; }
 
         bool HasSheet(string id);
 

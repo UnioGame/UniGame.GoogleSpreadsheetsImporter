@@ -35,9 +35,8 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
             _appName         = appName;
             _scope           = scope;
             
-            var sheets = GetSheets().ToList();
-            _spreadsheetData = new SpreadsheetData(sheets);
-            _clientStatus    = new GoogleSpreadsheetClientStatus(sheets);
+            _spreadsheetData = new SpreadsheetData(Sheets);
+            _clientStatus    = new GoogleSpreadsheetClientStatus(Sheets);
         }
 
         public bool IsConnectionRefused { get; protected set; }
@@ -47,6 +46,8 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
         public ISpreadsheetData SpreadsheetData => _spreadsheetData;
 
         public IGooglsSpreadsheetClientStatus Status => _clientStatus;
+
+        public IEnumerable<SheetData> Sheets => _connections.SelectMany(connection => connection.Sheets);
 
         public bool HasSheet(string id) => _spreadsheetData.HasSheet(id);
         
@@ -64,11 +65,6 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
                 _lifeTime.AddCleanUpAction(() => _sheetService = null);
                 return _sheetService;
             }
-        }
-        
-        public IEnumerable<SheetData> GetSheets()
-        {
-            return _connections.SelectMany(connection => connection.Sheets);
         }
 
         public bool Upload(string sheetId)

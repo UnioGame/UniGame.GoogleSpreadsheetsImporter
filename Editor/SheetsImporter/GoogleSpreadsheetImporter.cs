@@ -129,7 +129,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
         public void ShowSpreadSheets()
         {
 #if ODIN_INSPECTOR
-            GoogleSpreadSheetViewWindow.Open(Client.GetSheets());
+            GoogleSpreadSheetViewWindow.Open(Client.Sheets);
 #endif
         }
 
