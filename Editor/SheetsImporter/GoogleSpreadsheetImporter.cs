@@ -94,7 +94,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
 
         public bool IsValidToConnect => sheets.Any(x => !string.IsNullOrEmpty(x.id));
 
-        public bool HasConnectedSheets => Status.HasConnectedSheets;
+        public bool HasConnectedSheets => Client.IsConnected;
 
         public ILifeTime LifeTime => (_lifeTime ??= new LifeTimeDefinition());
 
@@ -136,17 +136,17 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
 #if ODIN_INSPECTOR
         [ButtonGroup()]
         [Button("Reload Spreadsheets")]
-        [EnableIf("HasConnectedSheets")]
+        [EnableIf(nameof(HasConnectedSheets))]
 #endif
         public void ReloadSpreadsheetsData()
         {
-            //ReconnectToSpreadsheets();
-            Client.ReloadAll();
+            ReconnectToSpreadsheets(); 
+            //Client.ReloadAll();
         }
 
 #if ODIN_INSPECTOR
         [ButtonGroup()]
-        [EnableIf("IsValidToConnect")]
+        [EnableIf(nameof(IsValidToConnect))]
         [Button("Connect Spreadsheets")]
 #endif
         public void Reconnect()

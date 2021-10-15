@@ -7,6 +7,9 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
     public interface IGoogleSpreadsheetClient : IDisposable
     {
         bool                   IsConnectionRefused { get; }
+
+        bool IsConnected { get; }
+
         SheetsService          SheetsService       { get; }
 
         ISpreadsheetData SpreadsheetData { get; }

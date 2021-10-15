@@ -34,8 +34,10 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
             _credentialsPath = credentialsPath;
             _appName         = appName;
             _scope           = scope;
-            _spreadsheetData = new SpreadsheetData(GetSheets());
-            _clientStatus    = new GoogleSpreadsheetClientStatus(GetSheets());
+            
+            var sheets = GetSheets().ToList();
+            _spreadsheetData = new SpreadsheetData(sheets);
+            _clientStatus    = new GoogleSpreadsheetClientStatus(sheets);
         }
 
         public bool IsConnectionRefused { get; protected set; }
