@@ -24,7 +24,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.EditorWindow
         #endregion
 
 #if ODIN_INSPECTOR
-        [InlineEditor()]
+        [InlineEditor]
 #endif
         public List<SpreadsheetSheetView> tables = new List<SpreadsheetSheetView>();
 
@@ -40,7 +40,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.EditorWindow
             tables.Clear();
 
             foreach (var sheetData in sheets) {
-                var view = ScriptableObject.CreateInstance<SpreadsheetSheetView>();
+                var view = CreateInstance<SpreadsheetSheetView>();
                 view.Initialize(sheetData);
                 tables.Add(view);
             }

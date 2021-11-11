@@ -134,9 +134,9 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
         }
 
 #if ODIN_INSPECTOR
-        [ButtonGroup()]
-        [Button("Reload Spreadsheets")]
-        [EnableIf(nameof(HasConnectedSheets))]
+        //[ButtonGroup()]
+        //[Button("Reload Spreadsheets")]
+        //[EnableIf(nameof(HasConnectedSheets))]
 #endif
         public void ReloadSpreadsheetsData()
         {
