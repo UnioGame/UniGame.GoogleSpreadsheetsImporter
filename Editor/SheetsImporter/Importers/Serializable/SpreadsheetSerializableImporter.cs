@@ -8,6 +8,10 @@
     [Serializable]
     public abstract class SpreadsheetSerializableImporter : ISpreadsheetAssetsHandler
     {
+        public string importerName = string.Empty;
+        
+        public string Name => string.IsNullOrEmpty(importerName) ? GetType().Name : importerName;
+        
         public abstract bool CanImport { get; }
         public abstract bool CanExport { get; }
 

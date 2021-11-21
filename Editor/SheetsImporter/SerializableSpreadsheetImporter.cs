@@ -11,8 +11,11 @@
         ISpreadsheetAssetsHandler,
         ISpreadsheetTriggerAssetsHandler
     {
+        public string importerName = string.Empty;
+        
         [SerializeField]
         private ImportAction _importAction = ImportAction.All;
+        
         
         private Subject<ISpreadsheetAssetsHandler> _importCommand;
         private Subject<ISpreadsheetAssetsHandler> _exportCommand;
@@ -21,6 +24,7 @@
 
         #region public properties
         
+        public string Name => string.IsNullOrEmpty(importerName) ? GetType().Name : importerName;
         public bool CanImport => _importAction.HasFlag(ImportAction.Import);
         public bool CanExport => _importAction.HasFlag(ImportAction.Export);
         

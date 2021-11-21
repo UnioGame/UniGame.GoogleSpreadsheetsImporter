@@ -13,6 +13,8 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
         ISpreadsheetAssetsHandler,
         ISpreadsheetTriggerAssetsHandler
     {
+        public string importerName = string.Empty;
+        
         private Subject<ISpreadsheetAssetsHandler> _importCommand;
         private Subject<ISpreadsheetAssetsHandler> _exportCommand;
         private IGoogleSpreadsheetClient           _client;
@@ -22,6 +24,8 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
 
         #region public properties
 
+        public string Name => string.IsNullOrEmpty(importerName) ? name : importerName;
+        
         protected ILifeTime LifeTime => _lifeTimeDefinition;
         
         public bool IsValidData => _importCommand != null && _exportCommand !=null && _status!=null && _status.HasConnectedSheets;

@@ -16,7 +16,9 @@
     public class SpreadsheetImportersHandler : ISpreadsheetAssetsHandler, IResetable
     {
         #region inspector
-
+        
+        public string importerName = string.Empty;
+        
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.InfoBox("Reload spreadsheet on each reimport action")]
 #endif
@@ -51,6 +53,8 @@
 
         #endregion
 
+        public string Name => string.IsNullOrEmpty(importerName) ? GetType().Name : importerName;
+        
         public ILifeTime LifeTime => _lifeTime = _lifeTime ?? new LifeTimeDefinition();
 
         public IEnumerable<ISpreadsheetAssetsHandler> Importers => importers.Concat<ISpreadsheetAssetsHandler>(serializabledImporters);

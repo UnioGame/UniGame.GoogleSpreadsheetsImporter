@@ -6,6 +6,8 @@
         ISpreadsheetAssetsImporter,
         ISpreadsheetAssetsExporter
     {
+        public string Name { get; }
+        
         IEnumerable<object> Load();
     }
 }
