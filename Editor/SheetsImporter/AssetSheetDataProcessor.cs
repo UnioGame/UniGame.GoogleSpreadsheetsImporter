@@ -312,7 +312,7 @@
 
             if (row == null)
             {
-                Debug.LogError($"Can't find in Sheet {sheetName} row with ID {sheetValueInfo.SyncFieldName} for Field {sheetValueInfo.SyncFieldName}");
+                Debug.LogError($"Can't find in Sheet {sheetName} row with ID {sheetValueInfo.SyncFieldName} == {sheetValueInfo.SyncFieldValue}");
                 return sheetValueInfo.Source;
             }
             
