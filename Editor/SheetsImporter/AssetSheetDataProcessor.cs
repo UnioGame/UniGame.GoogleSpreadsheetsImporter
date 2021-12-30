@@ -310,6 +310,12 @@
             var sheet = spreadsheetData[sheetName];
             var row   = sheet.GetRow(sheetValueInfo.SyncFieldName, sheetValueInfo.SyncFieldValue);
 
+            if (row == null)
+            {
+                Debug.LogError($"Can't find in Sheet {sheetName} row with ID {sheetValueInfo.SyncFieldName} for Field {sheetValueInfo.SyncFieldName}");
+                return sheetValueInfo.Source;
+            }
+            
             var result = ApplyData(sheetValueInfo, row);
             return result;
         }
