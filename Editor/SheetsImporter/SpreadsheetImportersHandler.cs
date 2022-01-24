@@ -158,5 +158,7 @@
             importer.Load();
             return importer.Import(data);
         }
+
+        public virtual void Select() { }
     }
 }

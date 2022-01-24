@@ -1,4 +1,4 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Abstract
+﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor
 {
     public interface ISelectable
     {

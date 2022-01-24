@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using Abstract;
-    using Object = UnityEngine.Object;
 
     [Serializable]
     public abstract class SpreadsheetSerializableImporter : ISpreadsheetAssetsHandler
@@ -23,5 +22,7 @@
         {
             return data;
         }
+
+        public virtual void Select() { }
     }
 }

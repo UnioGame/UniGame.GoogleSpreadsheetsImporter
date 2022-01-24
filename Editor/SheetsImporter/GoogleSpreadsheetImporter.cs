@@ -39,6 +39,9 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
 #endif
         public string user = "user";
 
+        [Header("try to auto-connect to spreadsheets when window opened")]
+        public bool autoConnect = true;
+        
         /// <summary>
         /// list of target sheets
         /// </summary>

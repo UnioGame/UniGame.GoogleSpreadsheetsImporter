@@ -97,11 +97,14 @@
             _exportCommand?.OnNext(this);
         }
         
+        public virtual void Select() { }
+        
         public virtual IEnumerable<object> ImportObjects(IEnumerable<object> source,ISpreadsheetData spreadsheetData)
         {
             return source;
         }
 
         public virtual ISpreadsheetData ExportObjects(IEnumerable<object> source,ISpreadsheetData spreadsheetData) => spreadsheetData;
+
     }
 }

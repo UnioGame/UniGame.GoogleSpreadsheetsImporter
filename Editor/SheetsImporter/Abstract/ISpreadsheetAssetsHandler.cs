@@ -4,7 +4,8 @@
 
     public interface ISpreadsheetAssetsHandler : 
         ISpreadsheetAssetsImporter,
-        ISpreadsheetAssetsExporter
+        ISpreadsheetAssetsExporter,
+        ISelectable
     {
         public string Name { get; }
         

@@ -39,6 +39,8 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
         
         #endregion
 
+        public virtual void Select() { }
+        
         public virtual void Initialize(IGoogleSpreadsheetClient client)
         {
             Reset();

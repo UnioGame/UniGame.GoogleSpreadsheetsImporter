@@ -1,4 +1,8 @@
-﻿#if ODIN_INSPECTOR
+﻿using System.Collections.Generic;
+using System.Linq;
+using UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Abstract;
+
+#if ODIN_INSPECTOR
 
 namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.EditorWindow
 {
@@ -39,6 +43,9 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.EditorWindow
         [HideInInspector]
         public GoogleSpreadsheetImporter _googleSheetImporter;
 
+        private GoogleImportersCommonOperations _operations;
+        private List<ISpreadsheetAssetsHandler> _assetsHandlers;
+        private OdinMenuTree _menuTree;
         
         #region private methods
 
@@ -46,23 +53,44 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.EditorWindow
         {
             _googleSheetImporter = GetGoogleSpreadsheetImporter();
 
-            var tree = new OdinMenuTree();
+            _menuTree = new OdinMenuTree();
             var spreadSheerHandler = _googleSheetImporter.sheetsItemsHandler;
-            var importers = spreadSheerHandler.Importers;
             
-            tree.Add("Commands",new GoogleImportersCommonOperations(_googleSheetImporter));
+            _assetsHandlers = spreadSheerHandler.Importers.ToList();
             
-            foreach (var importer in importers)
-            {
-                tree.Add($"Import & Export/{importer.Name}",importer);
-            }
+            _operations = new GoogleImportersCommonOperations(_googleSheetImporter);
             
-            tree.Add("Configuration",_googleSheetImporter);
+            _menuTree.Add("Commands",_operations);
+            
+            foreach (var importer in _assetsHandlers)
+                _menuTree.Add($"Import & Export/{importer.Name}",importer);
+            
+            _menuTree.Add("Configuration",_googleSheetImporter);
 
-            return tree;
+            if(_googleSheetImporter.autoConnect)
+                _operations.Reconnect();
+
+            _menuTree.Selection.SelectionChanged -= OnSelectionChange;
+            _menuTree.Selection.SelectionChanged += OnSelectionChange;
+            
+            return _menuTree;
         }
-        
-        
+
+        private void OnSelectionChange(SelectionChangedType _)
+        {
+            var selection = _menuTree.Selection.SelectedValue;
+            if(selection is ISelectable selectable)
+                selectable.Select();
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+    
+            if(_menuTree!=null)
+                _menuTree.Selection.SelectionChanged -= OnSelectionChange;
+        }
+
         #endregion
 
     }
