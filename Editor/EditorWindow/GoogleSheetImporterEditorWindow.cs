@@ -17,10 +17,10 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.EditorWindow
     {
         #region static data
         
-        [MenuItem("UniGame/Google/SpreadsheetImporterWindow")]
+        [MenuItem("UniGame/Google/Spreadsheet ImporterWindow")]
         public static void Open()
         {
-            var window = GetWindow<GoogleSheetImporterEditorWindow>();
+            var window = GetWindow<GoogleSheetImporterEditorWindow>(true, "Google Sheets", true);
             window.Show();
         }
         
