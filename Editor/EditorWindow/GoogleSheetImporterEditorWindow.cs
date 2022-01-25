@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Abstract;
 
@@ -20,7 +21,8 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.EditorWindow
         [MenuItem("UniGame/Google/Spreadsheet ImporterWindow")]
         public static void Open()
         {
-            var window = GetWindow<GoogleSheetImporterEditorWindow>(true, "Google Sheets", true);
+            var window = GetWindow<GoogleSheetImporterEditorWindow>();
+            window.titleContent = new GUIContent("Google Sheets");
             window.Show();
         }
         
@@ -70,27 +72,17 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.EditorWindow
             if(_googleSheetImporter.autoConnect)
                 _operations.Reconnect();
 
-            _menuTree.Selection.SelectionChanged -= OnSelectionChange;
-            _menuTree.Selection.SelectionChanged += OnSelectionChange;
+            OnStartElements();
             
             return _menuTree;
         }
 
-        private void OnSelectionChange(SelectionChangedType _)
+        private void OnStartElements()
         {
-            var selection = _menuTree.Selection.SelectedValue;
-            if(selection is ISelectable selectable)
-                selectable.Select();
+            foreach (var item in _assetsHandlers)
+                if(item is IStartable startable) startable.Start();
         }
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-    
-            if(_menuTree!=null)
-                _menuTree.Selection.SelectionChanged -= OnSelectionChange;
-        }
-
+        
         #endregion
 
     }

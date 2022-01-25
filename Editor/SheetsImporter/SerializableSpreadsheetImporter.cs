@@ -97,7 +97,7 @@
             _exportCommand?.OnNext(this);
         }
         
-        public virtual void Select() { }
+        public virtual void Start() { }
         
         public virtual IEnumerable<object> ImportObjects(IEnumerable<object> source,ISpreadsheetData spreadsheetData)
         {

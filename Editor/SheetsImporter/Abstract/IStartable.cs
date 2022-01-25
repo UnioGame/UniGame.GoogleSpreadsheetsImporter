@@ -1,7 +1,7 @@
 ﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor
 {
-    public interface ISelectable
+    public interface IStartable
     {
-        void Select();
+        void Start();
     }
 }

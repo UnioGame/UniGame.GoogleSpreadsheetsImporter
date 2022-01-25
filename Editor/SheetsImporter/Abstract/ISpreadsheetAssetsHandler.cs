@@ -5,7 +5,7 @@
     public interface ISpreadsheetAssetsHandler : 
         ISpreadsheetAssetsImporter,
         ISpreadsheetAssetsExporter,
-        ISelectable
+        IStartable
     {
         public string Name { get; }
         
