@@ -27,6 +27,8 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
         public string Name => string.IsNullOrEmpty(importerName) ? name : importerName;
         
         protected ILifeTime LifeTime => _lifeTimeDefinition;
+
+        public IGoogleSpreadsheetClient Client => _client;
         
         public bool IsValidData => _importCommand != null && _exportCommand !=null && _status!=null && _status.HasConnectedSheets;
         
