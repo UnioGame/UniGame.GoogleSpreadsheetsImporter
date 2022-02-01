@@ -38,6 +38,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.EditorWindow
             return importer;
         }
 
+
         #endregion
 
         [SerializeField]
@@ -77,6 +78,12 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.EditorWindow
             return _menuTree;
         }
 
+        protected override void OnBeginDrawEditors()
+        {
+            base.OnBeginDrawEditors();
+            _operations?.DrawEditors();
+        }
+        
         private void OnStartElements()
         {
             foreach (var item in _assetsHandlers)
