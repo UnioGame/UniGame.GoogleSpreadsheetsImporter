@@ -189,6 +189,14 @@
             return _stringBuilder.ToString();
         }
 
+        public bool RemoteRow(string fieldName, object keyValue)
+        {
+            var row = GetRow(fieldName, keyValue);
+            if (row == null) return false;
+            _table.Rows.Remove(row);
+            return true;
+        }
+        
         public DataRow GetRow(string fieldName, object value)
         {
             var key = _fieldKeyFactory(fieldName);
