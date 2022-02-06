@@ -189,12 +189,31 @@
             return _stringBuilder.ToString();
         }
 
-        public bool RemoteRow(string fieldName, object keyValue)
+        public void MarkDirty()
+        {
+            _isChanged = true;
+        }
+
+        public void AcceptChanges()
+        {
+            _table.AcceptChanges();
+            MarkDirty();
+        }
+        
+        public bool RemoveRow(string fieldName, object keyValue)
         {
             var row = GetRow(fieldName, keyValue);
             if (row == null) return false;
-            _table.Rows.Remove(row);
+            
+            row.Delete();
+            
+            AcceptChanges();
             return true;
+        }
+
+        public void AddRow(IList<object> data = null)
+        {
+            AddRow(_table, data);
         }
         
         public DataRow GetRow(string fieldName, object value)
