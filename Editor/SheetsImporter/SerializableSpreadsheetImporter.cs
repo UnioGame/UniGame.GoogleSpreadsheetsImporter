@@ -106,5 +106,6 @@
 
         public virtual ISpreadsheetData ExportObjects(IEnumerable<object> source,ISpreadsheetData spreadsheetData) => spreadsheetData;
 
+        public virtual string FormatName(string assetName) => assetName;
     }
 }

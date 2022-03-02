@@ -147,6 +147,8 @@
             return data;
         }
 
+        public virtual string FormatName(string assetName) => assetName;
+        
         private ISpreadsheetData Export(ISpreadsheetData data, ISpreadsheetAssetsHandler importer)
         {
             importer.Load();

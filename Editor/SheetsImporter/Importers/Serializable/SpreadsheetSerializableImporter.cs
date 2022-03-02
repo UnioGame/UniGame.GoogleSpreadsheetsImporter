@@ -24,5 +24,7 @@
         }
 
         public virtual void Start() { }
+
+        public virtual string FormatName(string assetName) => assetName;
     }
 }

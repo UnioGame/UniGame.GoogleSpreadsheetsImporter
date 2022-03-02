@@ -23,10 +23,7 @@
                 importer.Initialize(client);
                 importer.ExportCommand.
                     Where(x=>x.CanExport).
-                    Do(x =>
-                    {
-                        ExportObjects(new[] {x}, client.SpreadsheetData);
-                    }).
+                    Do(x => ExportObjects(new[] {x}, client.SpreadsheetData)).
                     Subscribe().
                     AddTo(LifeTime);
 

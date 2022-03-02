@@ -17,7 +17,7 @@
         private List<Object> _values = new List<Object>();
 
         protected List<Object> Values {
-            get => _values = _values == null ? new List<Object>() : _values;
+            get => _values ??= new List<Object>();
             set => _values = value;
         }
 
@@ -61,7 +61,12 @@
         [Sirenix.OdinInspector.VerticalGroup("Filter")]
 #endif
         public int maxItemsCount = -1;
-        
+
+#if ODIN_INSPECTOR
+        [Sirenix.OdinInspector.LabelWidth(LabelWidth)]
+        [Sirenix.OdinInspector.VerticalGroup("Filter")]
+#endif
+        public string assetTemplateName;
 
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.Button]
@@ -108,6 +113,13 @@
             return result;
         }
 
+        public override string FormatName(string assetName)
+        {
+            return string.IsNullOrEmpty(assetTemplateName) 
+                ? assetName 
+                : string.Format(assetTemplateName, assetName);
+        }
+        
         protected virtual Type GetFilteredType() => typeof(Object);
 
         protected virtual IEnumerable<Object> OnPostImportAction(IEnumerable<Object> importedAssets)

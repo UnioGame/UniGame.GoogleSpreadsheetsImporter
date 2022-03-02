@@ -46,7 +46,8 @@
             bool createMissing,
             ISpreadsheetData spreadsheetData,
             int maxItems = -1,
-            string overrideSheetId = "")
+            string overrideSheetId = "",
+            Func<string,string> assetNameFormatter = null)
         {
             if (!filterType.IsScriptableObject() && !filterType.IsComponent()) {
                 Debug.LogError($"SyncFolderAssets: BAD target type {filterType}");
@@ -59,7 +60,9 @@
                 folder,
                 spreadsheetData,
                 assets.ToArray(),
-                createMissing, maxItems, overrideSheetId);
+                createMissing, maxItems,
+                overrideSheetId,
+                assetNameFormatter);
             return result;
         }
 
@@ -73,6 +76,7 @@
         /// <param name="spreadsheetData"></param>
         /// <param name="maxItemsCount"></param>
         /// <param name="overrideSheetId">force override target sheet id</param>
+        /// <param name="assetNameFormatter"></param>
         /// <returns></returns>
         public List<Object> SyncFolderAssets(
             Type filterType,
@@ -81,7 +85,8 @@
             Object[] assets = null,
             bool createMissing = true,
             int maxItemsCount = -1,
-            string overrideSheetId = "")
+            string overrideSheetId = "",
+            Func<string,string> assetNameFormatter = null)
         {
             var result = assets != null ? new List<Object>(assets) : new List<Object>();
 
@@ -121,7 +126,8 @@
                 syncScheme,
                 spreadsheetData,
                 sheet.GetColumnValues(keysId).ToArray(),
-                assets, maxItemsCount, createMissing);
+                assets, maxItemsCount, createMissing,
+                string.Empty,assetNameFormatter);
 
             result.AddRange(updatedItems);
 
@@ -138,7 +144,8 @@
             Object[] assets = null,
             int count = -1,
             bool createMissing = true,
-            string keyFieldName = "")
+            string keyFieldName = "",
+            Func<string,string> assetNameFormatter = null)
         {
             count = count < 0 ? keys.Length : count;
             count = Math.Min(keys.Length, count);
@@ -159,7 +166,12 @@
                             continue;
 
                         targetAsset = filterType.CreateAsset();
-                        targetAsset.SaveAsset($"{filterType.Name}_{i + 1}", folder, false);
+                        var assetName = $"{filterType.Name}_{i + 1}";
+                        assetName = assetNameFormatter == null
+                            ? assetName
+                            : assetNameFormatter?.Invoke(assetName);
+                        
+                        targetAsset.SaveAsset(assetName, folder, false);
                         Debug.Log($"Create Asset [{targetAsset}] for path {folder}", targetAsset);
                     }
 
@@ -179,6 +191,7 @@
                         SyncFieldName   = keyField.sheetField,
                         SyncFieldValue  = keyValue,
                     };
+                    
                     ApplyData(spreadsheetValueInfo);
 
                     yield return targetAsset;

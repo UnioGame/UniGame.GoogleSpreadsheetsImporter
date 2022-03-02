@@ -24,7 +24,8 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
             bool createMissing, 
             ISpreadsheetData spreadsheetData,
             int maxItems = -1,
-            string overrideSheetId = "");
+            string overrideSheetId = "",
+            Func<string,string> assetNameFormatter = null);
 
         /// <summary>
         /// Sync folder assets by spreadsheet data
@@ -44,7 +45,8 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
             Object[] assets = null,
             bool createMissing = true, 
             int maxItemsCount = -1,
-            string overrideSheetId = "");
+            string overrideSheetId = "",
+            Func<string,string> assetNameFormatter = null);
 
         IEnumerable<Object> ApplyAssets(
             Type filterType,
@@ -56,7 +58,8 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
             Object[] assets = null,
             int count = -1,
             bool createMissing = true,
-            string keyFieldName = "");
+            string keyFieldName = "",
+            Func<string,string> assetNameFormatter = null);
 
         object ApplyData(object source, ISpreadsheetData spreadsheetData);
 
