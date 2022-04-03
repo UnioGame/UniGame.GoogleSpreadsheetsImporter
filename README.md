@@ -238,14 +238,14 @@ public class ItemData
   "scopedRegistries": [
     {
       "name": "Unity",
-      "url": "https://packages.unity.com",
+      "url": "https://package.unity.com",
       "scopes": [
         "com.unity"
       ]
     },
     {
       "name": "UniGame",
-      "url": "http://packages.unigame.pro:4873/",
+      "url": "http://package.unigame.pro:4873/",
       "scopes": [
         "com.unigame"
       ]
