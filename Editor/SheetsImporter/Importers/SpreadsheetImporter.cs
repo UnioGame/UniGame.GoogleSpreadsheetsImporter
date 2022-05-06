@@ -24,13 +24,13 @@
                 importer.ExportCommand.
                     Where(x=>x.CanExport).
                     Do(x => ExportObjects(new[] {x}, client.SpreadsheetData)).
-                    Subscribe().
+                    RxSubscribe().
                     AddTo(LifeTime);
 
                 importer.ImportCommand.
                     Where(x=>x.CanImport).
                     Do(x => ImportObjects(new []{x}, client.SpreadsheetData)).
-                    Subscribe().
+                    RxSubscribe().
                     AddTo(LifeTime);
             }
         }

@@ -76,7 +76,7 @@
                 importer.ExportCommand.
                     Where(x=>x.CanExport).
                     Do(x => ExportSheets(Export(_spreadsheetData, x))).
-                    Subscribe().
+                    RxSubscribe().
                     AddTo(LifeTime);
 
                 importer.ImportCommand.
@@ -86,7 +86,7 @@
                             _client.ReloadAll();
                     }).
                     Do(x => Import(_spreadsheetData, x)).
-                    Subscribe().
+                    RxSubscribe().
                     AddTo(LifeTime);
             }
 
