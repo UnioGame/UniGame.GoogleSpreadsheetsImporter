@@ -8,7 +8,7 @@
     using Extensions;
     using TypeConverters.Editor;
     using UniModules.UniCore.EditorTools.Editor;
-    using Core.Runtime.Extension;
+    using global::UniGame.Core.Runtime.Extension;
     using UnityEditor;
     using UnityEngine;
     using Object = UnityEngine.Object;

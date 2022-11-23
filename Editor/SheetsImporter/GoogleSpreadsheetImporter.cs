@@ -5,8 +5,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using Core.Runtime.DataFlow.Interfaces;
-    using Core.Runtime.Interfaces;
+    using global::UniGame.Core.Runtime;
     using EditorWindow;
     using GoogleSpreadsheets.Editor.SheetsImporter;
     using TypeConverters.Editor;
