@@ -1,11 +1,11 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
+﻿namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using GoogleSpreadsheets.Editor.SheetsImporter;
-    using GoogleSpreadsheets.Runtime.Attributes;
     using UniModules.UniCore.Runtime.ReflectionUtils;
+    using UniModules.UniGame.GoogleSpreadsheets.Editor.SheetsImporter;
+    using UniModules.UniGame.GoogleSpreadsheets.Runtime.Attributes;
 
     public class SheetSyncSchemaProcessor
     {

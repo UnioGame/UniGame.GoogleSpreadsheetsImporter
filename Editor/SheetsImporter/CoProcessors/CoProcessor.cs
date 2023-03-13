@@ -1,4 +1,4 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.CoProcessors
+﻿namespace UniGame.GoogleSpreadsheetsImporter.Editor.CoProcessors
 {
     using System;
     using System.Collections.Generic;
@@ -65,10 +65,9 @@
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.Button]
 #endif
-        private void ResetToDefault()
+        public void ResetToDefault()
         {
             _processors.Clear();
-            
             _processors.Add(new NestedTableCoProcessor());
         }
     }

@@ -1,4 +1,4 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.CoProcessors
+﻿namespace UniGame.GoogleSpreadsheetsImporter.Editor.CoProcessors
 {
     using System;
     using System.Text.RegularExpressions;
@@ -6,7 +6,7 @@
     using System.Collections.Generic;
     using System.Data;
     using Abstract;
-    using Extensions;
+    using global::UniGame.GoogleSpreadsheetsImporter.Editor;
 
     [Serializable]
     public class NestedTableCoProcessor : ICoProcessorHandle

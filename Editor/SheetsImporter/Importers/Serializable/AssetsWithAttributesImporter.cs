@@ -1,11 +1,11 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Importers.Serializable
+﻿namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using UniModules.Editor;
-    using Extensions;
-    using GoogleSpreadsheets.Runtime.Attributes;
+    using UniModules.UniGame.GoogleSpreadsheets.Runtime.Attributes;
+    using Editor;
     using UnityEngine;
 
     [Serializable]

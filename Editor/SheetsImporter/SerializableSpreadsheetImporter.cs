@@ -1,8 +1,8 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
+﻿namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     using System;
     using System.Collections.Generic;
-    using Abstract;
+    using global::UniGame.GoogleSpreadsheetsImporter.Editor;
     using UniRx;
     using UnityEngine;
 
@@ -15,7 +15,6 @@
         
         [SerializeField]
         private ImportAction _importAction = ImportAction.All;
-        
         
         private Subject<ISpreadsheetAssetsHandler> _importCommand;
         private Subject<ISpreadsheetAssetsHandler> _exportCommand;

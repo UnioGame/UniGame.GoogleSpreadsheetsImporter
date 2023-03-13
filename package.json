@@ -14,8 +14,7 @@
   ],
   "dependencies": {
     "com.unigame.coremodules": "2022.4.7",
-    "com.unigame.google.editor.api": "2020.0.2",
-    "com.unigame.google.sheet": "2020.1.2",
+    "com.unigame.google": "2023.0.0",
     "com.unity.addressables": "1.20.0",
     "com.unity.nuget.newtonsoft-json": "3.0.2"
   }

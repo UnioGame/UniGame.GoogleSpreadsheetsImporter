@@ -1,4 +1,4 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
+﻿namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     using System;
     using System.Collections.Generic;
@@ -14,10 +14,8 @@
             _sheets = sheets;
         }
 
-
         public bool HasSheet(string sheetName)
         {
-            // TODO: Trim only for fix the bug with 'sheet_name'
             return _sheets.Any(x => x.Name.Trim('\'').ToLower().Equals(sheetName.ToLower()));
         }
 

@@ -1,11 +1,11 @@
 ﻿using UniModules.UniCore.Runtime.DataFlow;
 using UniGame.Core.Runtime;
 
-namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
+namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     using System;
     using System.Collections.Generic;
-    using Abstract;
+    using global::UniGame.GoogleSpreadsheetsImporter.Editor;
     using UniRx;
     using UnityEngine;
 

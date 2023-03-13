@@ -1,12 +1,13 @@
 ﻿using System.Data;
 using System.Linq;
-using UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.CoProcessors;
+using UniGame.GoogleSpreadsheetsImporter.Editor.CoProcessors;
 
-namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Extensions
+namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     using System;
     using System.Collections.Generic;
-    using TypeConverters.Editor;
+    using Editor;
+    using UniModules.UniGame.TypeConverters.Editor;
     using Object = UnityEngine.Object;
 
     public static class SpreadsheetExtensions

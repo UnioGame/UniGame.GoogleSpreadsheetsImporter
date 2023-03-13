@@ -1,8 +1,9 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Extensions
+﻿namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     using System;
-    using UniCore.Runtime.Utils;
-    
+    using UniModules.UniCore.Runtime.Utils;
+    using Editor;
+
     public static class SheetSyncSchemaExtension
     {
         private static readonly SheetSyncSchemaProcessor _syncSchemeProcessor = new SheetSyncSchemaProcessor();

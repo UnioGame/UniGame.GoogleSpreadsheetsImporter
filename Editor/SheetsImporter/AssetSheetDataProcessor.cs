@@ -1,18 +1,17 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
+﻿namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     using System;
     using System.Collections.Generic;
     using System.Data;
     using System.Linq;
+    using CoProcessors.Abstract;
+    using Core.Runtime.Extension;
     using UniModules.Editor;
-    using Extensions;
-    using TypeConverters.Editor;
     using UniModules.UniCore.EditorTools.Editor;
-    using global::UniGame.Core.Runtime.Extension;
+    using UniModules.UniGame.TypeConverters.Editor;
     using UnityEditor;
     using UnityEngine;
     using Object = UnityEngine.Object;
-    using CoProcessors.Abstract;
 
     public class AssetSheetDataProcessor : IAssetSheetDataProcessor
     {
@@ -176,14 +175,16 @@
                     }
 
                     //show assets progression
-                    AssetEditorTools.ShowProgress(new ProgressData() {
+                    AssetEditorTools.ShowProgress(new ProgressData
+                    {
                         IsDone   = false,
                         Progress = i / (float) count,
                         Content  = $"{i}:{count}  {targetAsset.name}",
                         Title    = "Spreadsheet Importing"
                     });
 
-                    var spreadsheetValueInfo = new SheetValueInfo() {
+                    var spreadsheetValueInfo = new SheetValueInfo
+                    {
                         Source          = targetAsset,
                         SheetName         = sheetId,
                         SpreadsheetData = spreadsheetData,
@@ -198,7 +199,8 @@
                 }
             }
             finally {
-                AssetEditorTools.ShowProgress(new ProgressData() {
+                AssetEditorTools.ShowProgress(new ProgressData
+                {
                     IsDone = true,
                 });
                 AssetDatabase.SaveAssets();

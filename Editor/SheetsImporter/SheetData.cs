@@ -1,4 +1,4 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
+﻿namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     using System;
     using System.Collections.Generic;
@@ -6,8 +6,8 @@
     using System.Linq;
     using System.Text;
     using Google.Apis.Sheets.v4.Data;
-    using TypeConverters.Editor;
     using UniModules.UniCore.Runtime.Utils;
+    using UniModules.UniGame.TypeConverters.Editor;
     using UnityEditor;
     using UnityEngine;
 

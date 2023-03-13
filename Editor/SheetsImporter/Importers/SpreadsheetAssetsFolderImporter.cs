@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Importers
+namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     [Serializable]
 #if ODIN_INSPECTOR

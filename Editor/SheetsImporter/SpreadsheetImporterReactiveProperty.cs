@@ -1,7 +1,7 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
+﻿namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     using System;
-    using Abstract;
+    using global::UniGame.GoogleSpreadsheetsImporter.Editor;
     using UniRx;
 
     [Serializable]

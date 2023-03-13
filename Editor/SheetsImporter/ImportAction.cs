@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
+namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     [Flags]
     public enum ImportAction

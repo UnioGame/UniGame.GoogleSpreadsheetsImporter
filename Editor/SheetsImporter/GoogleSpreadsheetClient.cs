@@ -1,4 +1,4 @@
-namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
+namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     using System;
     using System.Collections.Generic;
@@ -9,33 +9,34 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
     using Google.Apis.Services;
     using Google.Apis.Sheets.v4;
     using Google.Apis.Util.Store;
-    using GoogleSpreadsheets.Editor.SheetsImporter;
-    using UniCore.Runtime.DataFlow;
+    using UniModules.UniCore.Runtime.DataFlow;
+    using UniModules.UniGame.GoogleSpreadsheets.Editor.SheetsImporter;
     using UnityEngine;
 
     public class GoogleSpreadsheetClient : IGoogleSpreadsheetClient
     {
-        private readonly string                            _appName;
-        private readonly string[]                          _scope;
-        
-        private          List<GoogleSpreadsheetConnection> _connections = new List<GoogleSpreadsheetConnection>();
-        private          LifeTimeDefinition                _lifeTime    = new LifeTimeDefinition();
-        
-        private string                  _credentialsPath;
-        private string                  _user;
-        private SheetsService           _sheetService;
-        private GoogleSpreadsheetClientStatus _clientStatus;
-        private SpreadsheetData         _spreadsheetData;
+        private readonly string _appName;
+        private readonly string[] _scope;
 
-        public GoogleSpreadsheetClient(string user, string credentialsPath,string appName, string[] scope)
+        private List<GoogleSpreadsheetConnection> _connections = new List<GoogleSpreadsheetConnection>();
+        private LifeTimeDefinition _lifeTime = new LifeTimeDefinition();
+
+        private string _credentialsPath;
+        private string _user;
+        private float _timeout;
+        private SheetsService _sheetService;
+        private GoogleSpreadsheetClientStatus _clientStatus;
+        private SpreadsheetData _spreadsheetData;
+
+        public GoogleSpreadsheetClient(SpreadsheetClientData data)
         {
-            _user            = user;
-            _credentialsPath = credentialsPath;
-            _appName         = appName;
-            _scope           = scope;
-            
+            _user = data.user;
+            _credentialsPath = data.credentialsPath;
+            _appName = data.appName;
+            _scope = data.scope;
+            _timeout = data.timeout;
             _spreadsheetData = new SpreadsheetData(Sheets);
-            _clientStatus    = new GoogleSpreadsheetClientStatus(Sheets);
+            _clientStatus = new GoogleSpreadsheetClientStatus(Sheets);
         }
 
         public bool IsConnectionRefused { get; protected set; }
@@ -49,17 +50,20 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
         public IEnumerable<SheetData> Sheets => _connections.SelectMany(connection => connection.Sheets);
 
         public bool HasSheet(string id) => _spreadsheetData.HasSheet(id);
-        
+
         public void Dispose() => _lifeTime.Terminate();
 
         public void Disconnect() => _lifeTime.Release();
-        
-        public SheetsService SheetsService {
-            get {
+
+        public SheetsService SheetsService
+        {
+            get
+            {
                 if (_sheetService != null)
                     return _sheetService;
 
-                _sheetService = LoadSheetService(GoogleSheetImporterConstants.ApplicationName, GoogleSpreadsheetConnection.WriteScope);
+                _sheetService = LoadSheetService(GoogleSheetImporterConstants.ApplicationName,
+                    GoogleSpreadsheetConnection.WriteScope);
                 _lifeTime.AddDispose(_sheetService);
                 _lifeTime.AddCleanUpAction(() => _sheetService = null);
                 return _sheetService;
@@ -77,30 +81,30 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
 
         public bool Upload(SheetData sheet)
         {
-            var id         = sheet.Name;
+            var id = sheet.Name;
             var connection = _connections.FirstOrDefault(x => x.HasSheet(id));
             if (connection == null)
                 return false;
             connection.UpdateData(sheet);
             return true;
         }
-        
+
         public bool Connect()
         {
             Disconnect();
-            
+
             _lifeTime.AddCleanUpAction(() => _connections.Clear());
 
-            _sheetService    = LoadSheetService(_appName, _scope);
+            _sheetService = LoadSheetService(_appName, _scope);
 
             _lifeTime.AddCleanUpAction(() => IsConnectionRefused = true);
-            
+
             return IsConnected;
         }
-        
-        public bool Connect(string user,string credentialsPath)
+
+        public bool Connect(string user, string credentialsPath)
         {
-            _user            = user;
+            _user = user;
             _credentialsPath = credentialsPath;
 
             return Connect();
@@ -114,12 +118,14 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
         {
             if (_connections.Any(x => x.Id == spreadsheetId))
                 return true;
-            try {
+            try
+            {
                 var client = new GoogleSpreadsheetConnection(SheetsService, spreadsheetId);
                 client.Reload();
                 _connections.Add(client);
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 Debug.LogException(e);
                 return false;
             }
@@ -138,25 +144,30 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
         {
             UserCredential credential;
 
-            using (var stream = new FileStream(_credentialsPath, FileMode.Open, FileAccess.Read)) {
+            using (var stream = new FileStream(_credentialsPath, FileMode.Open, FileAccess.Read))
+            {
                 var cancelationSource = new CancellationTokenSource();
+
                 cancelationSource.CancelAfter(TimeSpan.FromSeconds(30f));
+
                 // The file token.json stores the user's access and refresh tokens, and is created
                 // automatically when the authorization flow completes for the first time.
                 credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    GoogleClientSecrets.Load(stream).Secrets,
+                    stream,
                     scope,
                     _user,
                     cancelationSource.Token,
                     new FileDataStore(GoogleSheetImporterConstants.TokenKey, true)).Result;
+
                 Debug.Log("Credential file saved to: " + GoogleSheetImporterConstants.TokenKey);
             }
 
             // Create Google Sheets API service.
             var service = new SheetsService(
-                new BaseClientService.Initializer() {
+                new BaseClientService.Initializer()
+                {
                     HttpClientInitializer = credential,
-                    ApplicationName       = applicationName,
+                    ApplicationName = applicationName,
                 }).AddTo(_lifeTime);
 
             IsConnectionRefused = false;

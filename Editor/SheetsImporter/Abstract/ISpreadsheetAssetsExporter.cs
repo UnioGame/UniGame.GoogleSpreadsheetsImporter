@@ -1,5 +1,7 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Abstract
+﻿namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
+    using Editor;
+
     public interface ISpreadsheetAssetsExporter
     {
         bool CanExport { get; }

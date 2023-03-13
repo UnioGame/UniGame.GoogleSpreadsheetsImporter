@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.CoProcessors.Abstract
+namespace UniGame.GoogleSpreadsheetsImporter.Editor.CoProcessors.Abstract
 {
     public interface ICoProcessorHandle
     {
