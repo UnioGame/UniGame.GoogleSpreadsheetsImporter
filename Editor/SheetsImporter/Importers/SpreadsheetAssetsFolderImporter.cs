@@ -9,7 +9,7 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
     [Sirenix.OdinInspector.BoxGroup("Attributes Source")]
 #endif
     [CreateAssetMenu(menuName = "UniGame/Google/Spreadsheet/Importers/SpreadsheetFolderImporter",fileName = nameof(SpreadsheetAssetsFolderImporter))]
-    public class SpreadsheetAssetsFolderImporter : SpreadsheetImporter<AssetFolderByMonoScriptImporter>
+    public class SpreadsheetAssetsFolderImporter : SpreadsheetImporter<FolderAssetsImporter>
     {
     }
 }
