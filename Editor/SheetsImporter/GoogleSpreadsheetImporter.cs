@@ -1,11 +1,13 @@
 ﻿namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
+    using System;
     using System.IO;
     using System.Linq;
     using Core.Runtime;
     using UniModules.UniCore.Runtime.DataFlow;
     using UniModules.UniGame.GoogleSpreadsheets.Editor.SheetsImporter;
     using UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.EditorWindow;
+    using UnityEditor;
     using UnityEngine;
 
 #if ODIN_INSPECTOR
@@ -24,7 +26,7 @@
         /// <summary>
         /// list of assets linked by attributes
         /// </summary>
-        [Space(8)]
+        [Space(10)]
 #if ODIN_INSPECTOR
         [TabGroup(ImporterTab, ImporterTab)]
         [HorizontalGroup("importers/importers/handlers")]
@@ -35,7 +37,9 @@
 #endif
         public SpreadsheetHandler sheetsItemsHandler = new SpreadsheetHandler();
 
-        [TabGroup(ImporterTab, SettingsTab)] [InlineProperty] [HideLabel]
+        [TabGroup(ImporterTab, SettingsTab)] 
+        [InlineProperty] 
+        [HideLabel]
         public GoogleSpreadsheetSettings settings = new GoogleSpreadsheetSettings();
 
         #endregion
@@ -101,17 +105,51 @@
 #if ODIN_INSPECTOR
         [PropertyOrder(-1)]
         [Button("Import All", ButtonSizes.Small, Icon = SdfIconType.CloudDownloadFill)]
-        [ResponsiveButtonGroup("importers/importers/commands")]
+        [ResponsiveButtonGroup("importers/importers/commands",DefaultButtonSize = ButtonSizes.Small)]
         [EnableIf(nameof(HasConnectedSheets))]
 #endif
-        public void Import() => sheetsItemsHandler.Import();
+        public void Import()
+        {
+            AssetDatabase.StopAssetEditing();
+            try
+            {
+                sheetsItemsHandler.Import();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+            finally
+            {
+                AssetDatabase.StartAssetEditing();
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+            }
+        }
 
 #if ODIN_INSPECTOR
         [Button("Export All", ButtonSizes.Small, Icon = SdfIconType.CloudUploadFill)]
         [ResponsiveButtonGroup("importers/importers/commands")]
         [EnableIf(nameof(HasConnectedSheets))]
 #endif
-        public void Export() => sheetsItemsHandler.Export();
+        public void Export()
+        {
+            AssetDatabase.StopAssetEditing();
+            try
+            {
+                sheetsItemsHandler.Export();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+            finally
+            {
+                AssetDatabase.StartAssetEditing();
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+            }
+        }
 
 #if ODIN_INSPECTOR
         [Button("Show Sheets", ButtonSizes.Small, Icon = SdfIconType.Folder2Open)]

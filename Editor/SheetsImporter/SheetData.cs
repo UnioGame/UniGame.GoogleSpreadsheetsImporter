@@ -218,11 +218,13 @@
         
         public DataRow GetRow(string fieldName, object value)
         {
+            if (value == null) return null;
+            
             var key = _fieldKeyFactory(fieldName);
             for (var i = 0; i < _table.Rows.Count; i++) {
                 var row      = _table.Rows[i];
-                var     rowValue = row[key];
-                if (Equals(rowValue, value))
+                var rowValue = row[key];
+                if (Equals(rowValue, value.TryConvert<string>()))
                     return row;
             }
 

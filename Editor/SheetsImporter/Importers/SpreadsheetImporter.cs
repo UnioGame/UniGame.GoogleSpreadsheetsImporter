@@ -3,7 +3,6 @@
     using System.Collections.Generic;
     using System.Linq;
     using Editor;
-    using UniRx;
 
     public class SpreadsheetImporter<T> : BaseSpreadsheetImporter
         where T : SerializableSpreadsheetImporter
@@ -13,27 +12,6 @@
         public override bool CanImport => importers.Any(x => x.CanImport);
         public override bool CanExport => importers.Any(x => x.CanExport);
 
-        public override void Initialize(IGoogleSpreadsheetClient client)
-        {
-            base.Initialize(client);
-
-            foreach (var importer in importers)
-            {
-                importer.Initialize(client);
-                importer.ExportCommand.
-                    Where(x=>x.CanExport).
-                    Do(x => ExportObjects(new[] {x}, client.SpreadsheetData)).
-                    Subscribe().
-                    AddTo(LifeTime);
-
-                importer.ImportCommand.
-                    Where(x=>x.CanImport).
-                    Do(x => ImportObjects(new []{x}, client.SpreadsheetData)).
-                    Subscribe().
-                    AddTo(LifeTime);
-            }
-        }
-
         public override IEnumerable<object> Load()
         {
             return importers;
@@ -41,9 +19,11 @@
 
         public override ISpreadsheetData ExportObjects(IEnumerable<object> source, ISpreadsheetData data)
         {
-            foreach (var importer in source.OfType<ISpreadsheetAssetsExporter>().Where(x=>x.CanExport)) {
+            var items = source.OfType<ISpreadsheetAssetsExporter>()
+                .Where(x => x.CanExport);
+            
+            foreach (var importer in items) 
                 importer.Export(data);
-            }
 
             return data;
         }
@@ -51,8 +31,10 @@
         public sealed override IEnumerable<object> ImportObjects(IEnumerable<object> source,ISpreadsheetData spreadsheetData)
         {
             var result = new List<object>();
+
+            var items = OnPreImport(source.OfType<T>());
             
-            foreach (var importer in OnPreImport(source.OfType<T>()).Where(x=>x.CanImport)) {
+            foreach (var importer in items.Where(x=>x.CanImport)) {
                 result.AddRange(importer.Import(spreadsheetData));
             }
             
@@ -60,6 +42,18 @@
             return result;
         }
 
+        
+        protected override void OnInitialize(IGoogleSpreadsheetClient client)
+        {
+            base.Initialize(client);
+
+            foreach (var importer in importers)
+            {
+                importer.Initialize(client);
+            }
+        }
+
+        
         protected virtual IEnumerable<T> OnPreImport(IEnumerable<T> sourceImporters)
         {
             return sourceImporters;

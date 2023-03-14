@@ -11,5 +11,7 @@
         [Sirenix.OdinInspector.InlineEditor]
 #endif
         public Object asset;
+
+        public object target;
     }
 }

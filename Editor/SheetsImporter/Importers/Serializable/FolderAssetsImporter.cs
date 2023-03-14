@@ -89,12 +89,10 @@
         {
             Values.Clear();
             var filterType = GetFilteredType();
-            if (string.IsNullOrEmpty(folder) || filterType == null)
-                return Values;
-
-            Values = AssetEditorTools.GetAssets<Object>(filterType, new[] {folder});
+            Values = AssetEditorTools.GetAssets(filterType, new[] {folder});
             Values = ApplyRegExpFilter(Values);
-            return Values;
+            foreach (var value in Values)
+                yield return value;
         }
 
         public sealed override ISpreadsheetData ExportObjects(IEnumerable<object> source,ISpreadsheetData data)
@@ -111,13 +109,15 @@
         {
             var result = new List<object>();
             var filterType = GetFilteredType();
-            if (filterType == null)
-                return result;
+            
+            if (filterType == null) return result;
 
+            var assets = source.OfType<Object>().ToArray();
+            
             var syncedAsset = filterType.SyncFolderAssets(
                 folder,
                 spreadsheetData,
-                source.OfType<Object>().ToArray(),
+                assets,
                 createMissingItems, 
                 maxItemsCount,
                 overrideSheetId ? sheetId : string.Empty);

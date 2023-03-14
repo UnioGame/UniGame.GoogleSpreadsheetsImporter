@@ -23,10 +23,9 @@
 #endif
         public string user = "user";
 
-        [Tooltip("timeout to google auth in sec")]
-        [Range(10,100)]
+        [Tooltip("timeout to google auth in sec")] [Range(10, 100)]
         public float authTimeout = 30f;
-        
+
 #if ODIN_INSPECTOR
 #endif
         [Header("try to auto-connect to spreadsheets when window opened")]
@@ -45,10 +44,10 @@
         [Space(8)]
 #if ODIN_INSPECTOR
         [TitleGroup("Type Converters")]
-        [InlineProperty]
+        [InlineEditor()]
         [HideLabel]
 #endif
-        public TypeConverter typeConverters = new TypeConverter();
+        public ObjectTypeConverter typeConverter;
 
         [Space(8)]
 #if ODIN_INSPECTOR
@@ -57,5 +56,14 @@
         [HideLabel]
 #endif
         public CoProcessor coProcessors;
+
+
+#if ODIN_INSPECTOR
+        [OnInspectorInit]
+#endif
+        private void OnInspectorInitialize()
+        {
+            typeConverter ??= ObjectTypeConverter.TypeConverters;
+        }
     }
 }

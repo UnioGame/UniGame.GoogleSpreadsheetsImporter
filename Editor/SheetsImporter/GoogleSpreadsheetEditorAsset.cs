@@ -53,11 +53,8 @@
             var result = importerAsset.CopyAsset<GoogleSpreadsheetImporter>(importerAsset.name,path);
             var coProcessor = coProcessorAsset.CopyAsset<CoProcessor>(coProcessorAsset.name, path);
             coProcessor.ResetToDefault();
-            
-            var typeConverter = new TypeConverter();
-            typeConverter.ResetToDefault();
-            
-            result.settings.typeConverters = typeConverter;
+
+            result.settings.typeConverter = ObjectTypeConverter.TypeConverters;
             result.settings.coProcessors = coProcessor;
             
             result.MarkDirty();

@@ -118,14 +118,17 @@
                 return result;
             }
 
+            var values = sheet.GetColumnValues(keysId).ToArray();
+            
             var updatedItems = ApplyAssets(
                 filterType,
                 sheetId,
                 folder,
                 syncScheme,
                 spreadsheetData,
-                sheet.GetColumnValues(keysId).ToArray(),
-                assets, maxItemsCount, createMissing,
+                values,
+                assets, maxItemsCount,
+                createMissing,
                 string.Empty,assetNameFormatter);
 
             result.AddRange(updatedItems);
@@ -146,18 +149,32 @@
             string keyFieldName = "",
             Func<string,string> assetNameFormatter = null)
         {
+            assets ??= Array.Empty<Object>();
+            
             count = count < 0 ? keys.Length : count;
             count = Math.Min(keys.Length, count);
 
-            var keyField = string.IsNullOrEmpty(keyFieldName) ? syncScheme.keyField : syncScheme.GetFieldBySheetFieldName(keyFieldName);
+            var keyField = string.IsNullOrEmpty(keyFieldName) 
+                ? syncScheme.keyField 
+                : syncScheme.GetFieldBySheetFieldName(keyFieldName);
 
             try {
                 for (var i = 0; i < count; i++) {
                     var keyValue = keys[i];
                     var key      = keyValue.TryConvert<string>();
-                    var targetAsset = assets?.FirstOrDefault(x => string.Equals(keyField.GetValue(x).TryConvert<string>(),
-                        key, StringComparison.OrdinalIgnoreCase));
 
+                    Object targetAsset = null;
+                    
+                    foreach (var asset in assets)
+                    {
+                        if(asset == null) continue;
+                        var keyFieldValue = keyField.GetValue(asset).TryConvert<string>();
+                        var found = string.Equals(keyFieldValue,key, StringComparison.OrdinalIgnoreCase);
+                        if(!found) continue;
+                        targetAsset = asset;
+                        break;
+                    }
+                    
                     //create asset if missing
                     if (targetAsset == null) {
                         //skip asset creation step
@@ -195,6 +212,8 @@
                     
                     ApplyData(spreadsheetValueInfo);
 
+                    targetAsset.MarkDirty();
+                    
                     yield return targetAsset;
                 }
             }
@@ -259,6 +278,8 @@
                 _coProcessorHandle.Apply(valueInfo, row);
             }
 
+            if(source is Object asset) asset.MarkDirty();
+            
             return source;
         }
 

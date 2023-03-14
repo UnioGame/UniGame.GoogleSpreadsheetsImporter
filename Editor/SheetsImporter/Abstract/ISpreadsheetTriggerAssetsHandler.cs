@@ -6,9 +6,6 @@
 
     public interface ISpreadsheetTriggerAssetsHandler : IResetable
     {
-        IObservable<ISpreadsheetAssetsHandler> ImportCommand { get; }
-        IObservable<ISpreadsheetAssetsHandler> ExportCommand { get; }
-        
-        void                                   Initialize(IGoogleSpreadsheetClient status);
+        void                                   Initialize(IGoogleSpreadsheetClient client);
     }
 }

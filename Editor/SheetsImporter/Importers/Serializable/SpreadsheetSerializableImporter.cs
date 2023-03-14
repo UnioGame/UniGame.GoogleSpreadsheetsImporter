@@ -14,14 +14,15 @@
         public abstract bool CanImport { get; }
         public abstract bool CanExport { get; }
 
-        public abstract IEnumerable<object> Import(ISpreadsheetData spreadsheetData);
-
         public abstract IEnumerable<object> Load();
 
-        public virtual ISpreadsheetData Export(ISpreadsheetData data)
-        {
-            return data;
-        }
+        public abstract IEnumerable<object> Import(ISpreadsheetData spreadsheetData);
+
+        public virtual ISpreadsheetData Export(ISpreadsheetData data) => data;
+
+        public abstract ISpreadsheetData ExportObjects(IEnumerable<object> source, ISpreadsheetData data);
+        
+        public abstract IEnumerable<object> ImportObjects(IEnumerable<object> source, ISpreadsheetData spreadsheetData);
 
         public virtual void Start() { }
 

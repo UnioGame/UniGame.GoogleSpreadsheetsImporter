@@ -8,7 +8,7 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
     [Sirenix.OdinInspector.HideLabel]
     [Sirenix.OdinInspector.BoxGroup("Attributes Source")]
 #endif
-    [CreateAssetMenu(menuName = "UniGame/Google/Spreadsheet/Importers/SpreadsheetFolderImporter",fileName = nameof(SpreadsheetAssetsFolderImporter))]
+    [CreateAssetMenu(menuName = "UniGame/Google/Importers/SpreadsheetFolderImporter",fileName = nameof(SpreadsheetAssetsFolderImporter))]
     public class SpreadsheetAssetsFolderImporter : SpreadsheetImporter<FolderAssetsImporter>
     {
     }

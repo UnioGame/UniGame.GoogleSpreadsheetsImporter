@@ -47,7 +47,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.EditorWindow
         public GoogleSpreadsheetImporter _googleSheetImporter;
 
         private GoogleImportersCommonOperations _operations;
-        private List<ISpreadsheetAssetsHandler> _assetsHandlers;
+        private List<ISpreadsheetHandler> _assetsHandlers;
         private OdinMenuTree _menuTree;
         
         #region private methods

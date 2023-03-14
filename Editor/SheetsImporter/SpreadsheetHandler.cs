@@ -5,8 +5,8 @@
     using System.Linq;
     using Core.Runtime;
     using UniModules.UniCore.Runtime.DataFlow;
-    using UniRx;
     using UnityEngine;
+    
 #if ODIN_INSPECTOR
     using Sirenix.OdinInspector;
 #endif
@@ -14,6 +14,8 @@
     [Serializable]
     public class SpreadsheetHandler : ISpreadsheetAssetsHandler, IResetable
     {
+        private static Color _oddColor = new Color(0.2f, 0.4f, 0.3f);
+        
         #region inspector
 
         public string importerName = string.Empty;
@@ -24,24 +26,9 @@
         public bool autoReloadSpreadsheetOnImport = true;
 
 #if ODIN_INSPECTOR
-        [InlineProperty]
-        [ListDrawerSettings(ElementColor = nameof(GetElementColor))]
+        [ListDrawerSettings(ElementColor = nameof(GetElementColor),ListElementLabelName = "Name")]
 #endif
-        [SerializeReference]
-        public List<SerializableSpreadsheetImporter> serializabledImporters =
-            new List<SerializableSpreadsheetImporter>
-            {
-                new AssetsWithAttributesImporter()
-            };
-
-        /// <summary>
-        /// list of assets linked by attributes
-        /// </summary>
-#if ODIN_INSPECTOR
-        [InlineEditor(InlineEditorModes.GUIOnly,
-            InlineEditorObjectFieldModes.Foldout)]
-#endif
-        public List<BaseSpreadsheetImporter> importers = new List<BaseSpreadsheetImporter>();
+        public List<SpreadsheetImporterValue> importers = new List<SpreadsheetImporterValue>();
 
         #endregion
 
@@ -57,8 +44,9 @@
 
         public ILifeTime LifeTime => _lifeTime = _lifeTime ?? new LifeTimeDefinition();
 
-        public IEnumerable<ISpreadsheetAssetsHandler> Importers =>
-            importers.Concat<ISpreadsheetAssetsHandler>(serializabledImporters);
+        public IEnumerable<ISpreadsheetHandler> Importers => importers
+            .Where(x => x.HasValue)
+            .Select(x => x.Value);
 
         public bool CanImport => true;
         public bool CanExport => true;
@@ -72,17 +60,9 @@
             _client = client;
             _spreadsheetData = client.SpreadsheetData;
 
-            foreach (var importer in importers.Concat<ISpreadsheetTriggerAssetsHandler>(serializabledImporters))
+            foreach (var importer in Importers)
             {
                 importer.Initialize(client);
-                importer.ExportCommand.Where(x => x.CanExport).Do(x => ExportSheets(Export(_spreadsheetData, x)))
-                    .Subscribe().AddTo(LifeTime);
-
-                importer.ImportCommand.Where(x => x.CanImport).Do(x =>
-                {
-                    if (autoReloadSpreadsheetOnImport)
-                        _client.ReloadAll();
-                }).Do(x => Import(_spreadsheetData, x)).Subscribe().AddTo(LifeTime);
             }
 
             LifeTime.AddCleanUpAction(() => _client = null);
@@ -136,6 +116,30 @@
             return result;
         }
 
+        public IEnumerable<object> ImportObjects(IEnumerable<object> source, ISpreadsheetData spreadsheetData)
+        {
+            var stage = source;
+            foreach (var importer in Importers.Where(x => x.CanImport))
+            {
+                stage = importer.ImportObjects(stage, spreadsheetData);
+            }
+
+            return stage;
+        }
+
+        public ISpreadsheetData ExportObjects(IEnumerable<object> source, ISpreadsheetData data)
+        {
+            var stage = data;
+            var sourceData = source.ToList();
+            
+            foreach (var importer in Importers.Where(x => x.CanImport))
+            {
+                stage = importer.ExportObjects(sourceData, data);
+            }
+
+            return stage;
+        }
+
         public ISpreadsheetData Export(ISpreadsheetData data)
         {
             foreach (var importer in Importers.Where(x => x.CanExport))
@@ -145,7 +149,7 @@
 
             return data;
         }
-
+        
         public virtual string FormatName(string assetName) => assetName;
 
         private ISpreadsheetData Export(ISpreadsheetData data, ISpreadsheetAssetsHandler importer)
@@ -164,13 +168,17 @@
         {
         }
 
-
-        private static Color oddColor = new Color(0.2f, 0.4f, 0.3f);
+        
         private Color GetElementColor(int index, Color defaultColor)
         {
             var result = index % 2 == 0 
-                ? oddColor : defaultColor;
+                ? _oddColor : defaultColor;
             return result;
+        }
+        
+        private string GetImporterName(SpreadsheetImporterValue importer)
+        {
+            return importer.HasValue == false ? "EMPTY" : importer.Value.Name;
         }
     }
 }

@@ -1,48 +1,42 @@
-﻿using UniModules.UniCore.Runtime.DataFlow;
-using UniGame.Core.Runtime;
-
-namespace UniGame.GoogleSpreadsheetsImporter.Editor
+﻿namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     using System;
     using System.Collections.Generic;
-    using global::UniGame.GoogleSpreadsheetsImporter.Editor;
-    using UniRx;
+    using Core.Runtime;
+    using Sirenix.OdinInspector;
+    using UniModules.UniCore.Runtime.DataFlow;
     using UnityEngine;
 
-    public abstract class BaseSpreadsheetImporter : ScriptableObject, 
-        ISpreadsheetAssetsHandler,
-        ISpreadsheetTriggerAssetsHandler
+    public abstract class BaseSpreadsheetImporter : ScriptableObject, ISpreadsheetHandler
     {
         public string importerName = string.Empty;
-        
-        private Subject<ISpreadsheetAssetsHandler> _importCommand;
-        private Subject<ISpreadsheetAssetsHandler> _exportCommand;
-        private IGoogleSpreadsheetClient           _client;
+
+        private IGoogleSpreadsheetClient _client;
         private IGooglsSpreadsheetClientStatus _status;
         
-        private readonly LifeTimeDefinition _lifeTimeDefinition = new LifeTimeDefinition();
+        private LifeTimeDefinition _lifeTimeDefinition = new LifeTimeDefinition();
 
         #region public properties
 
-        public string Name => string.IsNullOrEmpty(importerName) ? name : importerName;
-        
+        public virtual string Name => string.IsNullOrEmpty(importerName) ? name : importerName;
+
         protected ILifeTime LifeTime => _lifeTimeDefinition;
 
         public IGoogleSpreadsheetClient Client => _client;
-        
-        public bool IsValidData => _importCommand != null && _exportCommand !=null && _status!=null && _status.HasConnectedSheets;
-        
+
+        public bool IsValidData =>  _client!=null && 
+                                    _status != null && 
+                                    _status.HasConnectedSheets;
+
         public abstract bool CanImport { get; }
         public abstract bool CanExport { get; }
 
-        public IObservable<ISpreadsheetAssetsHandler> ImportCommand => _importCommand;
-
-        public IObservable<ISpreadsheetAssetsHandler> ExportCommand => _exportCommand;
-        
         #endregion
 
-        public virtual void Start() { }
-        
+        public virtual void Start()
+        {
+        }
+
         public virtual void Initialize(IGoogleSpreadsheetClient client)
         {
             Reset();
@@ -50,26 +44,20 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
             _client = client;
             _status = client.Status;
 
-            _importCommand = new Subject<ISpreadsheetAssetsHandler>();
-            _exportCommand = new Subject<ISpreadsheetAssetsHandler>();
+            OnInitialize(client);
         }
 
         public abstract IEnumerable<object> Load();
 
         public void Reset()
         {
-            _client        = null;
-            _status        = null;
-            
-            _importCommand?.Dispose();
-            _exportCommand?.Dispose();
-            
-            _importCommand = null;
-            _exportCommand = null;
-            
-            _lifeTimeDefinition.Release();
+            _client = null;
+            _status = null;
+
+            _lifeTimeDefinition.Terminate();
+            _lifeTimeDefinition = new LifeTimeDefinition();
         }
-        
+
         public IEnumerable<object> Import(ISpreadsheetData spreadsheetData)
         {
             var source = Load();
@@ -81,35 +69,39 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
             var source = Load();
             return ExportObjects(source, data);
         }
-        
+
 #if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.ButtonGroup]
-        [Sirenix.OdinInspector.Button]
-        [Sirenix.OdinInspector.EnableIf("IsValidData")]
-        [Sirenix.OdinInspector.EnableIf("CanImport")]
+        [ButtonGroup]
+        [Button(ButtonSizes.Small,Icon = SdfIconType.CloudDownload)]
+        [EnableIf(nameof(IsValidData))]
+        [EnableIf(nameof(CanImport))]
 #endif
         public void Import()
         {
-            _importCommand?.OnNext(this);
+            if (IsValidData == false) return;
+            Import(_client.SpreadsheetData);
         }
 
 #if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.ButtonGroup]
-        [Sirenix.OdinInspector.Button]
-        [Sirenix.OdinInspector.EnableIf("IsValidData")]
-        [Sirenix.OdinInspector.EnableIf("CanExport")]
+        [ButtonGroup]
+        [Button(ButtonSizes.Small,Icon = SdfIconType.CloudUpload)]
+        [EnableIf("IsValidData")]
+        [EnableIf("CanExport")]
 #endif
         public void Export()
         {
-            _exportCommand?.OnNext(this);
+            if (IsValidData == false) return;
+            Export(_client.SpreadsheetData);
         }
 
-        public virtual IEnumerable<object> ImportObjects(IEnumerable<object> source,ISpreadsheetData spreadsheetData)
-        {
-            return source;
-        }
+        public abstract IEnumerable<object> ImportObjects(IEnumerable<object> source, ISpreadsheetData spreadsheetData);
 
-        public virtual ISpreadsheetData ExportObjects(IEnumerable<object> source,ISpreadsheetData spreadsheetData) => spreadsheetData;
+        public abstract ISpreadsheetData ExportObjects(IEnumerable<object> source, ISpreadsheetData spreadsheetData);
+
         public virtual string FormatName(string assetName) => assetName;
+        
+        protected virtual void OnReset() {}
+        
+        protected virtual void OnInitialize(IGoogleSpreadsheetClient client) {}
     }
 }

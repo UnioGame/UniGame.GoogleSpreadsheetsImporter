@@ -8,5 +8,7 @@
         bool CanImport { get; }
 
         IEnumerable<object> Import(ISpreadsheetData spreadsheetData);
+
+        IEnumerable<object> ImportObjects(IEnumerable<object> source, ISpreadsheetData spreadsheetData);
     }
 }
