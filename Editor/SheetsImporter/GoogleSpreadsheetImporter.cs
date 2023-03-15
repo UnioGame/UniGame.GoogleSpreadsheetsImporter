@@ -58,7 +58,9 @@
 
         public bool AutoConnect => settings.autoConnect;
         
-        public bool HasConnectedSheets => Client.IsConnected;
+        public bool HasConnectedSheets => Client.IsConnected && 
+                                          Client.Status!=null &&
+                                          Client.Status.HasConnectedSheets;
 
         public ILifeTime LifeTime => (_lifeTime ??= new LifeTimeDefinition());
 
@@ -110,7 +112,7 @@
 #endif
         public void Import()
         {
-            AssetDatabase.StopAssetEditing();
+            AssetDatabase.StartAssetEditing();
             try
             {
                 sheetsItemsHandler.Import();
@@ -121,7 +123,7 @@
             }
             finally
             {
-                AssetDatabase.StartAssetEditing();
+                AssetDatabase.StopAssetEditing();
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
             }
@@ -134,7 +136,7 @@
 #endif
         public void Export()
         {
-            AssetDatabase.StopAssetEditing();
+            AssetDatabase.StartAssetEditing();
             try
             {
                 sheetsItemsHandler.Export();
@@ -145,7 +147,7 @@
             }
             finally
             {
-                AssetDatabase.StartAssetEditing();
+                AssetDatabase.StopAssetEditing();
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
             }
@@ -154,6 +156,7 @@
 #if ODIN_INSPECTOR
         [Button("Show Sheets", ButtonSizes.Small, Icon = SdfIconType.Folder2Open)]
         [ResponsiveButtonGroup("importers/importers/commands")]
+        [EnableIf(nameof(HasConnectedSheets))]
 #endif
         public void ShowSpreadSheets()
         {

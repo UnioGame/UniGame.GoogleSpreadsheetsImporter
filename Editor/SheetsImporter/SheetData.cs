@@ -36,7 +36,11 @@
         public SheetData(string sheetId, string spreadsheetId, MajorDimension dimension)
         {
             _dimension = dimension;
-            _table     = new DataTable(sheetId, spreadsheetId);
+            
+            var fixedId = sheetId.TrimStart('\'');
+            fixedId = fixedId.TrimEnd('\'');
+            
+            _table     = new DataTable(fixedId, spreadsheetId);
         }
 
         #region public properties

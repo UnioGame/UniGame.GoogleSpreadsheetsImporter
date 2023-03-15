@@ -27,21 +27,11 @@
         [PropertyOrder(-1)]
 #endif
         public SType targetAssetType = typeof(ScriptableObject);
-
-        /// <summary>
-        /// list of assets linked by attributes
-        /// </summary>
-#if ODIN_INSPECTOR
-        [TableList]
-#endif
-        public List<SheetSyncItem> assets = new List<SheetSyncItem>();
-
+        
         [Button]
         public void LoadAssets()
         {
-            foreach (var asset in Load()) {
-                
-            }
+            foreach (var asset in Load()) { }
         }
         
         public override IEnumerable<object> Load()
@@ -53,20 +43,18 @@
 
         public override IEnumerable<object> ImportObjects(IEnumerable<object> source,ISpreadsheetData spreadsheetData)
         {
-            assets.Clear();
             var resultObjects = new List<object>();
             var result = FilterAttributesTargets(source);
             
             foreach (var item in result) {
                 if(!spreadsheetData.HasSheet(item.sheetId) || item.asset == null)
                     continue;
-                var resultValue = item.target.ApplySpreadsheetData(spreadsheetData,item.sheetId);
+                
+                var resultValue = item.target
+                    .ApplySpreadsheetData(spreadsheetData,item.sheetId);
+                
                 resultObjects.Add(item.asset);
-                
-                assets.Add(item);
-                
-                if (item.asset != null)
-                    item.asset.MarkDirty();
+                item.asset.MarkDirty();
             }
 
             return resultObjects;
@@ -74,7 +62,8 @@
         
         public override ISpreadsheetData ExportObjects(IEnumerable<object> source,ISpreadsheetData spreadsheetData)
         {
-            foreach (var item in assets) {
+            var result = FilterAttributesTargets(source);
+            foreach (var item in result) {
                 if(item.asset == null) continue;
                 item.asset.UpdateSheetValue(spreadsheetData, item.sheetId);
             }

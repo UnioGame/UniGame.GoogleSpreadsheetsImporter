@@ -54,12 +54,12 @@
             var result = new List<object>();
 
             var items = OnPreImport(source);
-            var stage = items;
+            var stage = items.ToList();
             
             foreach (var importer in importers.Where(x => x.HasValue))
             {
                 var value = importer.Value;
-                stage = value.ImportObjects(stage,spreadsheetData);
+                stage = value.ImportObjects(stage,spreadsheetData).ToList();
             }
 
             stage = OnPostImport(stage).ToList();

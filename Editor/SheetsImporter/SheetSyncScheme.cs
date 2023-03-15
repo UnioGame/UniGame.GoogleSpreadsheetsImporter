@@ -13,7 +13,7 @@
 
         public SyncField keyField;
         
-        public SyncField[] fields = new SyncField[0];
+        public SyncField[] fields = Array.Empty<SyncField>();
 
         public SheetSyncScheme(string sheetId)
         {

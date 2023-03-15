@@ -21,6 +21,7 @@
 
         public IEnumerable<SheetData> Sheets => _sheets;
 
-        public SheetData this[string sheetName] => _sheets.FirstOrDefault(x => x.Name.ToLower().Equals(sheetName.ToLower()));
+        public SheetData this[string sheetName] => _sheets
+            .FirstOrDefault(x => x.Name.Equals(sheetName,StringComparison.OrdinalIgnoreCase));
     }
 }

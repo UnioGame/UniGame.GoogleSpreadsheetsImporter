@@ -74,7 +74,7 @@
         [ButtonGroup]
         [Button(ButtonSizes.Small,Icon = SdfIconType.CloudDownload)]
         [EnableIf(nameof(IsValidData))]
-        [EnableIf(nameof(CanImport))]
+        [ShowIf(nameof(CanImport))]
 #endif
         public void Import()
         {
@@ -85,8 +85,8 @@
 #if ODIN_INSPECTOR
         [ButtonGroup]
         [Button(ButtonSizes.Small,Icon = SdfIconType.CloudUpload)]
-        [EnableIf("IsValidData")]
-        [EnableIf("CanExport")]
+        [EnableIf(nameof(IsValidData))]
+        [ShowIf(nameof(CanExport))]
 #endif
         public void Export()
         {
