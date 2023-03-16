@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using UnityEngine;
 
 #if ODIN_INSPECTOR
@@ -54,7 +55,9 @@
         public IEnumerable<object> Import(ISpreadsheetData spreadsheetData)
         {
             var source = Load();
-            return ImportObjects(source, spreadsheetData);
+            var result = ImportObjects(source, spreadsheetData);
+            foreach (var item in result)
+                yield return item; 
         }
 
         public ISpreadsheetData Export(ISpreadsheetData data)
@@ -67,19 +70,19 @@
         [ButtonGroup]
         [Button(ButtonSizes.Small,Icon = SdfIconType.CloudDownload)]
         [EnableIf(nameof(IsValidData))]
-        [EnableIf(nameof(CanImport))]
+        [ShowIf(nameof(CanImport))]
 #endif
         public void Import()
         {
             if (IsValidData == false) return;
-            Import(_client.SpreadsheetData);
+            Import(_client.SpreadsheetData).ToList();
         }
 
 #if ODIN_INSPECTOR
         [ButtonGroup]
         [Button(ButtonSizes.Small,Icon = SdfIconType.CloudUpload)]
         [EnableIf("IsValidData")]
-        [EnableIf("CanExport")]
+        [ShowIf("CanExport")]
 #endif
         public void Export()
         {
