@@ -1,10 +1,12 @@
 ﻿using System;
 using UnityEngine;
 
-namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
+namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
+        using NUnit.Framework;
+        using UnityEditor.PackageManager;
 #if ODIN_INSPECTOR
-    using Sirenix.OdinInspector;
+        using Sirenix.OdinInspector;
 #endif
 
     [Serializable]
@@ -28,5 +30,6 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
             if (string.IsNullOrEmpty(id)) return;
             Application.OpenURL(string.Format(spreadsheetUrl,id));
         }
+
     }
 }

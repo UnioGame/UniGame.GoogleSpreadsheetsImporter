@@ -1,86 +1,92 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Importers.Serializable
+﻿namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.RegularExpressions;
+    using Core.Runtime.SerializableType;
+    using Core.Runtime.SerializableType.Extensions;
     using UniModules.Editor;
-    using Extensions;
     using UniModules.UniCore.EditorTools.Editor;
+    using GoogleSpreadsheetsImporter.Editor;
+    using UnityEngine;
     using Object = UnityEngine.Object;
-
+#if ODIN_INSPECTOR
+    using Sirenix.OdinInspector;    
+#endif
+    
     [Serializable]
     public class FolderAssetsImporter : SerializableSpreadsheetImporter
     {
         private const int LabelWidth = 120;
-        
-        private List<Object> _values = new List<Object>();
-
-        protected List<Object> Values {
-            get => _values ??= new List<Object>();
-            set => _values = value;
-        }
 
 #if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.VerticalGroup("Filter")]
-        [Sirenix.OdinInspector.FolderPath(RequireExistingPath = true)]
-        [Sirenix.OdinInspector.LabelWidth(LabelWidth)]
-        [Sirenix.OdinInspector.Required]
+        [VerticalGroup("Filter")]
+        [FolderPath(RequireExistingPath = true)]
+        [LabelWidth(LabelWidth)]
+        [Required]
 #endif
         public string folder;
 
+        public bool cleanupOnImport = false;
+        
 #if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.VerticalGroup("Filter")]
-        [Sirenix.OdinInspector.LabelWidth(LabelWidth)]
-        [Sirenix.OdinInspector.LabelText("RegEx Filter")]
+        [ValueDropdown(nameof(GetAssetTypeDropdown))]
+        //[HideLabel]
+        [PropertyOrder(-1)]
+#endif
+        public SType targetAssetType = typeof(ScriptableObject);
+        
+#if ODIN_INSPECTOR
+        [VerticalGroup("Filter")]
+        [LabelWidth(LabelWidth)]
+        [LabelText("RegEx Filter")]
 #endif
         public string assetRegexFilter = string.Empty;
 
 #if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.VerticalGroup("Filter")]
-        [Sirenix.OdinInspector.LabelWidth(LabelWidth)]
-        [Sirenix.OdinInspector.LabelText("Create Missing")]
+        [VerticalGroup("Filter")]
+        [LabelWidth(LabelWidth)]
+        [LabelText("Create Missing")]
 #endif
         public bool createMissingItems;
 
 #if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.VerticalGroup("Filter")]
-        [Sirenix.OdinInspector.LabelWidth(LabelWidth)]
+        [VerticalGroup("Filter")]
+        [LabelWidth(LabelWidth)]
 #endif
         public bool overrideSheetId;
         
 #if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.VerticalGroup("Filter")]
-        [Sirenix.OdinInspector.LabelWidth(LabelWidth)]
-        [Sirenix.OdinInspector.ShowIf("overrideSheetId")]
+        [VerticalGroup("Filter")]
+        [LabelWidth(LabelWidth)]
+        [ShowIf("overrideSheetId")]
 #endif
         public string sheetId;
         
 #if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.LabelWidth(LabelWidth)]
-        [Sirenix.OdinInspector.VerticalGroup("Filter")]
+        [LabelWidth(LabelWidth)]
+        [VerticalGroup("Filter")]
 #endif
         public int maxItemsCount = -1;
 
 #if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.LabelWidth(LabelWidth)]
-        [Sirenix.OdinInspector.VerticalGroup("Filter")]
+        [LabelWidth(LabelWidth)]
+        [VerticalGroup("Filter")]
+        [PropertyTooltip("Example MyNewAsset {0} HERE")]
 #endif
         public string assetTemplateName;
 
 #if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.Button]
+        [Button]
 #endif
         public override IEnumerable<object> Load()
         {
-            Values.Clear();
             var filterType = GetFilteredType();
-            if (string.IsNullOrEmpty(folder) || filterType == null)
-                return Values;
-
-            Values = AssetEditorTools.GetAssets<Object>(filterType, new[] {folder});
-            Values = ApplyRegExpFilter(Values);
-            return Values;
+            var values = AssetEditorTools.GetAssets(filterType, new[] {folder});
+            values = ApplyRegExpFilter(values);
+            foreach (var value in values)
+                yield return value;
         }
 
         public sealed override ISpreadsheetData ExportObjects(IEnumerable<object> source,ISpreadsheetData data)
@@ -95,15 +101,20 @@
 
         public sealed override IEnumerable<object> ImportObjects(IEnumerable<object> source,ISpreadsheetData spreadsheetData)
         {
+            if(cleanupOnImport) 
+                EditorFileUtils.DeleteDirectoryFiles(folder.ToAbsoluteProjectPath());
+                
             var result = new List<object>();
             var filterType = GetFilteredType();
-            if (filterType == null)
-                return result;
+            
+            if (filterType == null) return result;
 
+            var assets = source.OfType<Object>().ToArray();
+            
             var syncedAsset = filterType.SyncFolderAssets(
                 folder,
                 spreadsheetData,
-                source.OfType<Object>().ToArray(),
+                assets,
                 createMissingItems, 
                 maxItemsCount,
                 overrideSheetId ? sheetId : string.Empty);
@@ -120,7 +131,7 @@
                 : string.Format(assetTemplateName, assetName);
         }
         
-        protected virtual Type GetFilteredType() => typeof(Object);
+        protected virtual Type GetFilteredType() => targetAssetType;
 
         protected virtual IEnumerable<Object> OnPostImportAction(IEnumerable<Object> importedAssets)
         {
@@ -170,5 +181,22 @@
             return filteredAssets;
         }
         
+#if ODIN_INSPECTOR
+        private IEnumerable<ValueDropdownItem<SType>> GetAssetTypeDropdown()
+        {
+            var baseType = typeof(ScriptableObject);
+            var baseSType = (SType)baseType;
+            var assetTypes = baseSType.GetAssignableNonAbstractTypes();
+            foreach (var sType in assetTypes)
+            {
+                yield return new ValueDropdownItem<SType>()
+                {
+                    Text = sType.Name,
+                    Value = sType
+                };
+            }
+        }
+#endif
+
     }
 }

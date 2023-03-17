@@ -1,4 +1,4 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
+﻿namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     using System;
     using Object = UnityEngine.Object;
@@ -11,5 +11,7 @@
         [Sirenix.OdinInspector.InlineEditor]
 #endif
         public Object asset;
+
+        public object target;
     }
 }

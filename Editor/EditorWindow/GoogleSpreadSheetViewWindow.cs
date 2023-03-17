@@ -4,7 +4,7 @@
 namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.EditorWindow
 {
     using System.Collections.Generic;
-    using SheetsImporter;
+    using global::UniGame.GoogleSpreadsheetsImporter.Editor;
     using Sirenix.OdinInspector;
     using Sirenix.OdinInspector.Editor;
     using UnityEngine;
@@ -25,12 +25,12 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.EditorWindow
 
 #if ODIN_INSPECTOR
         [InlineEditor]
+        [ListDrawerSettings(ListElementLabelName = nameof(SpreadsheetSheetView.sheetName))]
 #endif
         public List<SpreadsheetSheetView> tables = new List<SpreadsheetSheetView>();
 
         public void Initialize(IEnumerable<SheetData> sheets)
         {
-
             foreach (var sheetView in tables) {
                 if (sheetView) {
                     DestroyImmediate(sheetView); 

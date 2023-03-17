@@ -1,12 +1,13 @@
 ﻿using System.Data;
 using System.Linq;
-using UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.CoProcessors;
+using UniGame.GoogleSpreadsheetsImporter.Editor.CoProcessors;
 
-namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Extensions
+namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     using System;
     using System.Collections.Generic;
-    using TypeConverters.Editor;
+    using Editor;
+    using UniModules.UniGame.TypeConverters.Editor;
     using Object = UnityEngine.Object;
 
     public static class SpreadsheetExtensions
@@ -37,7 +38,8 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Ex
             int maxItemsCount = -1,
             string overrideSheetId = "")
         {
-            return DefaultProcessor.SyncFolderAssets(filterType, folder, spreadsheetData,assets, createMissing, maxItemsCount, overrideSheetId);
+            return DefaultProcessor
+                .SyncFolderAssets(filterType, folder, spreadsheetData,assets, createMissing, maxItemsCount, overrideSheetId);
         }
         
         public static List<Object> SyncFolderAssets(

@@ -10,7 +10,7 @@
         public bool useFieldName = false;
 
         /// <summary>
-        /// Marl class field as Sheet sync value
+        /// Mark class field as Sheet sync value
         /// </summary>
         /// <param name="sheetField">Name of Table Filed</param>
         /// <param name="isKey">If true - use this field for sync items with data</param>

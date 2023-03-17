@@ -1,87 +1,48 @@
-﻿using UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.CoProcessors;
-
-namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
+﻿namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
-    using System.Collections.Generic;
+    using System;
     using System.IO;
     using System.Linq;
-    using Core.Runtime.DataFlow.Interfaces;
-    using Core.Runtime.Interfaces;
-    using EditorWindow;
-    using GoogleSpreadsheets.Editor.SheetsImporter;
-    using TypeConverters.Editor;
-    using UniCore.Runtime.DataFlow;
+    using Core.Runtime;
+    using UniModules.UniCore.Runtime.DataFlow;
+    using UniModules.UniGame.GoogleSpreadsheets.Editor.SheetsImporter;
+    using UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.EditorWindow;
+    using UnityEditor;
     using UnityEngine;
 
 #if ODIN_INSPECTOR
     using Sirenix.OdinInspector;
 #endif
-        
-   
-    [CreateAssetMenu(menuName = "UniGame/Google/GoogleSpreadSheetImporter", fileName = nameof(GoogleSpreadsheetImporter))]
+    
+    //[CreateAssetMenu(menuName = "UniGame/Google/GoogleSpreadSheetImporter", fileName = nameof(GoogleSpreadsheetImporter))]
     public class GoogleSpreadsheetImporter : ScriptableObject, ILifeTimeContext
     {
         private const int DefaultButtonsWidth = 100;
+        private const string SettingsTab = "settings";
+        private const string ImporterTab = "importers";
 
         #region inspector
 
         /// <summary>
-        /// credential profile file
-        /// https://developers.google.com/sheets/api/quickstart/dotnet
-        /// </summary>
-#if ODIN_INSPECTOR
-        [BoxGroup(nameof(user), false)] [FilePath]
-#endif
-        public string credentialsPath;
-
-#if ODIN_INSPECTOR
-        [BoxGroup(nameof(user))]
-#endif
-        public string user = "user";
-
-        [Header("try to auto-connect to spreadsheets when window opened")]
-        public bool autoConnect = true;
-        
-        /// <summary>
-        /// list of target sheets
-        /// </summary>
-        [Space(4)]
-#if ODIN_INSPECTOR
-        [HorizontalGroup("Sheets")]
-        [BoxGroup("Sheets/Sheets Ids", false)]
-        [InfoBox("Add any valid spreadsheet id's")]
-        [TableList]
-#endif
-        public List<SpreadSheetInfo> sheets = new List<SpreadSheetInfo>();
-
-
-        /// <summary>
         /// list of assets linked by attributes
         /// </summary>
-        [Space(8)]
+        [Space(10)]
 #if ODIN_INSPECTOR
+        [TabGroup(ImporterTab, ImporterTab)]
+        [HorizontalGroup("importers/importers/handlers")]
+        [VerticalGroup("importers/importers/handlers/sources")]
         [InlineProperty]
         [HideLabel]
-        [HorizontalGroup("Sources")]
-        [BoxGroup("Sources/Assets Handlers")]
+        //[BoxGroup(ImporterTab + "/Assets Handlers")]
 #endif
-        public SpreadsheetImportersHandler sheetsItemsHandler = new SpreadsheetImportersHandler();
+        public SpreadsheetHandler sheetsItemsHandler = new SpreadsheetHandler();
 
-        [Space(8)]
 #if ODIN_INSPECTOR
-        [InlineEditor(InlineEditorObjectFieldModes.Boxed, Expanded = true)]
+        [TabGroup(ImporterTab, SettingsTab)] 
+        [InlineProperty] 
         [HideLabel]
-        [BoxGroup("Converters")]
 #endif
-        public ObjectTypeConverter typeConverters;
-
-        [Space(8)]
-#if ODIN_INSPECTOR
-        [InlineEditor(InlineEditorObjectFieldModes.Boxed, Expanded = true)]
-        [HideLabel]
-        [BoxGroup("Co-Processors")]
-#endif
-        public CoProcessor _coProcessors;
+        public GoogleSpreadsheetSettings settings = new GoogleSpreadsheetSettings();
 
         #endregion
 
@@ -95,9 +56,13 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
 
         #region public properties
 
-        public bool IsValidToConnect => sheets.Any(x => !string.IsNullOrEmpty(x.id));
+        public bool IsValidToConnect => settings.sheets.Any(x => !string.IsNullOrEmpty(x.id));
 
-        public bool HasConnectedSheets => Client.IsConnected;
+        public bool AutoConnect => settings.autoConnect;
+        
+        public bool HasConnectedSheets => Client.IsConnected && 
+                                          Client.Status!=null &&
+                                          Client.Status.HasConnectedSheets;
 
         public ILifeTime LifeTime => (_lifeTime ??= new LifeTimeDefinition());
 
@@ -110,24 +75,90 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
         #region public methods
 
 #if ODIN_INSPECTOR
-        [HorizontalGroup("Sources", DefaultButtonsWidth)]
-        [VerticalGroup("Sources/Source Commands", PaddingTop = 30)]
-        [Button("Import All")]
-        [EnableIf(nameof(HasConnectedSheets))]
+        [PropertyOrder(-1)]
+        [ResponsiveButtonGroup("Commands")]
+        [Button("Reconnect", ButtonSizes.Large, Icon = SdfIconType.SendCheck)]
+        [EnableIf(nameof(IsValidToConnect))]
 #endif
-        public void Import() => sheetsItemsHandler.Import();
+        public void Reconnect()
+        {
+            _lifeTime?.Release();
+
+            Client.Connect(settings.user, settings.credentialsPath);
+
+            LifeTime.AddDispose(Client);
+
+            ReloadSpreadsheetsData();
+
+            sheetsItemsHandler.Initialize(Client);
+        }
 
 #if ODIN_INSPECTOR
-        [VerticalGroup("Sources/Source Commands")]
-        [Button("Export All")]
-        [EnableIf(nameof(HasConnectedSheets))]
+        [PropertyOrder(-1)]
+        [ResponsiveButtonGroup("Commands")]
+        [Button("Reset", ButtonSizes.Large, Icon = SdfIconType.Eraser)]
 #endif
-        public void Export() => sheetsItemsHandler.Export();
+        public void ResetCredentials()
+        {
+            if (Directory.Exists(GoogleSheetImporterConstants.TokenKey))
+                Directory.Delete(GoogleSheetImporterConstants.TokenKey, true);
+
+            _lifeTime?.Release();
+        }
 
 #if ODIN_INSPECTOR
-        [HorizontalGroup("Sheets", DefaultButtonsWidth)]
-        [BoxGroup("Sheets/Commands", false)]
-        [Button("Show")]
+        [PropertyOrder(-1)]
+        [Button("Import All", ButtonSizes.Small, Icon = SdfIconType.CloudDownloadFill)]
+        [ResponsiveButtonGroup("importers/importers/commands",DefaultButtonSize = ButtonSizes.Small)]
+        [EnableIf(nameof(HasConnectedSheets))]
+#endif
+        public void Import()
+        {
+            AssetDatabase.StartAssetEditing();
+            try
+            {
+                sheetsItemsHandler.Import();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+            finally
+            {
+                AssetDatabase.StopAssetEditing();
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+            }
+        }
+
+#if ODIN_INSPECTOR
+        [Button("Export All", ButtonSizes.Small, Icon = SdfIconType.CloudUploadFill)]
+        [ResponsiveButtonGroup("importers/importers/commands")]
+        [EnableIf(nameof(HasConnectedSheets))]
+#endif
+        public void Export()
+        {
+            AssetDatabase.StartAssetEditing();
+            try
+            {
+                sheetsItemsHandler.Export();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+            finally
+            {
+                AssetDatabase.StopAssetEditing();
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+            }
+        }
+
+#if ODIN_INSPECTOR
+        [Button("Show Sheets", ButtonSizes.Small, Icon = SdfIconType.Folder2Open)]
+        [ResponsiveButtonGroup("importers/importers/commands")]
+        [EnableIf(nameof(HasConnectedSheets))]
 #endif
         public void ShowSpreadSheets()
         {
@@ -143,40 +174,8 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
 #endif
         public void ReloadSpreadsheetsData()
         {
-            ReconnectToSpreadsheets(); 
+            ReconnectToSpreadsheets();
             //Client.ReloadAll();
-        }
-
-#if ODIN_INSPECTOR
-        [ButtonGroup()]
-        [EnableIf(nameof(IsValidToConnect))]
-        [Button("Connect Spreadsheets")]
-#endif
-        public void Reconnect()
-        {
-            _lifeTime?.Release();
-
-            LoadTypeConverters();
-
-            Client.Connect(user, credentialsPath);
-
-            LifeTime.AddDispose(Client);
-
-            ReloadSpreadsheetsData();
-
-            sheetsItemsHandler.Initialize(Client);
-        }
-
-#if ODIN_INSPECTOR
-        [ButtonGroup()]
-        [Button("Reset Credentials")]
-#endif
-        public void ResetCredentials()
-        {
-            if (Directory.Exists(GoogleSheetImporterConstants.TokenKey))
-                Directory.Delete(GoogleSheetImporterConstants.TokenKey, true);
-
-            _lifeTime?.Release();
         }
 
         #endregion
@@ -185,7 +184,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
 
         private void ReconnectToSpreadsheets()
         {
-            foreach (var sheet in sheets)
+            foreach (var sheet in settings.sheets)
             {
                 if (string.IsNullOrEmpty(sheet.id))
                     continue;
@@ -193,31 +192,21 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
             }
         }
 
-        private void LoadTypeConverters()
-        {
-            typeConverters = typeConverters ? typeConverters : ObjectTypeConverter.TypeConverters;
-        }
-
-        private void LoadNestedProcessors()
-        {
-            _coProcessors = _coProcessors ? _coProcessors : CoProcessor.Processor;
-        }
-
-        private void OnEnable()
-        {
-            LoadTypeConverters();
-            LoadNestedProcessors();
-        }
 
         private GoogleSpreadsheetClient CreateClient()
         {
-            var client = new GoogleSpreadsheetClient(
-                user,
-                credentialsPath,
-                GoogleSheetImporterConstants.ApplicationName,
-                GoogleSpreadsheetConnection.WriteScope);
+            var clientData = new SpreadsheetClientData()
+            {
+                user = settings.user,
+                credentialsPath = settings.credentialsPath,
+                appName = GoogleSheetImporterConstants.ApplicationName,
+                scope = GoogleSpreadsheetConnection.WriteScope,
+                timeout = settings.authTimeout
+            };
+            
+            var client = new GoogleSpreadsheetClient(clientData)
+                .AddTo(LifeTime);
 
-            LifeTime.AddDispose(client);
             return client;
         }
 

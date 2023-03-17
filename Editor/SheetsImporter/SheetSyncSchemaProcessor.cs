@@ -1,11 +1,11 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
+﻿namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using GoogleSpreadsheets.Editor.SheetsImporter;
-    using GoogleSpreadsheets.Runtime.Attributes;
     using UniModules.UniCore.Runtime.ReflectionUtils;
+    using UniModules.UniGame.GoogleSpreadsheets.Editor.SheetsImporter;
+    using UniModules.UniGame.GoogleSpreadsheets.Runtime.Attributes;
 
     public class SheetSyncSchemaProcessor
     {
@@ -31,11 +31,8 @@
 
             var result = new SheetSyncScheme(sheetName);
 
-            var fields = LoadSyncFieldsData(type,keyField, useAllFields);
-            result.fields = fields.ToArray();
-            
-            result.keyField = result.fields.
-                FirstOrDefault(x => x.isKeyField);
+            result.fields = LoadSyncFieldsData(type,keyField, useAllFields).ToArray();
+            result.keyField = result.fields.FirstOrDefault(x => x.isKeyField);
             
             return result;
 
@@ -50,6 +47,7 @@
             
             var filedsAttributes  = new List<SpreadSheetFieldAttribute>();
             var keyFieldSheetName = GoogleSheetImporterConstants.KeyField;
+            
             var keyFieldName = spreadsheetTargetAttribute != null ? 
                 spreadsheetTargetAttribute.KeyField :
                 keyField;
@@ -58,7 +56,9 @@
                 var attributeInfo = field.
                     FieldType.
                     GetCustomAttribute<SpreadSheetFieldAttribute>();
+                
                 filedsAttributes.Add(attributeInfo);
+                
                 if (attributeInfo != null && attributeInfo.isKey)
                     keyFieldName = attributeInfo.useFieldName ? field.Name : attributeInfo.sheetField;
             }

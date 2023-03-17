@@ -12,6 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00fd1fef3f333d04d9c8ee89cb905e54, type: 3}
   m_Name: SpreadsheetFolderImporter
   m_EditorClassIdentifier: 
-  importers: []
-  references:
-    version: 1
+  importerName: 
+  importers:
+  - importerName: 
+    _importAction: 3
+    folder: 
+    targetAssetType:
+      fullTypeName: UnityEngine.ScriptableObject, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+    assetRegexFilter: 
+    createMissingItems: 0
+    overrideSheetId: 0
+    sheetId: 
+    maxItemsCount: -1
+    assetTemplateName: 
+    assetTypeScript: {fileID: 0}

@@ -1,18 +1,17 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
+﻿namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     using System;
     using System.Collections.Generic;
     using System.Data;
     using System.Linq;
-    using UniModules.Editor;
-    using Extensions;
-    using TypeConverters.Editor;
-    using UniModules.UniCore.EditorTools.Editor;
+    using CoProcessors.Abstract;
     using Core.Runtime.Extension;
+    using UniModules.Editor;
+    using UniModules.UniCore.EditorTools.Editor;
+    using UniModules.UniGame.TypeConverters.Editor;
     using UnityEditor;
     using UnityEngine;
     using Object = UnityEngine.Object;
-    using CoProcessors.Abstract;
 
     public class AssetSheetDataProcessor : IAssetSheetDataProcessor
     {
@@ -119,14 +118,17 @@
                 return result;
             }
 
+            var values = sheet.GetColumnValues(keysId).ToArray();
+            
             var updatedItems = ApplyAssets(
                 filterType,
                 sheetId,
                 folder,
                 syncScheme,
                 spreadsheetData,
-                sheet.GetColumnValues(keysId).ToArray(),
-                assets, maxItemsCount, createMissing,
+                values,
+                assets, maxItemsCount,
+                createMissing,
                 string.Empty,assetNameFormatter);
 
             result.AddRange(updatedItems);
@@ -147,43 +149,60 @@
             string keyFieldName = "",
             Func<string,string> assetNameFormatter = null)
         {
+            assets ??= Array.Empty<Object>();
+            
             count = count < 0 ? keys.Length : count;
             count = Math.Min(keys.Length, count);
 
-            var keyField = string.IsNullOrEmpty(keyFieldName) ? syncScheme.keyField : syncScheme.GetFieldBySheetFieldName(keyFieldName);
+            var keyField = string.IsNullOrEmpty(keyFieldName) 
+                ? syncScheme.keyField 
+                : syncScheme.GetFieldBySheetFieldName(keyFieldName);
 
             try {
                 for (var i = 0; i < count; i++) {
                     var keyValue = keys[i];
                     var key      = keyValue.TryConvert<string>();
-                    var targetAsset = assets?.FirstOrDefault(x => string.Equals(keyField.GetValue(x).TryConvert<string>(),
-                        key, StringComparison.OrdinalIgnoreCase));
 
+                    Object targetAsset = null;
+                    var createAsset = false;
+                    var assetName = $"{filterType.Name}_{i + 1}";
+                    
+                    foreach (var asset in assets)
+                    {
+                        if(asset == null) continue;
+                        var keyFieldValue = keyField.GetValue(asset).TryConvert<string>();
+                        var found = string.Equals(keyFieldValue,key, StringComparison.OrdinalIgnoreCase);
+                        if(!found) continue;
+                        targetAsset = asset;
+                        break;
+                    }
+                    
                     //create asset if missing
                     if (targetAsset == null) {
                         //skip asset creation step
                         if (createMissing == false)
                             continue;
 
+                        createAsset = true;
                         targetAsset = filterType.CreateAsset();
-                        var assetName = $"{filterType.Name}_{i + 1}";
+                        targetAsset.name = assetName;
+                        
                         assetName = assetNameFormatter == null
                             ? assetName
                             : assetNameFormatter?.Invoke(assetName);
-                        
-                        targetAsset.SaveAsset(assetName, folder, false);
-                        Debug.Log($"Create Asset [{targetAsset}] for path {folder}", targetAsset);
                     }
 
                     //show assets progression
-                    AssetEditorTools.ShowProgress(new ProgressData() {
+                    AssetEditorTools.ShowProgress(new ProgressData
+                    {
                         IsDone   = false,
                         Progress = i / (float) count,
                         Content  = $"{i}:{count}  {targetAsset.name}",
                         Title    = "Spreadsheet Importing"
                     });
 
-                    var spreadsheetValueInfo = new SheetValueInfo() {
+                    var spreadsheetValueInfo = new SheetValueInfo
+                    {
                         Source          = targetAsset,
                         SheetName         = sheetId,
                         SpreadsheetData = spreadsheetData,
@@ -194,13 +213,19 @@
                     
                     ApplyData(spreadsheetValueInfo);
 
+                    if (createAsset)
+                    {
+                        targetAsset.SaveAsset(assetName, folder, false);
+                        Debug.Log($"Create Asset [{targetAsset}] for path {folder}", targetAsset);
+                    }
+                    
+                    targetAsset.MarkDirty();
+                    
                     yield return targetAsset;
                 }
             }
             finally {
-                AssetEditorTools.ShowProgress(new ProgressData() {
-                    IsDone = true,
-                });
+                AssetEditorTools.ShowProgress(new ProgressData {IsDone = true,});
                 AssetDatabase.SaveAssets();
             }
         }
@@ -257,6 +282,8 @@
                 _coProcessorHandle.Apply(valueInfo, row);
             }
 
+            if(source is Object asset) asset.MarkDirty();
+            
             return source;
         }
 

@@ -1,4 +1,4 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
+﻿namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     using System;
     using System.Collections.Generic;
@@ -6,8 +6,8 @@
     using System.Linq;
     using System.Text;
     using Google.Apis.Sheets.v4.Data;
-    using TypeConverters.Editor;
     using UniModules.UniCore.Runtime.Utils;
+    using UniModules.UniGame.TypeConverters.Editor;
     using UnityEditor;
     using UnityEngine;
 
@@ -36,7 +36,11 @@
         public SheetData(string sheetId, string spreadsheetId, MajorDimension dimension)
         {
             _dimension = dimension;
-            _table     = new DataTable(sheetId, spreadsheetId);
+            
+            var fixedId = sheetId.TrimStart('\'');
+            fixedId = fixedId.TrimEnd('\'');
+            
+            _table     = new DataTable(fixedId, spreadsheetId);
         }
 
         #region public properties
@@ -218,11 +222,13 @@
         
         public DataRow GetRow(string fieldName, object value)
         {
+            if (value == null) return null;
+            
             var key = _fieldKeyFactory(fieldName);
             for (var i = 0; i < _table.Rows.Count; i++) {
                 var row      = _table.Rows[i];
-                var     rowValue = row[key];
-                if (Equals(rowValue, value))
+                var rowValue = row[key];
+                if (Equals(rowValue, value.TryConvert<string>()))
                     return row;
             }
 

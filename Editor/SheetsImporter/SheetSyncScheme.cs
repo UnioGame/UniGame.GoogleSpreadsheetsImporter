@@ -1,4 +1,4 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter
+﻿namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     using System;
     using System.Collections.Generic;
@@ -13,7 +13,7 @@
 
         public SyncField keyField;
         
-        public SyncField[] fields = new SyncField[0];
+        public SyncField[] fields = Array.Empty<SyncField>();
 
         public SheetSyncScheme(string sheetId)
         {

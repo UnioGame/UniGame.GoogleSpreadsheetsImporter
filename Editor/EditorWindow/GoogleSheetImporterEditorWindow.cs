@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Abstract;
+using UniGame.GoogleSpreadsheetsImporter.Editor;
 
 #if ODIN_INSPECTOR
 
 namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.EditorWindow
 {
     using UniModules.Editor;
-    using SheetsImporter;
+    using global::UniGame.GoogleSpreadsheetsImporter.Editor;
     using Sirenix.OdinInspector;
     using Sirenix.OdinInspector.Editor;
     using UnityEditor;
@@ -47,7 +47,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.EditorWindow
         public GoogleSpreadsheetImporter _googleSheetImporter;
 
         private GoogleImportersCommonOperations _operations;
-        private List<ISpreadsheetAssetsHandler> _assetsHandlers;
+        private List<ISpreadsheetHandler> _assetsHandlers;
         private OdinMenuTree _menuTree;
         
         #region private methods
@@ -70,7 +70,7 @@ namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.EditorWindow
             
             _menuTree.Add("Configuration",_googleSheetImporter);
 
-            if(_googleSheetImporter.autoConnect)
+            if(_googleSheetImporter.AutoConnect)
                 _operations.Reconnect();
 
             OnStartElements();

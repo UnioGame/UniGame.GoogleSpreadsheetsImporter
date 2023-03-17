@@ -1,14 +1,15 @@
-﻿namespace UniModules.UniGame.GoogleSpreadsheetsImporter.Editor.SheetsImporter.Extensions
+﻿namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     using System;
-    using UniCore.Runtime.Utils;
-    
+    using UniModules.UniCore.Runtime.Utils;
+    using Editor;
+
     public static class SheetSyncSchemaExtension
     {
         private static readonly SheetSyncSchemaProcessor _syncSchemeProcessor = new SheetSyncSchemaProcessor();
         
-        private static readonly Func<Type, SheetSyncScheme> _syncCache =
-            MemorizeTool.Create<Type, SheetSyncScheme>(x => _syncSchemeProcessor.CreateSyncScheme(x));
+        private static readonly MemorizeItem<Type, SheetSyncScheme> _syncCache =
+            MemorizeTool.Memorize<Type, SheetSyncScheme>(x => _syncSchemeProcessor.CreateSyncScheme(x));
 
         private static readonly SheetSyncScheme DummyScheme = new SheetSyncScheme(string.Empty);
 
@@ -34,7 +35,7 @@
                 return DummyScheme;
             }
 
-            return _syncCache(source);
+            return _syncCache[source];
         }
         
         public static SheetSyncScheme CreateSheetScheme(this object source)
