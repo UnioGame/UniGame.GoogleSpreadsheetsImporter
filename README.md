@@ -22,6 +22,12 @@ Unity3D Google Spreadsheet export/import library
 - [Connect to Google Spreadsheet](#connect-to-google-spreadsheet)
 - [Supported types](#supported-types)
 
+## Create Importer asset
+
+Menu: "UniGame/Google Spreadsheet/Google Spreadsheet Asset"
+
+![](https://github.com/UnioGame/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/create_spreadsheet_asset.png)
+
 ## Data Definitions
 
 ### Import and Export Attributes
@@ -53,7 +59,7 @@ Parameters:
 
 ```csharp
 
-[SpreadSheetField("DemoTable")]
+[SpreadsheetTarget("DemoTable")]
 public class DemoSO : ScriptableObject{
 
     [SpreadSheetField("KeyField",true)]
@@ -135,6 +141,9 @@ public class DemoSO : ScriptableObject{
 
 ![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/asset_ref1.png)
 
+#### Auto Sync Scriptable Assets on Import
+
+![](https://github.com/UnioGame/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/spreadsheet_asset_creation.gif)
 
 ### Unity Addressables References support
 
@@ -183,10 +192,33 @@ public class ItemData
 
 ```
 
-
 ![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/json_support1.png)
 
 ![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/json_support2.png)
+
+## Pipeline Importer
+
+for more complex import scenario we can use **Pipeline Importer** Asset
+
+### How To Create
+
+Create Menu: **"UniGame/Google/Importers/PipelineImporter"**
+
+Each step of import pipeline take data from previous one. For custom import step your should implement one of:
+
+- SerializableSpreadsheetImporter: pure serializable c# class
+- BaseSpreadsheetImporter: ScriptableObject asset
+
+For example:
+
+- Create Units Prefabs by Spreadsheet Data
+- Apply Unit settings from sheets data to assets
+- Mark Assets as an Addressables an move them into target group
+
+![](https://github.com/UnioGame/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/webapp5.png)
+
+![](https://github.com/UnioGame/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/Import%20Characters%20from%20Spreadsheets1.gif)
+
 
 ## Connect to Google Spreadsheet
 
@@ -200,6 +232,14 @@ public class ItemData
 
 - HOWTO create api credentials https://developers.google.com/sheets/api/quickstart/dotnet
 
+**IMPORTANT**
+
+When you create an Desktop API KEY:
+
+![](https://github.com/UnioGame/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/webapp2.png)
+
+![](https://github.com/UnioGame/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/webapp3.png)
+
 - Setup path to credential .json file and press "Connect Spreadsheet" 
 
 ![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/editorapikey.png)
@@ -207,7 +247,6 @@ public class ItemData
 - Under target Google Profile allow application access to spreadsheets
 
 ![](https://github.com/UniGameTeam/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/editorapikey2.png)
-
 
 
 ### Spreadsheet Id's
