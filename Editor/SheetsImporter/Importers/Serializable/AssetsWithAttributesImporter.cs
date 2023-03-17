@@ -28,7 +28,9 @@
 #endif
         public SType targetAssetType = typeof(ScriptableObject);
         
+#if ODIN_INSPECTOR
         [Button]
+#endif
         public void LoadAssets()
         {
             foreach (var asset in Load()) { }
@@ -100,6 +102,7 @@
             }
         }
         
+#if ODIN_INSPECTOR
         private IEnumerable<ValueDropdownItem<SType>> GetAssetTypeDropdown()
         {
             var baseType = typeof(ScriptableObject);
@@ -114,5 +117,6 @@
                 };
             }
         }
+#endif
     }
 }

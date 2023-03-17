@@ -37,9 +37,11 @@
 #endif
         public SpreadsheetHandler sheetsItemsHandler = new SpreadsheetHandler();
 
+#if ODIN_INSPECTOR
         [TabGroup(ImporterTab, SettingsTab)] 
         [InlineProperty] 
         [HideLabel]
+#endif
         public GoogleSpreadsheetSettings settings = new GoogleSpreadsheetSettings();
 
         #endregion

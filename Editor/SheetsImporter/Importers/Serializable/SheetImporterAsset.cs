@@ -1,8 +1,11 @@
 ﻿namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     using System.Collections.Generic;
-    using Sirenix.OdinInspector;
 
+#if ODIN_INSPECTOR
+    using Sirenix.OdinInspector;
+#endif
+    
     public class SheetImporterAsset<TImporter> : BaseSpreadsheetImporter
         where TImporter : SerializableSpreadsheetImporter
     {

@@ -3,9 +3,12 @@
     using System;
     using System.Collections.Generic;
     using Core.Runtime;
-    using Sirenix.OdinInspector;
     using UniModules.UniCore.Runtime.DataFlow;
     using UnityEngine;
+
+#if ODIN_INSPECTOR
+    using Sirenix.OdinInspector;
+#endif
 
     public abstract class BaseSpreadsheetImporter : ScriptableObject, ISpreadsheetHandler
     {

@@ -181,6 +181,7 @@
             return filteredAssets;
         }
         
+#if ODIN_INSPECTOR
         private IEnumerable<ValueDropdownItem<SType>> GetAssetTypeDropdown()
         {
             var baseType = typeof(ScriptableObject);
@@ -195,6 +196,7 @@
                 };
             }
         }
+#endif
 
     }
 }

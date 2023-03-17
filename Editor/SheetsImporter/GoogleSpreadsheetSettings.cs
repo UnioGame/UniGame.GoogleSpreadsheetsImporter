@@ -3,10 +3,13 @@
     using System;
     using System.Collections.Generic;
     using CoProcessors;
-    using Sirenix.OdinInspector;
     using UniModules.UniGame.TypeConverters.Editor;
     using UnityEngine;
 
+#if ODIN_INSPECTOR
+    using Sirenix.OdinInspector;
+#endif
+    
     [Serializable]
     public class GoogleSpreadsheetSettings
     {
