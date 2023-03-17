@@ -164,6 +164,8 @@
                     var key      = keyValue.TryConvert<string>();
 
                     Object targetAsset = null;
+                    var createAsset = false;
+                    var assetName = $"{filterType.Name}_{i + 1}";
                     
                     foreach (var asset in assets)
                     {
@@ -181,14 +183,13 @@
                         if (createMissing == false)
                             continue;
 
+                        createAsset = true;
                         targetAsset = filterType.CreateAsset();
-                        var assetName = $"{filterType.Name}_{i + 1}";
+                        targetAsset.name = assetName;
+                        
                         assetName = assetNameFormatter == null
                             ? assetName
                             : assetNameFormatter?.Invoke(assetName);
-                        
-                        targetAsset.SaveAsset(assetName, folder, false);
-                        Debug.Log($"Create Asset [{targetAsset}] for path {folder}", targetAsset);
                     }
 
                     //show assets progression
@@ -212,16 +213,19 @@
                     
                     ApplyData(spreadsheetValueInfo);
 
+                    if (createAsset)
+                    {
+                        targetAsset.SaveAsset(assetName, folder, false);
+                        Debug.Log($"Create Asset [{targetAsset}] for path {folder}", targetAsset);
+                    }
+                    
                     targetAsset.MarkDirty();
                     
                     yield return targetAsset;
                 }
             }
             finally {
-                AssetEditorTools.ShowProgress(new ProgressData
-                {
-                    IsDone = true,
-                });
+                AssetEditorTools.ShowProgress(new ProgressData {IsDone = true,});
                 AssetDatabase.SaveAssets();
             }
         }

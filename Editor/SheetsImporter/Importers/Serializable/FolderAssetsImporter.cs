@@ -19,13 +19,6 @@
     public class FolderAssetsImporter : SerializableSpreadsheetImporter
     {
         private const int LabelWidth = 120;
-        
-        private List<Object> _values = new List<Object>();
-
-        protected List<Object> Values {
-            get => _values ??= new List<Object>();
-            set => _values = value;
-        }
 
 #if ODIN_INSPECTOR
         [VerticalGroup("Filter")]
@@ -35,6 +28,8 @@
 #endif
         public string folder;
 
+        public bool cleanupOnImport = false;
+        
 #if ODIN_INSPECTOR
         [ValueDropdown(nameof(GetAssetTypeDropdown))]
         //[HideLabel]
@@ -87,11 +82,10 @@
 #endif
         public override IEnumerable<object> Load()
         {
-            Values.Clear();
             var filterType = GetFilteredType();
-            Values = AssetEditorTools.GetAssets(filterType, new[] {folder});
-            Values = ApplyRegExpFilter(Values);
-            foreach (var value in Values)
+            var values = AssetEditorTools.GetAssets(filterType, new[] {folder});
+            values = ApplyRegExpFilter(values);
+            foreach (var value in values)
                 yield return value;
         }
 
@@ -107,6 +101,9 @@
 
         public sealed override IEnumerable<object> ImportObjects(IEnumerable<object> source,ISpreadsheetData spreadsheetData)
         {
+            if(cleanupOnImport) 
+                EditorFileUtils.DeleteDirectoryFiles(folder.ToAbsoluteProjectPath());
+                
             var result = new List<object>();
             var filterType = GetFilteredType();
             
