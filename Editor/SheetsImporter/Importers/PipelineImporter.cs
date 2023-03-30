@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Sirenix.Utilities.Editor;
     using UnityEngine;
 
 #if ODIN_INSPECTOR
@@ -97,5 +98,6 @@
                 ? _oddColor : defaultColor;
             return result;
         }
+
     }
 }
