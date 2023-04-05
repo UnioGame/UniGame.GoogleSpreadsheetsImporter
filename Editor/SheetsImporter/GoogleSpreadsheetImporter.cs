@@ -114,7 +114,7 @@
 #endif
         public void Import()
         {
-            AssetDatabase.StartAssetEditing();
+            //AssetDatabase.StartAssetEditing();
             try
             {
                 sheetsItemsHandler.Import();
@@ -125,7 +125,7 @@
             }
             finally
             {
-                AssetDatabase.StopAssetEditing();
+                //AssetDatabase.StopAssetEditing();
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
             }

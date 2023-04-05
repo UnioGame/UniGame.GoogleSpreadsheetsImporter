@@ -110,9 +110,14 @@
                 _client.ReloadAll();
 
             var result = new List<object>();
-            foreach (var importer in Importers.Where(x => x.CanImport))
+            var importItems = Importers
+                .Where(x => x.CanImport)
+                .ToList();
+            
+            foreach (var importer in importItems)
             {
-                result.AddRange(Import(spreadsheetData, importer));
+                var importerResult = Import(spreadsheetData, importer);
+                    result.AddRange(importerResult);
             }
 
             return result;
