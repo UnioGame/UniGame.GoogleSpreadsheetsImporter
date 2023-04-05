@@ -8,6 +8,7 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
     using System.Collections.Generic;
     using Editor;
     using UniModules.UniGame.TypeConverters.Editor;
+    using UniModules.UniGame.TypeConverters.Editor.Abstract;
     using Object = UnityEngine.Object;
 
     public static class SpreadsheetExtensions
@@ -137,13 +138,27 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
             return DefaultProcessor.ApplyData(sheetValue);
         }
 
-        public static object ConvertType(this object source, Type target)
+        public static TypeConverterResult ConvertType(this object source, Type target)
         {
             if (source == null)
-                return null;
-            
+            {
+                var result = new TypeConverterResult()
+                {
+                    IsComplete = false,
+                    Result = null,
+                };
+                return result;
+            }
+
             if (target.IsInstanceOfType(source))
-                return source;
+            {
+                var result = new TypeConverterResult()
+                {
+                    IsComplete = true,
+                    Result = source,
+                };
+                return result;
+            }
 
             return ObjectTypeConverter.TypeConverters.ConvertValue(source, target);
         }

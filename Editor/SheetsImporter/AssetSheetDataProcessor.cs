@@ -258,7 +258,9 @@
                     continue;
                 
                 var rowValue     = rowValues[i];
-                var resultValue  = rowValue.ConvertType(itemField.targetType);
+                var result  = rowValue.ConvertType(itemField.targetType);
+                
+                var resultValue = result.Result;
 
                 itemField.ApplyValue(source, resultValue);
 
