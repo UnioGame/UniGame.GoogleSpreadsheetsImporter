@@ -118,7 +118,9 @@
                 return result;
             }
 
-            var values = sheet.GetColumnValues(keysId).ToArray();
+            var values = sheet.GetColumnValues(keysId)
+                .Where(x => !string.IsNullOrEmpty(x.ToString()))
+                .ToArray();
             
             var updatedItems = ApplyAssets(
                 filterType,
