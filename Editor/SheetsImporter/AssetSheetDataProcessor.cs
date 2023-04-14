@@ -133,8 +133,12 @@
                 createMissing,
                 string.Empty,assetNameFormatter);
 
-            result.AddRange(updatedItems);
-
+            foreach (var item in updatedItems)
+            {
+                if(result.Contains(item)) continue;
+                result.Add(item);
+            }
+            
             return result;
         }
 
