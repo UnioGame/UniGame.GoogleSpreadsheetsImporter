@@ -368,7 +368,18 @@
             return result;
         }
 
-        public bool UpdateSheetValue(object source, ISpreadsheetData data, string sheetId = "", string sheetKeyField = "")
+        public bool UpdateSheetValue(object source, 
+            ISpreadsheetData data, 
+            string sheetId = "", 
+            string sheetKeyField = "")
+        {
+            return UpdateSheetValue(source, data, sheetId, sheetKeyField,null);
+        }
+
+        public bool UpdateSheetValue(object source, ISpreadsheetData data, 
+            string sheetId , 
+            string sheetKeyField, 
+            object keyValue)
         {
             if (source == null)
                 return false;
@@ -386,6 +397,7 @@
                 SpreadsheetData = data,
                 SyncScheme      = syncScheme,
                 SyncFieldName   = sheetKeyField,
+                SyncFieldValue = keyValue,
                 SheetName         = sheetId
             };
 
