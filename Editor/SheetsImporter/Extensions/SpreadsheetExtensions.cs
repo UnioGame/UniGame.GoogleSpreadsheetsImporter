@@ -6,6 +6,7 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     using System;
     using System.Collections.Generic;
+    using DG.DemiEditor;
     using Editor;
     using UniModules.UniGame.TypeConverters.Editor;
     using UniModules.UniGame.TypeConverters.Editor.Abstract;
@@ -20,6 +21,11 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
             return DefaultProcessor.UpdateSheetValue(source, data,sheetId,sheetKeyField);
         }
         
+        public static bool UpdateSheetValues(this object source, ISpreadsheetData data, string sheetId, string sheetKeyField, object keyValue)
+        {
+            return DefaultProcessor.UpdateSheetValue(source, data,sheetId,sheetKeyField, keyValue);
+        }
+        
         public static bool UpdateSheetValue(this object source, ISpreadsheetData data)
         {
             return DefaultProcessor.UpdateSheetValue(source, data);
@@ -28,6 +34,46 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
         public static bool UpdateSheetValue(this object source, ISpreadsheetData data, string sheetId)
         {
             return DefaultProcessor.UpdateSheetValue(source, data,sheetId);
+        }
+
+        public static bool UpdateListValue<T>(this List<T> source, ISpreadsheetData data, string sheetId, string sheetKeyField)
+            where T : new()
+        {
+            source.Clear();
+            var sheetData = data[sheetId];
+            var rowsCount = sheetData.RowsCount;
+            if (sheetKeyField.IsNullOrEmpty())
+                return false;
+            
+            for (var i = 0; i < rowsCount; i++)
+            {
+                var key = sheetData.GetValue(i, sheetKeyField);
+                var item = new T();
+                item.UpdateSheetValues(data, sheetId, sheetKeyField, key);
+                source.Add(item);
+            }
+
+            return true;
+        }
+        
+        public static bool ApplySpreadsheetData<T>(this List<T> source, ISpreadsheetData data, string sheetId, string sheetKeyField)
+            where T : new()
+        {
+            source.Clear();
+            var sheetData = data[sheetId];
+            var rowsCount = sheetData.RowsCount;
+            if (sheetKeyField.IsNullOrEmpty())
+                return false;
+            
+            for (var i = 0; i < rowsCount; i++)
+            {
+                var key = sheetData.GetValue(i, sheetKeyField);
+                var item = new T();
+                item.ApplySpreadsheetData(data, sheetId, key, sheetKeyField);
+                source.Add(item);
+            }
+
+            return true;
         }
 
         public static List<Object> SyncFolderAssets(
