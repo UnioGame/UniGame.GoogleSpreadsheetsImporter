@@ -122,6 +122,30 @@ Nested Table
 
 Spreadsheet library support all base value types. 
 
+### Custom Type support
+
+To add support your custom type you need to realize new converter that extends base interface ITypeConverter. As a shortcut you can implement BaseTypeConverter class and mark with [Serializable] attribute.
+
+```csharp
+public interface ITypeConverter
+{
+    bool CanConvert(Type fromType, Type toType);
+    TypeConverterResult TryConvert(object source, Type target);
+}
+```
+
+```csharp
+[Serializable]
+public class StringToVectorTypeConverter : BaseTypeConverter
+{
+    ....
+}
+```
+
+Now we can add it into converters list
+
+![](https://github.com/UnioGame/UniGame.GoogleSpreadsheetsImporter/blob/master/GitAssets/typeconvert1.png)
+
 ### Unity Assets Support
 
 your can make reference to unity asset by type filtering and specifying name of asset
