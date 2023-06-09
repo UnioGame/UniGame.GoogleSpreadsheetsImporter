@@ -6,8 +6,10 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     using System;
     using System.Collections.Generic;
+    using DG.DemiEditor;
     using Editor;
     using UniModules.UniGame.TypeConverters.Editor;
+    using UniModules.UniGame.TypeConverters.Editor.Abstract;
     using Object = UnityEngine.Object;
 
     public static class SpreadsheetExtensions
@@ -19,6 +21,11 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
             return DefaultProcessor.UpdateSheetValue(source, data,sheetId,sheetKeyField);
         }
         
+        public static bool UpdateSheetValues(this object source, ISpreadsheetData data, string sheetId, string sheetKeyField, object keyValue)
+        {
+            return DefaultProcessor.UpdateSheetValue(source, data,sheetId,sheetKeyField, keyValue);
+        }
+        
         public static bool UpdateSheetValue(this object source, ISpreadsheetData data)
         {
             return DefaultProcessor.UpdateSheetValue(source, data);
@@ -27,6 +34,46 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
         public static bool UpdateSheetValue(this object source, ISpreadsheetData data, string sheetId)
         {
             return DefaultProcessor.UpdateSheetValue(source, data,sheetId);
+        }
+
+        public static bool UpdateListValue<T>(this List<T> source, ISpreadsheetData data, string sheetId, string sheetKeyField)
+            where T : new()
+        {
+            source.Clear();
+            var sheetData = data[sheetId];
+            var rowsCount = sheetData.RowsCount;
+            if (sheetKeyField.IsNullOrEmpty())
+                return false;
+            
+            for (var i = 0; i < rowsCount; i++)
+            {
+                var key = sheetData.GetValue(i, sheetKeyField);
+                var item = new T();
+                item.UpdateSheetValues(data, sheetId, sheetKeyField, key);
+                source.Add(item);
+            }
+
+            return true;
+        }
+        
+        public static bool ApplySpreadsheetData<T>(this List<T> source, ISpreadsheetData data, string sheetId, string sheetKeyField)
+            where T : new()
+        {
+            source.Clear();
+            var sheetData = data[sheetId];
+            var rowsCount = sheetData.RowsCount;
+            if (sheetKeyField.IsNullOrEmpty())
+                return false;
+            
+            for (var i = 0; i < rowsCount; i++)
+            {
+                var key = sheetData.GetValue(i, sheetKeyField);
+                var item = new T();
+                item.ApplySpreadsheetData(data, sheetId, key, sheetKeyField);
+                source.Add(item);
+            }
+
+            return true;
         }
 
         public static List<Object> SyncFolderAssets(
@@ -137,13 +184,27 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
             return DefaultProcessor.ApplyData(sheetValue);
         }
 
-        public static object ConvertType(this object source, Type target)
+        public static TypeConverterResult ConvertType(this object source, Type target)
         {
             if (source == null)
-                return null;
-            
+            {
+                var result = new TypeConverterResult()
+                {
+                    IsComplete = false,
+                    Result = null,
+                };
+                return result;
+            }
+
             if (target.IsInstanceOfType(source))
-                return source;
+            {
+                var result = new TypeConverterResult()
+                {
+                    IsComplete = true,
+                    Result = source,
+                };
+                return result;
+            }
 
             return ObjectTypeConverter.TypeConverters.ConvertValue(source, target);
         }

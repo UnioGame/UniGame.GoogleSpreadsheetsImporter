@@ -68,7 +68,7 @@
 
 #if ODIN_INSPECTOR
         [ButtonGroup]
-        [Button(ButtonSizes.Small,Icon = SdfIconType.CloudDownload)]
+        [Button(ButtonSizes.Medium,Icon = SdfIconType.CloudDownload)]
         [EnableIf(nameof(IsValidData))]
         [ShowIf(nameof(CanImport))]
 #endif
@@ -80,7 +80,7 @@
 
 #if ODIN_INSPECTOR
         [ButtonGroup]
-        [Button(ButtonSizes.Small,Icon = SdfIconType.CloudUpload)]
+        [Button(ButtonSizes.Medium,Icon = SdfIconType.CloudUpload)]
         [EnableIf("IsValidData")]
         [ShowIf("CanExport")]
 #endif
