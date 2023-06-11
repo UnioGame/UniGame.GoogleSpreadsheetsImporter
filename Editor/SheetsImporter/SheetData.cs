@@ -143,6 +143,13 @@
             var row = GetRow(key, keyValue);
             return row?[fieldName];
         }
+        
+        public object GetValue(int rowIndex, string columnName)
+        {
+            var fieldName = _fieldKeyFactory(columnName);
+            var row = _table.Rows[rowIndex];
+            return row?[fieldName];
+        }
 
         public SheetData Update(IList<IList<object>> source)
         {

@@ -52,8 +52,7 @@
                 if(!spreadsheetData.HasSheet(item.sheetId) || item.asset == null)
                     continue;
                 
-                var resultValue = item.target
-                    .ApplySpreadsheetData(spreadsheetData,item.sheetId);
+                var resultValue = item.target.ApplySpreadsheetData(spreadsheetData,item.sheetId);
                 
                 resultObjects.Add(item.asset);
                 item.asset.MarkDirty();

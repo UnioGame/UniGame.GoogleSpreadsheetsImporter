@@ -9,6 +9,7 @@
     using UniModules.Editor;
     using UniModules.UniCore.EditorTools.Editor;
     using GoogleSpreadsheetsImporter.Editor;
+    using UnityEditor;
     using UnityEngine;
     using Object = UnityEngine.Object;
 #if ODIN_INSPECTOR
@@ -101,15 +102,21 @@
 
         public sealed override IEnumerable<object> ImportObjects(IEnumerable<object> source,ISpreadsheetData spreadsheetData)
         {
-            if(cleanupOnImport) 
+            if (cleanupOnImport)
+            {
                 EditorFileUtils.DeleteDirectoryFiles(folder.ToAbsoluteProjectPath());
-                
+                AssetDatabase.Refresh();
+            }
+
             var result = new List<object>();
             var filterType = GetFilteredType();
             
             if (filterType == null) return result;
 
-            var assets = source.OfType<Object>().ToArray();
+            var assets = source
+                .OfType<Object>()
+                .Where(x => x!=null)
+                .ToArray();
             
             var syncedAsset = filterType.SyncFolderAssets(
                 folder,

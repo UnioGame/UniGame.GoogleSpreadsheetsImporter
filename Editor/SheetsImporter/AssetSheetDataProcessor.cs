@@ -118,7 +118,9 @@
                 return result;
             }
 
-            var values = sheet.GetColumnValues(keysId).ToArray();
+            var values = sheet.GetColumnValues(keysId)
+                .Where(x => !string.IsNullOrEmpty(x.ToString()))
+                .ToArray();
             
             var updatedItems = ApplyAssets(
                 filterType,
@@ -131,8 +133,12 @@
                 createMissing,
                 string.Empty,assetNameFormatter);
 
-            result.AddRange(updatedItems);
-
+            foreach (var item in updatedItems)
+            {
+                if(result.Contains(item)) continue;
+                result.Add(item);
+            }
+            
             return result;
         }
 
@@ -258,7 +264,9 @@
                     continue;
                 
                 var rowValue     = rowValues[i];
-                var resultValue  = rowValue.ConvertType(itemField.targetType);
+                var result  = rowValue.ConvertType(itemField.targetType);
+                
+                var resultValue = result.Result;
 
                 itemField.ApplyValue(source, resultValue);
 
@@ -360,7 +368,18 @@
             return result;
         }
 
-        public bool UpdateSheetValue(object source, ISpreadsheetData data, string sheetId = "", string sheetKeyField = "")
+        public bool UpdateSheetValue(object source, 
+            ISpreadsheetData data, 
+            string sheetId = "", 
+            string sheetKeyField = "")
+        {
+            return UpdateSheetValue(source, data, sheetId, sheetKeyField,null);
+        }
+
+        public bool UpdateSheetValue(object source, ISpreadsheetData data, 
+            string sheetId , 
+            string sheetKeyField, 
+            object keyValue)
         {
             if (source == null)
                 return false;
@@ -378,6 +397,7 @@
                 SpreadsheetData = data,
                 SyncScheme      = syncScheme,
                 SyncFieldName   = sheetKeyField,
+                SyncFieldValue = keyValue,
                 SheetName         = sheetId
             };
 
