@@ -6,7 +6,6 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     using System;
     using System.Collections.Generic;
-    using DG.DemiEditor;
     using Editor;
     using UniModules.UniGame.TypeConverters.Editor;
     using UniModules.UniGame.TypeConverters.Editor.Abstract;
@@ -42,7 +41,7 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
             source.Clear();
             var sheetData = data[sheetId];
             var rowsCount = sheetData.RowsCount;
-            if (sheetKeyField.IsNullOrEmpty())
+            if (string.IsNullOrEmpty(sheetKeyField))
                 return false;
             
             for (var i = 0; i < rowsCount; i++)
@@ -62,7 +61,7 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
             source.Clear();
             var sheetData = data[sheetId];
             var rowsCount = sheetData.RowsCount;
-            if (sheetKeyField.IsNullOrEmpty())
+            if (string.IsNullOrEmpty(sheetKeyField))
                 return false;
             
             for (var i = 0; i < rowsCount; i++)
