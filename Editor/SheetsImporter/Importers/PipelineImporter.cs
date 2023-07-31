@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using Sirenix.Utilities.Editor;
+    using UnityEditor;
     using UnityEngine;
 
 #if ODIN_INSPECTOR
@@ -15,7 +16,7 @@
         private static Color _oddColor = new Color(0.2f, 0.4f, 0.3f);
         
 #if ODIN_INSPECTOR
-        [ListDrawerSettings(ElementColor = nameof(GetElementColor),ListElementLabelName = "Name")]
+        [ListDrawerSettings(ElementColor = nameof(GetElementColor),ListElementLabelName = "Name")]//OnEndListElementGUI = "BeginDrawImporterElement"
 #endif
         public List<SpreadsheetImporterValue> importers = new List<SpreadsheetImporterValue>();
 
@@ -27,6 +28,10 @@
             .Where(x => x.HasValue)
             .Any(x => x.Value.CanExport);
 
+        public bool IsValidData =>  Client!= null && 
+                                    Client.Status !=null && 
+                                    Client.Status.HasConnectedSheets;
+        
         public override IEnumerable<object> Load()
         {
             var importer = importers
@@ -97,6 +102,28 @@
             var result = index % 2 == 0 
                 ? _oddColor : defaultColor;
             return result;
+        }
+        
+        private void BeginDrawImporterElement(int index)
+        {
+            var importer = importers[index];
+            var handler = importer.Value;
+            if (handler == null) return;
+
+            
+            if (handler.CanImport && IsValidData && SirenixEditorGUI.SDFIconButton("import",14,SdfIconType.Download))
+            {
+                handler.Initialize(Client);
+                var data = handler.Load();
+                handler.ImportObjects(data,Client.SpreadsheetData);
+            }
+
+            if (handler.CanExport && IsValidData && SirenixEditorGUI.SDFIconButton("export",14,SdfIconType.Upload))
+            {
+                handler.Initialize(Client);
+                var data = handler.Load();
+                handler.ExportObjects(data,Client.SpreadsheetData);
+            }
         }
 
     }
