@@ -110,7 +110,7 @@
             var handler = importer.Value;
             if (handler == null) return;
 
-            
+#if ODIN_INSPECTOR
             if (handler.CanImport && IsValidData && SirenixEditorGUI.SDFIconButton("import",14,SdfIconType.Download))
             {
                 handler.Initialize(Client);
@@ -124,6 +124,7 @@
                 var data = handler.Load();
                 handler.ExportObjects(data,Client.SpreadsheetData);
             }
+#endif  
         }
 
     }
