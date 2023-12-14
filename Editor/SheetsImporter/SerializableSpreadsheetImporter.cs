@@ -3,7 +3,11 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
+    using UniCore.Runtime.ProfilerTools;
+    using UnityEditor;
     using UnityEngine;
+    using Object = UnityEngine.Object;
 
 #if ODIN_INSPECTOR
     using Sirenix.OdinInspector;
@@ -13,6 +17,8 @@
     public abstract class SerializableSpreadsheetImporter : ISpreadsheetHandler
     {
         public string importerName = string.Empty;
+        
+        public bool disableDBOnImport = false;
         
         [SerializeField]
         private ImportAction _importAction = ImportAction.All;
@@ -75,7 +81,33 @@
         public void Import()
         {
             if (IsValidData == false) return;
-            Import(_client.SpreadsheetData).ToList();
+            
+            var counter = 0;
+            var stringBuilder = new StringBuilder();
+
+            if (disableDBOnImport)
+                AssetDatabase.StartAssetEditing();
+
+            try
+            {
+                foreach (var importedObject in Import(_client.SpreadsheetData))
+                {
+                    var assetName = importedObject is Object asset ? asset.name : importedObject.GetType().Name;
+                    stringBuilder.AppendLine($"{counter} : [{assetName}] : {importedObject}");
+                    counter++;
+                }
+            }
+            catch (Exception e)
+            {
+                GameLog.LogError(e);
+            }
+            finally
+            {
+                AssetDatabase.StopAssetEditing();
+            }
+            
+            stringBuilder.AppendLine($"\nImported {counter} objects");
+            GameLog.Log(stringBuilder.ToString());
         }
 
 #if ODIN_INSPECTOR
