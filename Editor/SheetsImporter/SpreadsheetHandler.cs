@@ -4,13 +4,14 @@
     using System.Collections.Generic;
     using System.Linq;
     using Core.Runtime;
-    using Sirenix.OdinInspector.Editor;
-    using Sirenix.Utilities.Editor;
+    
     using UniModules.UniCore.Runtime.DataFlow;
     using UnityEngine;
     
 #if ODIN_INSPECTOR
     using Sirenix.OdinInspector;
+    using Sirenix.OdinInspector.Editor;
+    using Sirenix.Utilities.Editor;
 #endif
     
     [Serializable]

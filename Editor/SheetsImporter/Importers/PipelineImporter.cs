@@ -3,14 +3,15 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Sirenix.Utilities.Editor;
+    using UnityEngine.Serialization;
     using UniCore.Runtime.ProfilerTools;
     using UnityEditor;
     using UnityEngine;
-    using UnityEngine.Serialization;
-
+    
 #if ODIN_INSPECTOR
     using Sirenix.OdinInspector;
+    using Sirenix.Utilities.Editor;
+    
 #endif
     
     [CreateAssetMenu(menuName = "UniGame/Google/Importers/PipelineImporter",fileName = nameof(PipelineImporter))]
