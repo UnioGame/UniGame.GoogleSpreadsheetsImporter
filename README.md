@@ -294,27 +294,17 @@ When you create an Desktop API KEY:
 
 - https://googleapis.dev/dotnet/Google.Apis.Sheets.v4/latest/api/Google.Apis.Sheets.v4.html
 
-## NPM Installation
+## UPM Installation
+
+Add to your project manifiest by path [%UnityProject%]/Packages/manifiest.json new dependency:
 
 ```json
 {
-  "scopedRegistries": [
-    {
-      "name": "Unity",
-      "url": "https://package.unity.com",
-      "scopes": [
-        "com.unity"
-      ]
-    },
-    {
-      "name": "UniGame",
-      "url": "http://package.unigame.pro:4873/",
-      "scopes": [
-        "com.unigame"
-      ]
-    }
-  ],
+  "dependencies": {
+    "unigame.unityspreadsheets" : "https://github.com/UnioGame/UniGame.GoogleSpreadsheetsImporter.git",
+  }
 }
+
 ```
 
 ### Official Newtonsoft.Json Unity Package
@@ -333,39 +323,6 @@ When you create an Desktop API KEY:
     "revision": "74ca86c283a2f63ba5b687451a0842ba924da907"
   }
 }
-```
-
-add into your manifest dependency
-
-```json
-  "dependencies": {
-    "com.unity.nuget.newtonsoft-json" : "2.0.0",
-    ...
-    ...
-    ...
-  }
-```
-
-
-### Trird party Newtonsoft.Json for Unity 
-
-https://github.com/jilleJr/Newtonsoft.Json-for-Unity
-
-```json
-{
-  "scopedRegistries": [
-    {
-      "name": "Packages from jillejr",
-      "url": "https://npm.cloudsmith.io/jillejr/newtonsoft-json-for-unity/",
-      "scopes": ["jillejr"]
-    }
-  ],
-  "dependencies": {
-    "jillejr.newtonsoft.json-for-unity": "12.0.201",
-  }
-}
-
-
 ```
 
 ## Co-Processors
