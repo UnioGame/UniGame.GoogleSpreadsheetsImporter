@@ -7,7 +7,8 @@
     using Abstract;
     using UnityEngine;
     using System.Data;
-    
+    using UniModules;
+
     [CreateAssetMenu(menuName = "UniGame/Google/CoProcessors/CoProcessor", fileName = nameof(CoProcessor))]
     public class CoProcessor : ScriptableObject, ICoProcessorHandle
     {
@@ -17,7 +18,7 @@
 
         private static string DefaultCoProcessorPath => _defaultCoProcessorPath =
             string.IsNullOrEmpty(_defaultCoProcessorPath)
-                ? EditorFileUtils.Combine(EditorPathConstants.GeneratedContentPath,
+                ? FileUtils.Combine(EditorPathConstants.GeneratedContentPath,
                     "GoogleSheetImporter/Editor/CoProcessors/")
                 : _defaultCoProcessorPath;
 

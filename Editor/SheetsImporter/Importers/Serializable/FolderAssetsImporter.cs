@@ -8,7 +8,7 @@
     using Core.Runtime.SerializableType.Extensions;
     using UniModules.Editor;
     using UniModules.UniCore.EditorTools.Editor;
-    using GoogleSpreadsheetsImporter.Editor;
+    using UniModules;
     using UnityEditor;
     using UnityEngine;
     using Object = UnityEngine.Object;
@@ -104,7 +104,7 @@
         {
             if (cleanupOnImport)
             {
-                EditorFileUtils.DeleteDirectoryFiles(folder.ToAbsoluteProjectPath());
+                FileUtils.DeleteDirectoryFiles(folder.ToAbsoluteProjectPath());
                 AssetDatabase.Refresh();
             }
 
