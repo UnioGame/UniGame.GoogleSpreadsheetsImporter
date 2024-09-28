@@ -47,7 +47,7 @@
 
         public ILifeTime LifeTime => _lifeTime = _lifeTime ?? new LifeTimeDefinition();
 
-        public IEnumerable<ISpreadsheetHandler> Importers => importers
+        public IEnumerable<ISpreadsheetProcessor> Importers => importers
             .Where(x => x.HasValue)
             .Select(x => x.Value);
 

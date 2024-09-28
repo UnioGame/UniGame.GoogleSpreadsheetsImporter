@@ -14,7 +14,7 @@
 #endif
     
     [Serializable]
-    public abstract class SerializableSpreadsheetImporter : ISpreadsheetHandler
+    public abstract class SerializableSpreadsheetImporter : ISpreadsheetProcessor
     {
         public string importerName = string.Empty;
         

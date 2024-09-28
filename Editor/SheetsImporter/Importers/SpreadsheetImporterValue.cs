@@ -6,8 +6,8 @@
     [Serializable]
     public class SpreadsheetImporterValue : VariantValue<
         SerializableSpreadsheetImporter,
-        BaseSpreadsheetImporter,
-        ISpreadsheetHandler>
+        BaseSpreadsheetProcessor,
+        ISpreadsheetProcessor>
     {
         public const string EmptyValue = "EMPTY";
         

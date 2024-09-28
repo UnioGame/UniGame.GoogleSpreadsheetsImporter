@@ -4,7 +4,7 @@
     using System.Linq;
     using Editor;
 
-    public class SpreadsheetImporter<T> : BaseSpreadsheetImporter
+    public class SpreadsheetImporter<T> : BaseSpreadsheetProcessor
         where T : SerializableSpreadsheetImporter
     {
         public List<T> importers = new List<T>();

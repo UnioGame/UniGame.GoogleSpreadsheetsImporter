@@ -64,8 +64,10 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
 
                 _sheetService = LoadSheetService(GoogleSheetImporterConstants.ApplicationName,
                     GoogleSpreadsheetConnection.WriteScope);
+                
                 _lifeTime.AddDispose(_sheetService);
                 _lifeTime.AddCleanUpAction(() => _sheetService = null);
+                
                 return _sheetService;
             }
         }

@@ -1,6 +1,5 @@
 ﻿namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
-    using System;
     using System.Collections.Generic;
     using Core.Runtime;
     using UniModules.UniCore.Runtime.DataFlow;
@@ -10,7 +9,7 @@
     using Sirenix.OdinInspector;
 #endif
 
-    public abstract class BaseSpreadsheetImporter : ScriptableObject, ISpreadsheetHandler
+    public abstract class BaseSpreadsheetProcessor : ScriptableObject, ISpreadsheetProcessor
     {
         public string importerName = string.Empty;
 

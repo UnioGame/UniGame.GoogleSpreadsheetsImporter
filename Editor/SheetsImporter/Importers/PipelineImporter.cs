@@ -15,7 +15,7 @@
 #endif
     
     [CreateAssetMenu(menuName = "UniGame/Google/Importers/PipelineImporter",fileName = nameof(PipelineImporter))]
-    public class PipelineImporter : BaseSpreadsheetImporter
+    public class PipelineImporter : BaseSpreadsheetProcessor
     {
         private static Color _oddColor = new Color(0.2f, 0.4f, 0.3f);
         

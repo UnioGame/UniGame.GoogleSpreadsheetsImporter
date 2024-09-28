@@ -16,7 +16,9 @@
 
         public bool HasSheet(string sheetName)
         {
-            return _sheets.Any(x => x.Name.Trim('\'').ToLower().Equals(sheetName.ToLower()));
+            return _sheets.Any(x => x.Name.Trim('\'')
+                .ToLower()
+                .Equals(sheetName.ToLower()));
         }
 
         public IEnumerable<SheetData> Sheets => _sheets;

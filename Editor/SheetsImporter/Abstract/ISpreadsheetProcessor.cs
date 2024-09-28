@@ -1,6 +1,6 @@
 ﻿namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
-    public interface ISpreadsheetHandler: 
+    public interface ISpreadsheetProcessor: 
         ISpreadsheetAssetsHandler,
         ISpreadsheetTriggerAssetsHandler
     {

@@ -6,7 +6,7 @@
     using Sirenix.OdinInspector;
 #endif
     
-    public class SheetImporterAsset<TImporter> : BaseSpreadsheetImporter
+    public class SheetImporterAsset<TImporter> : BaseSpreadsheetProcessor
         where TImporter : SerializableSpreadsheetImporter
     {
 #if ODIN_INSPECTOR
