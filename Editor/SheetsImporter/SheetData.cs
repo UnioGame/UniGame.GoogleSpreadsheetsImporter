@@ -16,7 +16,8 @@
     {
         #region static data
 
-        private static Func<string, string> _fieldKeyFactory = MemorizeTool.Create<string, string>(x => x.TrimStart('_').ToLower());
+        private static Func<string, string> _fieldKeyFactory = MemorizeTool
+            .Create<string, string>(x => x.TrimStart('_').ToLower());
 
         private const string _spaceString = " ";
 
@@ -28,8 +29,8 @@
         
         
         private readonly MajorDimension _dimension;
-        private List<object> _headers = new List<object>();
-        private          StringBuilder  _stringBuilder = new StringBuilder(300);
+        private List<object> _headers = new();
+        private          StringBuilder  _stringBuilder = new(300);
         private          DataTable      _table;
         private          bool           _isChanged = false;
 
@@ -222,9 +223,55 @@
             return true;
         }
 
-        public void AddRow(IList<object> data = null)
+        public void AddHeaders(IList<object> data)
         {
-            AddRow(_table, data);
+            AddHeaders(_table, data);
+        }
+        
+        public DataRow AddRow(IList<object> data = null)
+        {
+            return AddRow(_table, data);
+        }
+        
+        public DataRow WriteRow(string fieldName, object value,List<object> values)
+        {
+            var row = GetRow(fieldName, value);
+            if (row == null)
+            {
+                return AddRow(values);
+            }
+            
+            var columns = _table.Columns;
+            var valuesCount = values.Count;
+            
+            row.BeginEdit();
+            
+            for (var i = 0; i < columns.Count; i++) {
+                var valueData =  i < valuesCount ? values[i] : string.Empty;
+                row[columns[i].ColumnName] = valueData.ToString();
+            }
+            
+            row.EndEdit();
+            row.AcceptChanges();
+            AcceptChanges();
+            
+            return row;
+        }
+        
+        public bool AddHeader(string title)
+        {
+            if (string.IsNullOrEmpty(title))
+                return false;
+            var titleKey = _fieldKeyFactory(title);
+            if (_table.Columns.Contains(titleKey))
+                return false;
+ 
+            _headers.Add(title);
+            _table.Columns.Add(titleKey);
+            
+            AcceptChanges();
+
+            return true;
         }
         
         public DataRow GetRow(string fieldName, object value)
@@ -262,31 +309,25 @@
             var row     = table.NewRow();
             var columns = table.Columns;
             var lineLen = line?.Count ?? 0;
-            if (columns.Count <= 0)
-                return row;
+            if (columns.Count <= 0) return row;
+            
             for (var i = 0; i < columns.Count; i++) {
                 row[columns[i].ColumnName] = i < lineLen ? line[i] : string.Empty;
             }
 
             table.Rows.Add(row);
+            AcceptChanges();
             return row;
         }
 
         private void AddHeaders(DataTable table, IList<object> headers)
         {
-            var counter = 0;
-            var columns = table.Columns;
             foreach (var header in headers) {
-                counter++;
                 var title = header == null ? string.Empty : header.ToString();
-                _headers.Add(title);
-                title = _fieldKeyFactory(title);
-                title = columns.Contains(title) ? 
-                    Guid.NewGuid().ToString().
-                        Substring(0,10) : 
-                    title;
-                columns.Add(title);
+                AddHeader(title);
             }
+            
+            AcceptChanges();
         }
     }
 }

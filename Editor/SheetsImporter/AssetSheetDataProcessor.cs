@@ -380,13 +380,21 @@
             string sheetKeyField, 
             object keyValue)
         {
-            if (source == null)
-                return false;
+            if (source == null) return false;
+            
             var type       = source.GetType();
             var syncScheme = type.CreateSheetScheme();
-
-            var keyField = string.IsNullOrEmpty(sheetKeyField) ? syncScheme.keyValue : syncScheme.GetFieldBySheetFieldName(sheetKeyField);
-
+            var keyFieldName = string.IsNullOrEmpty(sheetKeyField) 
+                ? syncScheme.keyValue.sheetField 
+                : sheetKeyField;
+            
+            var keyField = string.IsNullOrEmpty(sheetKeyField) 
+                ? syncScheme.keyValue 
+                : syncScheme.GetFieldBySheetFieldName(sheetKeyField);
+            
+            syncScheme.keyField = keyFieldName;
+            syncScheme.keyValue = keyField;
+            
             if (keyField == null)
                 return false;
 

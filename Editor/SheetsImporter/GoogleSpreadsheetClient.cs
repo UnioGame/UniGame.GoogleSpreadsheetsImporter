@@ -85,8 +85,8 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
         {
             var id = sheet.Name;
             var connection = _connections.FirstOrDefault(x => x.HasSheet(id));
-            if (connection == null)
-                return false;
+            if (connection == null) return false;
+            
             connection.UpdateData(sheet);
             return true;
         }
