@@ -1,6 +1,6 @@
 ﻿namespace UniModules.UniGame.GoogleSpreadsheets.Editor.SheetsImporter
 {
-    public class GoogleSheetImporterConstants
+    public class GoogleSpreadsheetConstants
     {
         public const string ApplicationName = "UnioGame Google Sheets Importer";
         public const string ScriptableAssetKey = "[UnityScriptable]";

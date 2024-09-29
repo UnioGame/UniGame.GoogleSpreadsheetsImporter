@@ -2,32 +2,43 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
 
     [Serializable]
     public class SheetSyncScheme
     {
-        public object target;
-
         public string sheetId;
-
-        public SyncField keyField;
-        
-        public SyncField[] fields = Array.Empty<SyncField>();
+        public string keyField;
+        public SyncValue keyValue;
+        public Dictionary<string,SyncValue> values = new();
 
         public SheetSyncScheme(string sheetId)
         {
             this.sheetId = sheetId;
         }
 
-        public SyncField GetFieldBySheetFieldName(string fieldName)
+        public SyncValue GetFieldBySheetFieldName(string fieldName)
         {
-            return fields.FirstOrDefault(x => SheetData.IsEquals(x.sheetField, fieldName));
+            foreach (var item in values)
+            {
+                if (SheetData.IsEquals(item.Value.sheetField, fieldName))
+                {
+                    return item.Value;
+                }
+            }
+            
+            return null;
         }
         
-        public SyncField GetFieldByObjectField(string fieldName)
+        public SyncValue GetFieldByObjectField(string fieldName)
         {
-            return fields.FirstOrDefault(x => SheetData.IsEquals(x.objectField, fieldName));
+            foreach (var item in values)
+            {
+                if (SheetData.IsEquals(item.Value.objectField, fieldName))
+                {
+                    return item.Value;
+                }
+            }
+            return null;
         }
     }
 }

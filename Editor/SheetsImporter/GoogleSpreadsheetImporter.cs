@@ -100,8 +100,8 @@
 #endif
         public void ResetCredentials()
         {
-            if (Directory.Exists(GoogleSheetImporterConstants.TokenKey))
-                Directory.Delete(GoogleSheetImporterConstants.TokenKey, true);
+            if (Directory.Exists(GoogleSpreadsheetConstants.TokenKey))
+                Directory.Delete(GoogleSpreadsheetConstants.TokenKey, true);
 
             _lifeTime?.Release();
         }
@@ -199,7 +199,7 @@
             {
                 user = settings.user,
                 credentialsPath = settings.credentialsPath,
-                appName = GoogleSheetImporterConstants.ApplicationName,
+                appName = GoogleSpreadsheetConstants.ApplicationName,
                 scope = GoogleSpreadsheetConnection.WriteScope,
                 timeout = settings.authTimeout
             };

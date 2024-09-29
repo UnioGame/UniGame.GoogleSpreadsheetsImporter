@@ -8,7 +8,7 @@
     {
         private string _sheetName = string.Empty;
         private bool _syncAllFields = false;
-        private string _keyField = GoogleSheetImporterConstants.KeyField;
+        private string _keyField = GoogleSpreadsheetConstants.KeyField;
 
         public SpreadsheetTargetAttribute(string sheetName = "",string keyField = "",bool syncAllFields = true)
         {

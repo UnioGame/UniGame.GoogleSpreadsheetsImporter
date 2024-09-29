@@ -69,7 +69,7 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
 
         bool UpdateSheetValue(SheetValueInfo sheetValueInfo);
         
-        IEnumerable<SyncField> SelectSheetFields(SheetSyncScheme schemaValue,SheetData data);
+        IEnumerable<SyncValue> SelectSheetFields(SheetSyncScheme schemaValue,SheetData data);
 
     }
 }

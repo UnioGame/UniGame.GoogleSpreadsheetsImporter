@@ -7,6 +7,6 @@
     public class SheetId
     {
         public string sheetName = string.Empty;
-        public string keyField = GoogleSheetImporterConstants.KeyField;
+        public string keyField = GoogleSpreadsheetConstants.KeyField;
     }
 }

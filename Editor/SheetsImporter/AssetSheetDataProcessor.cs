@@ -104,7 +104,7 @@
                 return result;
             }
 
-            var keyField = syncScheme.keyField;
+            var keyField = syncScheme.keyValue;
 
             if (keyField == null) {
                 Debug.LogWarning($"{nameof(AssetSheetDataProcessor)} Key field missing sheet = {sheetId}");
@@ -161,7 +161,7 @@
             count = Math.Min(keys.Length, count);
 
             var keyField = string.IsNullOrEmpty(keyFieldName) 
-                ? syncScheme.keyField 
+                ? syncScheme.keyValue 
                 : syncScheme.GetFieldBySheetFieldName(keyFieldName);
 
             try {
@@ -248,15 +248,14 @@
                 return source;
             }
 
+            var values = syncScheme.values;
+            
             for (var i = valueInfo.StartColumn; i < rowValues.Length; i++) 
             {
                 var columnName = table.Columns[i].ColumnName;
-                var itemField  = syncScheme.fields.FirstOrDefault(x => SheetData.IsEquals(x.sheetField, columnName));
-
-                if (itemField == null)
-                {
-                    continue;
-                }
+                var key = SheetData.FormatKey(columnName);
+                var found = values.TryGetValue(key, out var itemField);
+                if(!found) continue;
 
                 //check for recurvice call
                 var currentValue = itemField.GetValue(source);
@@ -305,7 +304,7 @@
                 SpreadsheetData = spreadsheetData,
                 SheetName         = syncScheme.sheetId,
                 SyncScheme      = syncScheme,
-                SyncFieldName   = syncScheme.keyField.sheetField,
+                SyncFieldName   = syncScheme.keyValue.sheetField,
             };
 
             var result = ApplyData(syncValue);
@@ -330,7 +329,7 @@
             if (!spreadsheetData.HasSheet(sheetId))
                 return false;
 
-            var keyField = string.IsNullOrEmpty(sheetValueInfo.SyncFieldName) ? syncScheme.keyField?.sheetField : sheetValueInfo.SyncFieldName;
+            var keyField = string.IsNullOrEmpty(sheetValueInfo.SyncFieldName) ? syncScheme.keyValue?.sheetField : sheetValueInfo.SyncFieldName;
 
             if (string.IsNullOrEmpty(keyField) || !spreadsheetData.HasSheet(sheetId))
                 return false;
@@ -386,7 +385,7 @@
             var type       = source.GetType();
             var syncScheme = type.CreateSheetScheme();
 
-            var keyField = string.IsNullOrEmpty(sheetKeyField) ? syncScheme.keyField : syncScheme.GetFieldBySheetFieldName(sheetKeyField);
+            var keyField = string.IsNullOrEmpty(sheetKeyField) ? syncScheme.keyValue : syncScheme.GetFieldBySheetFieldName(sheetKeyField);
 
             if (keyField == null)
                 return false;
@@ -418,30 +417,29 @@
             var row   = sheet.GetRow(sheetValueInfo.SyncFieldName, sheetValueInfo.SyncFieldValue) ?? sheet.CreateRow();
 
             //var sheetFields = SelectSheetFields(schemaValue, data);
-            var fields = schemeValue.fields;
-
-            for (var i = 0; i < fields.Length; i++) {
-                var field       = fields[i];
+            var values = schemeValue.values;
+            foreach (var item in values)
+            {
+                var field       = item.Value;
                 var sourceValue = field.GetValue(source);
                 sourceValue = sourceValue ?? string.Empty;
                 sheet.UpdateValue(row, field.sheetField, sourceValue);
 
-                if (field.IsSheetTarget) {
-                }
+                if (field.IsSheetTarget) {}
             }
 
             return true;
         }
 
-        public IEnumerable<SyncField> SelectSheetFields(SheetSyncScheme schemaValue, SheetData data)
+        public IEnumerable<SyncValue> SelectSheetFields(SheetSyncScheme schemaValue, SheetData data)
         {
             var columns = data.Columns;
+            
             for (var i = 0; i < columns.Count; i++) {
                 var column = columns[i];
-                var field  = schemaValue.fields.FirstOrDefault(x => SheetData.IsEquals(x.sheetField, column.ColumnName));
-                if (field == null)
-                    yield return null;
-                yield return field;
+                var syncValue = schemaValue.GetFieldBySheetFieldName(column.ColumnName);
+                if (syncValue == null) yield return null;
+                yield return syncValue;
             }
         }
     }

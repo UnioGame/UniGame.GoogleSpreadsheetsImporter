@@ -62,7 +62,7 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
                 if (_sheetService != null)
                     return _sheetService;
 
-                _sheetService = LoadSheetService(GoogleSheetImporterConstants.ApplicationName,
+                _sheetService = LoadSheetService(GoogleSpreadsheetConstants.ApplicationName,
                     GoogleSpreadsheetConnection.WriteScope);
                 
                 _lifeTime.AddDispose(_sheetService);
@@ -159,9 +159,9 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
                     scope,
                     _user,
                     cancelationSource.Token,
-                    new FileDataStore(GoogleSheetImporterConstants.TokenKey, true)).Result;
+                    new FileDataStore(GoogleSpreadsheetConstants.TokenKey, true)).Result;
 
-                Debug.Log("Credential file saved to: " + GoogleSheetImporterConstants.TokenKey);
+                Debug.Log("Credential file saved to: " + GoogleSpreadsheetConstants.TokenKey);
             }
 
             // Create Google Sheets API service.

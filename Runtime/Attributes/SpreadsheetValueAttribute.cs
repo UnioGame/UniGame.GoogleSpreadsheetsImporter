@@ -2,8 +2,8 @@
 {
     using System;
 
-    [AttributeUsage(AttributeTargets.Field)]
-    public class SpreadSheetFieldAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+    public class SpreadsheetValueAttribute : Attribute
     {
         public string sheetField = String.Empty;
         public bool isKey = false;
@@ -14,7 +14,7 @@
         /// </summary>
         /// <param name="sheetField">Name of Table Filed</param>
         /// <param name="isKey">If true - use this field for sync items with data</param>
-        public SpreadSheetFieldAttribute(string sheetField = "", bool isKey = false)
+        public SpreadsheetValueAttribute(string sheetField = "", bool isKey = false)
         {
             this.useFieldName = string.IsNullOrEmpty(sheetField);
             this.isKey = isKey;
