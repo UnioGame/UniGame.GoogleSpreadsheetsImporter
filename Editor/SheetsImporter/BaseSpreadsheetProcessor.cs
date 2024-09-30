@@ -49,8 +49,6 @@
             OnInitialize(client);
         }
 
-        public abstract IEnumerable<object> Load();
-
         public void Reset()
         {
             _client = null;
@@ -60,16 +58,14 @@
             _lifeTimeDefinition = new LifeTimeDefinition();
         }
 
-        public IEnumerable<object> Import(ISpreadsheetData spreadsheetData)
+        public ISpreadsheetData Import(ISpreadsheetData spreadsheetData)
         {
-            var source = Load();
-            return ImportObjects(source, spreadsheetData);
+            return ImportObjects(spreadsheetData);
         }
 
         public ISpreadsheetData Export(ISpreadsheetData data)
         {
-            var source = Load();
-            return ExportObjects(source, data);
+            return ExportObjects(data);
         }
 
 #if ODIN_INSPECTOR
@@ -99,9 +95,9 @@
                 _client.UploadAll();
         }
 
-        public abstract IEnumerable<object> ImportObjects(IEnumerable<object> source, ISpreadsheetData spreadsheetData);
+        public abstract ISpreadsheetData ImportObjects(ISpreadsheetData spreadsheetData);
 
-        public abstract ISpreadsheetData ExportObjects(IEnumerable<object> source, ISpreadsheetData spreadsheetData);
+        public abstract ISpreadsheetData ExportObjects(ISpreadsheetData spreadsheetData);
 
         public virtual string FormatName(string assetName) => assetName;
         

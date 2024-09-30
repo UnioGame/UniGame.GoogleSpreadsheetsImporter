@@ -18,20 +18,15 @@
         public override bool CanImport => importer.CanImport;
         public override bool CanExport => importer.CanExport;
         public override string Name => importer.Name;
-        
-        public override IEnumerable<object> Load()
+   
+        public override ISpreadsheetData ImportObjects(ISpreadsheetData spreadsheetData)
         {
-            return importer.Load();
+            return importer.ImportObjects(spreadsheetData);
         }
 
-        public override IEnumerable<object> ImportObjects(IEnumerable<object> source, ISpreadsheetData spreadsheetData)
+        public override ISpreadsheetData ExportObjects( ISpreadsheetData spreadsheetData)
         {
-            return importer.ImportObjects(source, spreadsheetData);
-        }
-
-        public override ISpreadsheetData ExportObjects(IEnumerable<object> source, ISpreadsheetData spreadsheetData)
-        {
-            return importer.ExportObjects(source, spreadsheetData);
+            return importer.ExportObjects(spreadsheetData);
         }
 
         public override string FormatName(string assetName) => importer.Name;

@@ -1,13 +1,10 @@
 ﻿namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Text;
     using UniCore.Runtime.ProfilerTools;
     using UnityEditor;
     using UnityEngine;
-    using Object = UnityEngine.Object;
 
 #if ODIN_INSPECTOR
     using Sirenix.OdinInspector;
@@ -52,24 +49,15 @@
             _client        = null;
             _status        = null;
         }
-        
-        public virtual IEnumerable<object> Load()
-        {
-            yield break;
-        }
 
-        public IEnumerable<object> Import(ISpreadsheetData spreadsheetData)
+        public ISpreadsheetData Import(ISpreadsheetData spreadsheetData)
         {
-            var source = Load();
-            var result = ImportObjects(source, spreadsheetData);
-            foreach (var item in result)
-                yield return item; 
+            return ImportObjects(spreadsheetData);
         }
 
         public ISpreadsheetData Export(ISpreadsheetData data)
         {
-            var source = Load();
-            return ExportObjects(source, data);
+            return ExportObjects(data);
         }
 
 #if ODIN_INSPECTOR
@@ -82,7 +70,6 @@
         {
             if (IsValidData == false) return;
             
-            var counter = 0;
             var stringBuilder = new StringBuilder();
 
             if (disableDBOnImport)
@@ -90,12 +77,7 @@
 
             try
             {
-                foreach (var importedObject in Import(_client.SpreadsheetData))
-                {
-                    var assetName = importedObject is Object asset ? asset.name : importedObject.GetType().Name;
-                    stringBuilder.AppendLine($"{counter} : [{assetName}] : {importedObject}");
-                    counter++;
-                }
+                Import(_client.SpreadsheetData);
             }
             catch (Exception e)
             {
@@ -107,7 +89,6 @@
                 AssetDatabase.StopAssetEditing();
             }
             
-            stringBuilder.AppendLine($"\nImported {counter} objects");
             GameLog.Log(stringBuilder.ToString());
         }
 
@@ -127,12 +108,12 @@
         
         public virtual void Start() { }
         
-        public virtual IEnumerable<object> ImportObjects(IEnumerable<object> source,ISpreadsheetData spreadsheetData)
+        public virtual ISpreadsheetData ImportObjects(ISpreadsheetData spreadsheetData)
         {
-            return source;
+            return spreadsheetData;
         }
 
-        public virtual ISpreadsheetData ExportObjects(IEnumerable<object> source,ISpreadsheetData spreadsheetData) => spreadsheetData;
+        public virtual ISpreadsheetData ExportObjects(ISpreadsheetData spreadsheetData) => spreadsheetData;
 
         public virtual string FormatName(string assetName) => assetName;
     }

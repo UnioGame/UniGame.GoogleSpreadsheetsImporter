@@ -15,7 +15,7 @@
 #endif
     
     [Serializable]
-    public class SpreadsheetHandler : ISpreadsheetAssetsHandler, IResetable
+    public class SpreadsheetHandler : ISpreadsheetAssetsProcessor, IResetable
     {
         private static Color _oddColor = new Color(0.2f, 0.4f, 0.3f);
         
@@ -45,7 +45,7 @@
 
         public string Name => string.IsNullOrEmpty(importerName) ? GetType().Name : importerName;
 
-        public ILifeTime LifeTime => _lifeTime = _lifeTime ?? new LifeTimeDefinition();
+        public ILifeTime LifeTime => _lifeTime ??= new LifeTimeDefinition();
 
         public IEnumerable<ISpreadsheetProcessor> Importers => importers
             .Where(x => x.HasValue)
@@ -72,18 +72,7 @@
             LifeTime.AddCleanUpAction(() => _spreadsheetData = null);
         }
 
-        public IEnumerable<object> Load()
-        {
-            var result = new List<object>();
-            foreach (var importer in Importers)
-            {
-                result.AddRange(importer.Load());
-            }
-
-            return result;
-        }
-
-        public IEnumerable<object> Import()
+        public ISpreadsheetData Import()
         {
             return Import(_spreadsheetData);
         }
@@ -105,44 +94,40 @@
             return data;
         }
 
-        public IEnumerable<object> Import(ISpreadsheetData spreadsheetData)
+        public ISpreadsheetData Import(ISpreadsheetData spreadsheetData)
         {
             if (autoReloadSpreadsheetOnImport)
                 _client.ReloadAll();
 
-            var result = new List<object>();
             var importItems = Importers
                 .Where(x => x.CanImport)
                 .ToList();
             
             foreach (var importer in importItems)
             {
-                var importerResult = Import(spreadsheetData, importer);
-                    result.AddRange(importerResult);
+                var importerResult = importer.Import(spreadsheetData);
             }
 
-            return result;
+            return spreadsheetData;
         }
 
-        public IEnumerable<object> ImportObjects(IEnumerable<object> source, ISpreadsheetData spreadsheetData)
+        public ISpreadsheetData ImportObjects(ISpreadsheetData spreadsheetData)
         {
-            var stage = source;
             foreach (var importer in Importers.Where(x => x.CanImport))
             {
-                stage = importer.ImportObjects(stage, spreadsheetData);
+                importer.Import(spreadsheetData);
             }
 
-            return stage;
+            return spreadsheetData;
         }
 
-        public ISpreadsheetData ExportObjects(IEnumerable<object> source, ISpreadsheetData data)
+        public ISpreadsheetData ExportObjects(ISpreadsheetData data)
         {
             var stage = data;
-            var sourceData = source.ToList();
             
             foreach (var importer in Importers.Where(x => x.CanImport))
             {
-                stage = importer.ExportObjects(sourceData, data);
+                stage = importer.Export(data);
             }
 
             return stage;
@@ -160,15 +145,13 @@
         
         public virtual string FormatName(string assetName) => assetName;
 
-        private ISpreadsheetData Export(ISpreadsheetData data, ISpreadsheetAssetsHandler importer)
+        private ISpreadsheetData Export(ISpreadsheetData data, ISpreadsheetAssetsProcessor importer)
         {
-            importer.Load();
             return importer.Export(data);
         }
 
-        private IEnumerable<object> Import(ISpreadsheetData data, ISpreadsheetAssetsHandler importer)
+        private ISpreadsheetData Import(ISpreadsheetData data, ISpreadsheetAssetsProcessor importer)
         {
-            importer.Load();
             return importer.Import(data);
         }
 

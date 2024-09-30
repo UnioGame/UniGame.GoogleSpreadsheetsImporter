@@ -81,17 +81,18 @@
 #if ODIN_INSPECTOR
         [Button]
 #endif
-        public override IEnumerable<object> Load()
+        public List<Object> Load()
         {
             var filterType = GetFilteredType();
             var values = AssetEditorTools.GetAssets(filterType, new[] {folder});
             values = ApplyRegExpFilter(values);
-            foreach (var value in values)
-                yield return value;
+            return values;
         }
 
-        public sealed override ISpreadsheetData ExportObjects(IEnumerable<object> source,ISpreadsheetData data)
+        public sealed override ISpreadsheetData ExportObjects(ISpreadsheetData data)
         {
+            var source = Load();
+            
             if (!data.HasSheet(sheetId))
                 return data;
 
@@ -100,8 +101,10 @@
             return data;
         }
 
-        public sealed override IEnumerable<object> ImportObjects(IEnumerable<object> source,ISpreadsheetData spreadsheetData)
+        public sealed override ISpreadsheetData ImportObjects(ISpreadsheetData spreadsheetData)
         {
+            var source = Load();
+            
             if (cleanupOnImport)
             {
                 FileUtils.DeleteDirectoryFiles(folder.ToAbsoluteProjectPath());
@@ -111,10 +114,9 @@
             var result = new List<object>();
             var filterType = GetFilteredType();
             
-            if (filterType == null) return result;
+            if (filterType == null) return spreadsheetData;
 
             var assets = source
-                .OfType<Object>()
                 .Where(x => x!=null)
                 .ToArray();
             
@@ -128,7 +130,7 @@
             
             result.AddRange(OnPostImportAction(syncedAsset));
 
-            return result;
+            return spreadsheetData;
         }
 
         public override string FormatName(string assetName)

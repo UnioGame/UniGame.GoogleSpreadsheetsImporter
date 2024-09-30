@@ -127,7 +127,11 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
             {
                 var rangeParts = valueRange.Range.Split('!');
                 var tableName = rangeParts.Length > 0 ? rangeParts[0] : valueRange.Range;
-                var data = UpdateCache(tableName, valueRange.Values);
+                var dataItems = valueRange.Values;
+                if(dataItems == null)
+                    continue;
+                
+                var data = UpdateCache(tableName, dataItems);
                 loadedData.Add(data);
             }
 

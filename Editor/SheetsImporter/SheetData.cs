@@ -89,6 +89,11 @@
                 yield return row[columnName];
             }
         }
+        
+        public bool HasColumn(string key)
+        {
+            return _table.Columns.Contains(_fieldKeyFactory(key));
+        }
 
         public DataColumn GetColumn(string key)
         {

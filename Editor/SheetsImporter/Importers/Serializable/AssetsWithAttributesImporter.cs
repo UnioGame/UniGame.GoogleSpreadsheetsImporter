@@ -36,33 +36,33 @@
             foreach (var asset in Load()) { }
         }
         
-        public override IEnumerable<object> Load()
+        public List<Object> Load()
         {
-            if(targetAssetType == null)yield break;
+            if(targetAssetType == null) return default;
             
-            yield return AssetEditorTools.GetAssets(targetAssetType);
+            return AssetEditorTools.GetAssets(targetAssetType);
         }
 
-        public override IEnumerable<object> ImportObjects(IEnumerable<object> source,ISpreadsheetData spreadsheetData)
+        public override ISpreadsheetData ImportObjects(ISpreadsheetData spreadsheetData)
         {
-            var resultObjects = new List<object>();
+            var source =Load();
+            if(source == null) return spreadsheetData;
+            
             var result = FilterAttributesTargets(source);
             
             foreach (var item in result) {
                 if(!spreadsheetData.HasSheet(item.sheetId) || item.asset == null)
                     continue;
-                
-                var resultValue = item.target.ApplySpreadsheetData(spreadsheetData,item.sheetId);
-                
-                resultObjects.Add(item.asset);
+                item.target.ApplySpreadsheetData(spreadsheetData,item.sheetId);
                 item.asset.MarkDirty();
             }
 
-            return resultObjects;
+            return spreadsheetData;
         }
         
-        public override ISpreadsheetData ExportObjects(IEnumerable<object> source,ISpreadsheetData spreadsheetData)
+        public override ISpreadsheetData ExportObjects(ISpreadsheetData spreadsheetData)
         {
+            var source =Load();
             var result = FilterAttributesTargets(source);
             foreach (var item in result) {
                 if(item.asset == null) continue;

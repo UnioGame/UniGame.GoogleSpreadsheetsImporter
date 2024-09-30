@@ -11,15 +11,11 @@
 
         public override bool CanImport => importers.Any(x => x.CanImport);
         public override bool CanExport => importers.Any(x => x.CanExport);
+        
 
-        public override IEnumerable<object> Load()
+        public override ISpreadsheetData ExportObjects(ISpreadsheetData data)
         {
-            return importers;
-        }
-
-        public override ISpreadsheetData ExportObjects(IEnumerable<object> source, ISpreadsheetData data)
-        {
-            var items = source.OfType<ISpreadsheetAssetsExporter>()
+            var items = importers
                 .Where(x => x.CanExport);
             
             foreach (var importer in items) 
@@ -28,18 +24,14 @@
             return data;
         }
 
-        public sealed override IEnumerable<object> ImportObjects(IEnumerable<object> source,ISpreadsheetData spreadsheetData)
+        public sealed override ISpreadsheetData ImportObjects(ISpreadsheetData spreadsheetData)
         {
-            var result = new List<object>();
-
-            var items = OnPreImport(source.OfType<T>());
-            
-            foreach (var importer in items.Where(x=>x.CanImport)) {
-                result.AddRange(importer.Import(spreadsheetData));
+            foreach (var importer in importers.Where(x=>x.CanImport))
+            {
+                importer.Import(spreadsheetData);
             }
             
-            result = OnPostImport(result).ToList();
-            return result;
+            return spreadsheetData;
         }
 
         

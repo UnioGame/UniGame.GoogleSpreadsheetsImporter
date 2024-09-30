@@ -5,7 +5,7 @@
     using Editor;
 
     [Serializable]
-    public abstract class SpreadsheetSerializableImporter : ISpreadsheetAssetsHandler
+    public abstract class SpreadsheetSerializableImporter : ISpreadsheetAssetsProcessor
     {
         public string importerName = string.Empty;
         
@@ -15,14 +15,12 @@
         public abstract bool CanExport { get; }
 
         public abstract IEnumerable<object> Load();
-
-        public abstract IEnumerable<object> Import(ISpreadsheetData spreadsheetData);
-
+        public abstract ISpreadsheetData Import(ISpreadsheetData spreadsheetData);
         public virtual ISpreadsheetData Export(ISpreadsheetData data) => data;
 
-        public abstract ISpreadsheetData ExportObjects(IEnumerable<object> source, ISpreadsheetData data);
+        public abstract ISpreadsheetData ExportObjects(ISpreadsheetData data);
         
-        public abstract IEnumerable<object> ImportObjects(IEnumerable<object> source, ISpreadsheetData spreadsheetData);
+        public abstract ISpreadsheetData ImportObjects(ISpreadsheetData spreadsheetData);
 
         public virtual void Start() { }
 

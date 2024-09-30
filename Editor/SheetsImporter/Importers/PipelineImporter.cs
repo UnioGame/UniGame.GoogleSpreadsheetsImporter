@@ -7,7 +7,8 @@
     using UniCore.Runtime.ProfilerTools;
     using UnityEditor;
     using UnityEngine;
-    
+    using Object = UnityEngine.Object;
+
 #if ODIN_INSPECTOR
     using Sirenix.OdinInspector;
     using Sirenix.Utilities.Editor;
@@ -51,19 +52,7 @@
                                     Client.Status !=null && 
                                     Client.Status.HasConnectedSheets;
         
-        public override IEnumerable<object> Load()
-        {
-            var importer = importers
-                .FirstOrDefault(x => x.HasValue);
-            
-            if(importer == null) yield break;
-
-            var items = importer.Value.Load();
-            foreach (var item in items)
-                yield return item;
-        }
-
-        public override ISpreadsheetData ExportObjects(IEnumerable<object> source, ISpreadsheetData data)
+        public override ISpreadsheetData ExportObjects(ISpreadsheetData data)
         {
             if (disableDBOnExport)
                 AssetDatabase.StartAssetEditing();
@@ -98,7 +87,7 @@
             return data;
         }
 
-        public sealed override IEnumerable<object> ImportObjects(IEnumerable<object> source,ISpreadsheetData spreadsheetData)
+        public sealed override ISpreadsheetData ImportObjects(ISpreadsheetData spreadsheetData)
         {
             var stage = new List<object>();
 
@@ -107,13 +96,11 @@
             
             try
             {
-                var items = OnPreImport(source);
-                stage = items.ToList();
-
-                foreach (var importer in importers.Where(x => x.HasValue))
+                foreach (var importer in importers
+                             .Where(x => x.HasValue))
                 {
                     var value = importer.Value;
-                    stage = value.ImportObjects(stage, spreadsheetData).ToList();
+                    value.Import(spreadsheetData);
                     
                     if (reimportOnStep)
                     {
@@ -127,7 +114,6 @@
             catch (Exception e)
             {
                 GameLog.LogError(e);
-                yield break;
             }
             finally
             {
@@ -140,8 +126,7 @@
                 }
             }
             
-            foreach (var stageItem in stage)
-                yield return stageItem;
+            return spreadsheetData;
         }
 
         
@@ -184,15 +169,13 @@
             if (handler.CanImport && IsValidData && SirenixEditorGUI.SDFIconButton("import",14,SdfIconType.Download))
             {
                 handler.Initialize(Client);
-                var data = handler.Load();
-                handler.ImportObjects(data,Client.SpreadsheetData);
+                handler.Import(Client.SpreadsheetData);
             }
 
             if (handler.CanExport && IsValidData && SirenixEditorGUI.SDFIconButton("export",14,SdfIconType.Upload))
             {
                 handler.Initialize(Client);
-                var data = handler.Load();
-                handler.ExportObjects(data,Client.SpreadsheetData);
+                handler.Export(Client.SpreadsheetData);
             }
 #endif  
         }
