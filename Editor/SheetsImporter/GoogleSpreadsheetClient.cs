@@ -72,6 +72,17 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
             }
         }
 
+        public void UploadAll()
+        {
+            foreach (var connection in _connections)  
+            {
+                foreach (var sheet in connection.Sheets)
+                {
+                    Upload(sheet);
+                }
+            }
+        }
+        
         public bool Upload(string sheetId)
         {
             var connection = _connections.FirstOrDefault(x => x.HasSheet(sheetId));

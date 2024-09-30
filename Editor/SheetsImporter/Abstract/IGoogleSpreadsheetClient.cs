@@ -20,6 +20,8 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
 
         bool HasSheet(string id);
 
+        void UploadAll();
+        
         bool Upload(string sheetId);
         
         bool Upload(SheetData sheet);

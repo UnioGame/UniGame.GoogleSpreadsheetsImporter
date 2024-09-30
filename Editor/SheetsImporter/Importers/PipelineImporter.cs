@@ -37,7 +37,7 @@
 #if ODIN_INSPECTOR
         [ListDrawerSettings(ElementColor = nameof(GetElementColor),ListElementLabelName = "Name")]//OnEndListElementGUI = "BeginDrawImporterElement"
 #endif
-        public List<SpreadsheetImporterValue> importers = new List<SpreadsheetImporterValue>();
+        public List<SpreadsheetProcessorValue> importers = new List<SpreadsheetProcessorValue>();
 
         public override bool CanImport => importers
             .Where(x => x.HasValue)

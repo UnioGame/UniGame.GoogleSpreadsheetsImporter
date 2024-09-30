@@ -4,8 +4,8 @@
     using UniModules.UniGame.Core.Runtime.Common;
 
     [Serializable]
-    public class SpreadsheetImporterValue : VariantValue<
-        SerializableSpreadsheetImporter,
+    public class SpreadsheetProcessorValue : VariantValue<
+        SerializableSpreadsheetProcessor,
         BaseSpreadsheetProcessor,
         ISpreadsheetProcessor>
     {

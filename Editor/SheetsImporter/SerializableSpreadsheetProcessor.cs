@@ -14,7 +14,7 @@
 #endif
     
     [Serializable]
-    public abstract class SerializableSpreadsheetImporter : ISpreadsheetProcessor
+    public abstract class SerializableSpreadsheetProcessor : ISpreadsheetProcessor
     {
         public string importerName = string.Empty;
         
@@ -100,6 +100,7 @@
             catch (Exception e)
             {
                 GameLog.LogError(e);
+                return;
             }
             finally
             {
@@ -120,6 +121,8 @@
         {
             if (IsValidData == false) return;
             Export(_client.SpreadsheetData);
+            
+            if(_client.IsConnected) _client.UploadAll();
         }
         
         public virtual void Start() { }

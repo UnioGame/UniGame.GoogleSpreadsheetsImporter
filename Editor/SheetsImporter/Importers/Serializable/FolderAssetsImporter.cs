@@ -17,7 +17,7 @@
 #endif
     
     [Serializable]
-    public class FolderAssetsImporter : SerializableSpreadsheetImporter
+    public class FolderAssetsImporter : SerializableSpreadsheetProcessor
     {
         private const int LabelWidth = 120;
 

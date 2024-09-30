@@ -20,7 +20,7 @@
     [HideLabel]
     [BoxGroup("Attributes Source")]
 #endif
-    public class AssetsWithAttributesImporter :  SerializableSpreadsheetImporter 
+    public class AssetsWithAttributesImporter :  SerializableSpreadsheetProcessor 
     {
 #if ODIN_INSPECTOR
         [ValueDropdown(nameof(GetAssetTypeDropdown))]

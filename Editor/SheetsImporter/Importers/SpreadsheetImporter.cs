@@ -5,7 +5,7 @@
     using Editor;
 
     public class SpreadsheetImporter<T> : BaseSpreadsheetProcessor
-        where T : SerializableSpreadsheetImporter
+        where T : SerializableSpreadsheetProcessor
     {
         public List<T> importers = new List<T>();
 

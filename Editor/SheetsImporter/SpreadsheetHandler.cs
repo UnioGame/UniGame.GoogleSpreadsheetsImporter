@@ -31,7 +31,7 @@
 #if ODIN_INSPECTOR
         [ListDrawerSettings(ElementColor = nameof(GetElementColor),ListElementLabelName = "Name")]
 #endif
-        public List<SpreadsheetImporterValue> importers = new List<SpreadsheetImporterValue>();
+        public List<SpreadsheetProcessorValue> importers = new List<SpreadsheetProcessorValue>();
 
         #endregion
 
@@ -184,7 +184,7 @@
             return result;
         }
         
-        private string GetImporterName(SpreadsheetImporterValue importer)
+        private string GetImporterName(SpreadsheetProcessorValue importer)
         {
             return importer.HasValue == false ? "EMPTY" : importer.Value.Name;
         }

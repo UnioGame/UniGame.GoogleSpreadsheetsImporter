@@ -7,7 +7,7 @@
 #endif
     
     public class SheetImporterAsset<TImporter> : BaseSpreadsheetProcessor
-        where TImporter : SerializableSpreadsheetImporter
+        where TImporter : SerializableSpreadsheetProcessor
     {
 #if ODIN_INSPECTOR
         [InlineProperty]

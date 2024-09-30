@@ -94,6 +94,9 @@
         {
             if (IsValidData == false) return;
             Export(_client.SpreadsheetData);
+            
+            if (_client.IsConnected) 
+                _client.UploadAll();
         }
 
         public abstract IEnumerable<object> ImportObjects(IEnumerable<object> source, ISpreadsheetData spreadsheetData);
