@@ -123,23 +123,17 @@
         
         public bool UpdateValue(DataRow row, string fieldName,object value)
         {
-            var columns      = _table.Columns;
-            var columnsCount = columns.Count;
-
-            for (var i = 0; i < columnsCount; i++) {
-                var columnName = columns[i].ColumnName;
-                if (!SheetData.IsEquals(columnName, fieldName)) {
-                    continue;
-                }
-
-                var currentValue = row[i];
-                var newValue     = value.TryConvert(typeof(string));
-                
-                row[i]     = newValue;
-                _isChanged = true;
-                break;
-            }
-
+            var key = _fieldKeyFactory(fieldName);
+            if (!HasColumn(key)) return false;
+            
+            var currentValue = row[key];
+            var newValue     = value.TryConvert(typeof(string));
+            if(currentValue.Equals(newValue)) return false;
+            
+            row[key] = newValue;
+            
+            AcceptChanges();
+            
             return true;
         }
 
@@ -281,9 +275,9 @@
         
         public DataRow GetRow(string fieldName, object value)
         {
-            if (value == null) return null;
-            
+            value = value ?? string.Empty;
             var key = _fieldKeyFactory(fieldName);
+            
             for (var i = 0; i < _table.Rows.Count; i++) {
                 var row      = _table.Rows[i];
                 var rowValue = row[key];
