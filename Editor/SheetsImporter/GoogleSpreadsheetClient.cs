@@ -9,6 +9,7 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
     using Google.Apis.Services;
     using Google.Apis.Sheets.v4;
     using Google.Apis.Util.Store;
+    using UniCore.Runtime.ProfilerTools;
     using UniModules.UniCore.Runtime.DataFlow;
     using UniModules.UniGame.GoogleSpreadsheets.Editor.SheetsImporter;
     using UnityEngine;
@@ -18,8 +19,8 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
         private readonly string _appName;
         private readonly string[] _scope;
 
-        private List<GoogleSpreadsheetConnection> _connections = new List<GoogleSpreadsheetConnection>();
-        private LifeTimeDefinition _lifeTime = new LifeTimeDefinition();
+        private List<GoogleSpreadsheetConnection> _connections = new();
+        private LifeTimeDefinition _lifeTime = new();
 
         private string _credentialsPath;
         private string _user;
@@ -72,11 +73,14 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
             }
         }
 
-        public void UploadAll()
+        public void UploadAll(bool force = false)
         {
-            foreach (var connection in _connections)  
+            foreach (var connection in _connections)
             {
-                foreach (var sheet in connection.Sheets)
+                var sheets = connection.Sheets
+                    .Where(x => force || x.IsChanged);
+                
+                foreach (var sheet in sheets)
                 {
                     Upload(sheet);
                 }
@@ -98,7 +102,15 @@ namespace UniGame.GoogleSpreadsheetsImporter.Editor
             var connection = _connections.FirstOrDefault(x => x.HasSheet(id));
             if (connection == null) return false;
             
+            var timeStart = DateTime.Now;
+            
             connection.UpdateData(sheet);
+            
+            var timeEnd = DateTime.Now;
+            var timePassed = timeEnd - timeStart;
+            
+            GameLog.Log($"Sheet {sheet.Name} uploaded in {timePassed.TotalSeconds} sec",Color.green);
+            
             return true;
         }
 
