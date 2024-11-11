@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using UniModules.UniGame.Core.EditorTools.Editor;
     using UniModules.Editor;
     using Abstract;
     using UnityEngine;

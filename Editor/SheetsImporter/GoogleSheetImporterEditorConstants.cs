@@ -1,7 +1,7 @@
 ﻿namespace UniGame.GoogleSpreadsheetsImporter.Editor
 {
     using UniModules;
-    using UniModules.UniGame.Core.EditorTools.Editor;
+    using UniModules.Editor;
 
     public class GoogleSheetImporterEditorConstants
     {
