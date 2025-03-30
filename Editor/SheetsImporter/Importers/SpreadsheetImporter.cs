@@ -37,7 +37,7 @@
         
         protected override void OnInitialize(IGoogleSpreadsheetClient client)
         {
-            base.Initialize(client);
+            base.OnInitialize(client);
 
             foreach (var importer in importers)
             {
